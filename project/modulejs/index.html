@@ -1,0 +1,160 @@
+<!DOCTYPE HTML>
+<html> 
+  <head> 
+    <meta charset="utf-8"> 
+    <title>modulejs | modular javascript framework</title> 
+	<link href=' http://fonts.googleapis.com/css?family=Kreon' rel='stylesheet' type='text/css' />
+    <style type="text/css" media="screen"> 
+      
+      body { background: #D9CBA3; font-size: 16pt; }
+      
+      #container { width: 890px; color: white; margin: 20px auto; padding: 30px;
+        -moz-box-shadow:    0 10px 14px rgba(0, 0, 0, 0.8);
+        -webkit-box-shadow: 0 10px 14px rgba(0, 0, 0, 0.8);
+        background-color: #333;
+        font-family: 'Droid Sans', arial, serif;
+        line-height: 1.4;
+      }
+      
+      h1, h2 { font-family: 'Kreon', arial, serif; color: #FFC830; text-shadow: 1px 1px 1px #FA8103; margin: 5px auto; }
+      h1 { text-align: center; font-size: 5em }
+      h2 { font-size: 2.2em; }
+      h3 { font-size: 1.6em; margin: 5px auto; }
+      h4 { font-size: 1.2em; margin: 5px auto; }
+      
+      a { color: inherit; }
+      
+      pre {
+        border: 3px dashed #333;
+        padding: 15px; 
+        background-color: #444;
+        text-wrap: wrap;
+        white-space: pre-wrap;
+        white-space: -moz-pre-wrap;
+        white-space: -pre-wrap;
+        white-space: -o-pre-wrap;
+        word-wrap: break-word;
+      }
+        
+      code {
+        padding: 2px;
+        font-size: 0.7em;
+        background-color: #444;
+        color: #C5DBA9;
+        font-family: 'Monaco',Courier,monospace !important;
+      }
+      
+      code .keyword              { font-weight: bold; color: #E9C062; }
+      code .string, code .regexp, code .number { color: #ffbb00 }
+      code .class, code .special { color: white }
+      code .comment              { color: #CCC }
+      
+      .footer { text-align: center; }
+ 
+    </style> 
+ 
+  </head> 
+  
+  <body> 
+    <div id="container" style="position: relative"> 
+      <a href="http://github.com/yuanyan/modulejs" target="_blank"> 
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png" alt="Fork me on GitHub" /> 
+      </a> 
+      
+      <h1>modulejs</h1> 
+      <div> 
+        <h4>
+		modulejs is a modular and Object-Oriented javascript framework that is designed to write a high maintainability and reusability of the javascript code. 
+		</h4>	
+		<h2>Features</h2> 
+        <ul> 
+          <li>HTML document query/traversing/manipulation</li> 
+          <li>Lightweight selector engine</li> 
+          <li>Event handling</li> 
+          <li>Animation</li>
+          <li>Cookie/localStorage storage</li>
+          <li>Language extensions</li>
+          <li>Ajax/JSONP request</li>
+          <li>Template engine</li>
+          <li>Rich utility class</li>
+        </ul>
+			
+        <p>modulejs is compatible with <code>Internet Explorer 6+, Firefox 2+ (and browsers based on gecko) Chrome 4+, Safari 3+ and Opera 9+.</code></p>
+		
+		<h5><em>modulejs quick example:</em></h5>
+ 		<pre><code>var ajax = module("net.Ajax").ajax;
+ajax({
+	url:"localhost/ajaxdemo.php",      //be submited server-side address
+	form:"formName",                   //be submited form's name
+	timeout: 200,                      //timeout 
+	success: function(response){       //success callback
+		console.log(response);
+	}
+});</code></pre>
+
+	  <h2 id="license">Open Source License </h2>
+	  
+	  <p>modulejs is released under the Open Source <a href="http://opensource.org/licenses/mit-license.php" target="_blank">MIT license</a>, which gives you the possibility to use it and modify it in every circumstance.
+	  </p>
+	  <p><img alt="open source" src="http://opensource.org/trademarks/opensource/web/transparent/opensource-75x65-t.png"/></p>
+	     
+        <h2 id="guide">Guide</h2> 
+        
+        <em>Note: This guide is only applicable to modulejs 0.1.0</em> 
+ 
+        <h3>module</h3> 
+ 
+        <p><code>"everything is module"</code> that is an important concept in modulejs. 
+           </p> 
+        
+        <p>An example declare a <code>module</code> could look like:</p>      
+<pre><code>module("lang.Array",function(){
+	//IMPORT
+	//...
+	function trim(str){
+		//...	
+	}
+	//EXPOSE
+	return {
+		"trim":trim
+	};
+});</code></pre>
+        
+ 
+        <h2 id="links">Links</h2>
+		
+		<h4>Group</h4> 
+		<p><a href="http://groups.google.com/group/modulejs" target="_blank">Google Group</a> for discussion</p>
+		
+		<h4>wiki</h4>
+        <p>Visit the <a href="https://github.com/yuanyan/modulejs/wiki" target="_blank">Wiki</a></p>
+
+        <h4>Issues</h4> 
+        <p>Please report issues <a href="http://github.com/yuanyan/modulejs/issues" target="_blank">here</a>.</p> 		
+ 
+      </div> 
+
+
+
+      <div class="footer">
+        <p>copyright &copy;2010-2011 <a href="http://www.madscript.com" target="_blank">Yuanyan</a></p>
+	</div> 
+      
+    </div> 
+
+    <script src="http://www.madscript.com/static/js/hijs.js" charset="utf-8"></script>
+	<script type="text/javascript">
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', 'UA-19059856-3']);
+	  _gaq.push(['_trackPageview']);
+
+	  (function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+
+	</script>
+  </body> 
+  
+</html>

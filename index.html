@@ -1,0 +1,85 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>madscript open project</title>
+<meta charset="utf-8"/>
+<meta name="copyright" content="copyright 2010 yuanyan" /> 
+<meta name="description" content="madscript open project" />
+<meta name="keywords" content="madscript,modulejs,commons-json,uglifyjs-java" />
+<link rel="shortcut icon" href="favicon.ico" >
+<link rel="icon" type="image/gif" href="animated_favicon1.gif" >
+<link href='http://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Copse' rel='stylesheet' type='text/css'>
+<style>
+a:link, a:visited, a:active, a:hover { color: #333; text-decoration:none; }
+body { text-align: center; background:#EEE; padding: 0; font: normal 12px/1.5 'Tahoma',arial, serif;}
+.clear { clear: both;}
+#wrapper {width:700px; padding-top: 150px;}
+header {}
+#projects {}
+.project { width: 220px; padding:5px; float:left; }
+.project a { }
+.project h1 { font-family: 'Copse', arial, serif; color: #333;}',;l
+footer { padding-top: 140px; font-family: 'Lobster', arial, serif; color: #8C8C8C;}
+footer #copyright {color: #8C8C8C;}
+header:hover, article section:hover { opacity: 0.7; filter: alpha(opacity=70);}
+#wrapper, #projects, .project, header, article, footer, section { margin: 0 auto;}
+</style>
+
+<!--[if lt IE 9]>
+<script src="static/js/html5.js"></script>
+<style>
+header, article, footer, section {display: block;}  
+</style>
+<![endif]-->
+
+<script>
+var moduleConfig={debug:false,host:"static/js/modulejs"}; //http://www.madscript.com/static/js/modulejs
+</script>
+<script src="static/js/modulejs/global.js"></script>
+<script>
+module.load(["lang.Base","dom.Selector","event.Event","dom.Node","dom.NodeList","dom.query"]);
+module.onReady(function(){
+
+	var query = module("dom.query");
+	var projects = query(".project > h1");
+
+});
+
+</script>
+</head>
+<body>
+
+<section id="wrapper">
+
+<header>
+<img src="static/images/logo.png"></img>
+</header>
+
+<article id="projects">
+
+<section class="project">
+	<h1><a href="./modulejs">modulejs</a></h1>
+	<p class="project-desc">modular javascript framework</p>
+</section>
+
+<section class="project">
+	<h1><a href="./json">commons-json</a></h1>
+	<p class="project-desc">a high performance JSON library for java</p>
+</section>
+
+<section class="project">
+	<h1><a href="./uglifyjs">UglifyJS-java</a></h1>
+	<p class="project-desc">UglifyJS for java</p>
+</section>
+
+</article>
+
+<footer>
+	<p>copyright &copy; 2010-2011 <a id="copyright" href="http://blog.madscript.com">yuanyan</a></p>
+	<img src="static/images/cloud.png" />
+</footer>
+
+</section>
+</body>
+</html>
