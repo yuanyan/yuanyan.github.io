@@ -13,9 +13,9 @@
 <!--[if IE 9]>
 <meta name="application-name" content="madscript" />
 <meta name="msapplication-tooltip" content="madscript project!" />
-<meta name="msapplication-task" content="name=modulejs;action-uri=http://madscript.com/modulejs;icon-uri=http://madscript.com/static/images/cloud.png" />
-<meta name="msapplication-task" content="name=commons.json;action-uri=http://madscript.com/commons-json;icon-uri=http://madscript.com/static/images/cloud.png" />
-<meta name="msapplication-task" content="name=moon;action-uri=http://madscript.com/moon;icon-uri=http://madscript.com/static/images/cloud.png" />
+<meta name="msapplication-task" content="name=modulejs;action-uri=http://madscript.com/modulejs;icon-uri=http://madscript.com/static/images/favicon.ico" />
+<meta name="msapplication-task" content="name=commons.json;action-uri=http://madscript.com/commons-json;icon-uri=http://madscript.com/static/images/favicon.ico" />
+<meta name="msapplication-task" content="name=moon;action-uri=http://madscript.com/moon;icon-uri=http://madscript.com/static/images/favicon.ico" />
 <meta name="msapplication-navbutton-color" content="#000" />
 <![endif]-->
 
@@ -23,19 +23,18 @@
 <script src="static/js/html5.js"></script>
 <![endif]-->
 <style>
-header, article, footer, section {display: block;}  
+header, article, footer, section {display: block;} 
 a:link, a:visited, a:active, a:hover { color: #333; text-decoration:none; }
 body { text-align: center; background:#EEE; padding: 0; font: normal 12px/1.5 'Tahoma',arial, serif;}
-.clear { clear: both;}
-#wrapper {width:700px; padding-top: 150px;}
-#projects {}
+#wrapper, #projects, #header, #footer { margin: 0 auto;}
+#wrapper {width:700px; padding-top: 120px;}
+#projects {padding-top: 10px;}
 .project { width: 220px; padding:5px; float:left; }
 .project a { }
-.project h1 { font-family: 'Copse', arial, serif; color: #333;}',;l
-footer { padding-top: 140px; font-family: 'Lobster', arial, serif; color: #8C8C8C;}
-footer #copyright {color: #8C8C8C;}
+.project h1 {font-family: 'Copse', arial, serif; color: #333; }
+#copyright {color: #8C8C8C;}
 header:hover, article section:hover { opacity: 0.7; filter: alpha(opacity=70);}
-#wrapper, #projects, .project, header, article, footer, section { margin: 0 auto;}
+#footer {padding-top: 120px;}
 </style>
 
 <script>
@@ -57,7 +56,7 @@ module.onReady(function(){
 
 <section id="wrapper">
 
-<header>
+<header id="header">
 <img id="logo" src="static/images/logo.png"></img>
 </header>
 
@@ -87,7 +86,7 @@ module.onReady(function(){
 
 </article>
 
-<footer>
+<footer id="footer">
 	<p>copyright &copy; 2010-2011 <a id="copyright" href="http://madscript.com/about">yuanyan</a></p>
 	<img src="static/images/cloud.png" />
 </footer>
