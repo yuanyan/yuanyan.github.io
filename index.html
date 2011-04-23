@@ -1,21 +1,33 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>madscript open project</title>
+<title>madscript project!</title>
 <meta charset="utf-8"/>
-<meta name="copyright" content="copyright 2010 yuanyan" /> 
-<meta name="description" content="madscript open project" />
-<meta name="keywords" content="madscript,modulejs,commons-json,uglifyjs-java" />
-<link rel="shortcut icon" href="favicon.ico" >
+<meta name="copyright" content="copyright 2010-2011 yuanyan" /> 
+<meta name="description" content="madscript project!" />
+<meta name="keywords" content="madscript,open source,modulejs,commons-json,uglifyjs-java,moon" />
+<link rel="shortcut icon" href="http://madscript.com/static/images/favicon.ico" >
 <link rel="icon" type="image/gif" href="animated_favicon1.gif" >
 <link href='http://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
 <link href='http://fonts.googleapis.com/css?family=Copse' rel='stylesheet' type='text/css'>
+<!--[if IE9]>
+<meta name="application-name" content="madscript" />
+<meta name="msapplication-tooltip" content="madscript project!" />
+<meta name="msapplication-task" content="name=modulejs;action-uri=http://madscript.com/modulejs;icon-uri=http://madscript.com/static/images/favicon.ico" />
+<meta name="msapplication-task" content="name=commons.json;action-uri=http://madscript.com/commons-json;icon-uri=http://madscript.com/static/images/favicon.ico" />
+<meta name="msapplication-task" content="name=moon;action-uri=http://madscript.com/moon;icon-uri=http://madscript.com/static/images/favicon.ico" />
+<meta name="msapplication-navbutton-color" content="#333" />
+<![endif]-->
+
+<!--[if IE]>
+<script src="static/js/html5.js"></script>
+<![endif]-->
 <style>
+header, article, footer, section {display: block;}  
 a:link, a:visited, a:active, a:hover { color: #333; text-decoration:none; }
 body { text-align: center; background:#EEE; padding: 0; font: normal 12px/1.5 'Tahoma',arial, serif;}
 .clear { clear: both;}
 #wrapper {width:700px; padding-top: 150px;}
-header {}
 #projects {}
 .project { width: 220px; padding:5px; float:left; }
 .project a { }
@@ -25,13 +37,6 @@ footer #copyright {color: #8C8C8C;}
 header:hover, article section:hover { opacity: 0.7; filter: alpha(opacity=70);}
 #wrapper, #projects, .project, header, article, footer, section { margin: 0 auto;}
 </style>
-
-<!--[if lt IE 9]>
-<script src="static/js/html5.js"></script>
-<style>
-header, article, footer, section {display: block;}  
-</style>
-<![endif]-->
 
 <script>
 var moduleConfig={debug:false,host:"static/js/modulejs"}; //http://www.madscript.com/static/js/modulejs
@@ -53,7 +58,7 @@ module.onReady(function(){
 <section id="wrapper">
 
 <header>
-<img src="static/images/logo.png"></img>
+<img id="logo" src="static/images/logo.png"></img>
 </header>
 
 <article id="projects">
