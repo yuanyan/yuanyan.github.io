@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>sdk-api</title>
+</head>
+<body>
+  <div>
+  <a href="http://web.qq.com/">WebQQ</a>
+  <a href="http://www.qq.com/" target="_blank">QQ</a>
+  <a href="http://www.soso.com/" target="_blank">SOSO</a>
+  <a href="http://www.paipai.com/" target="_blank">paipai</a>
+  </div>
+  
+  <div id="tag">
+  <a href="http://www.qq.com/" target="_blank"><span style="color:#ccc">QQ</span></a>
+  <a href="http://www.soso.com/" target="_blank"><img style="color:#ccc" src="http://cache.soso.com/30d/img/logo/logo_index.png">SOSO</img></a>
+  <a href="http://www.paipai.com/" target="_blank">paipai</a>
+  </div>
+ 
+ <div id="other"></div>
+
+<script src="http://web.qstatic.com/jsapi/alloy.api.js?t=1"></script>
+<script>
+//alloy.onDomReady((function(){
+	
+
+	// 设置页面所有链接都用内置浏览器打开
+	//alloy.system.setOpenURL();
+	 
+	// 设置id为tag的DOM对象内的所有链接用内置浏览器打开
+	//alloy.system.setOpenURL(document.getElementById("tag"));
+	 
+	// 过滤innerHTML为paipai的DOM对象，其他的链接用内置浏览器打开
+	/*
+	alloy.system.setOpenURL(function(dom){
+		if (dom.innerHTML == "paipai"){
+			return false;
+		}
+	}); */
+	 
+	// 设置id为tag的DOM对象内的所有链接用内置浏览器打开，除了其中innerHTML等于paipai的对象
+	/*
+	alloy.system.setOpenURL(document.getElementById("tag"), function(dom){
+		if (dom.innerHTML == "paipai") {
+			return false;
+		}
+	});*/
+	
+	document.getElementById("other").innerHTML= "<a href='http://www.qq.com/' target='_blank'>QQ</a>";
+	//document.write("<a href='http://www.qq.com/' target='_blank'>QQ</a>");
+	alloy.on("system.exit",function(){});
+//});
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
