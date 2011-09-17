@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+
+
+<html>
+  <head>
+    <title>LESS - Make stylesheets fun again</title>
+
+    <meta charset='utf-8'/>
+	
+    <script src="slides.js"></script>
+    <script src="less-latest.js"></script>
+	<script>
+		var parser = new less.Parser();
+		function $()
+		{
+			return document.getElementById.apply(document, arguments)
+		}
+		function less2css(l,c){
+			var less = $(l).value;
+			
+			parser.parse(less, function(e, tree){
+				$(c).value = tree.toCSS();
+			})
+		}
+	</script>
+  </head>
+  
+  <style>
+    /* Your individual styles here, or just use inline styles if that’s
+       what you want. */
+	   
+	.codearea {width: 300px; height:400px;display: inline; font-size: 20px;}
+    
+  </style>
+
+  <body style='display: none'>
+
+    <section class='slides'>
+
+      <article class='biglogo'>
+      </article>
+
+      <article>
+          
+        <h1>
+		  LESS
+	      <br>
+          Make stylesheets fun again
+        </h1>
+        <p>
+          yuanyan
+        </p>
+      </article>
+	  
+      <article>
+		<h3>Synopsis</h3>
+        <ul>
+		  <li>LESS是什么</li>
+		  <li>LESS解决什么问题</li>
+		  <li>LESS工作原理</li>
+		  <li>LESS详细语法</li>
+		  <li>LESS实战</li>
+        </ul>
+      </article>
+      <article>
+        <h3>Less.js</h3>
+		<p>动态样式语言，CSS的扩展</p>
+		<p>注重实效的前端攻城湿居家旅行必备良药</p>
+        <ul>
+		  <li>Official: <a href="http://lesscss.org" target="_blank">http://lesscss.org</a></li>
+          <li>Github: <a href="https://github.com/cloudhead/less.js" target="_blank">https://github.com/cloudhead/less.js</a></li>
+          <!--<img style="float:right; margin:-20px;" src="https://chart.googleapis.com/chart?chs=450x450&cht=qr&chl=https://github.com/cloudhead/less.js&choe=UTF-8"/>-->
+          
+        </ul>
+      </article>
+
+      <article>
+        <h3>About CSS</h3>
+		<pre>
+/* this is for the fuckin' ie6 only */
+#docViewerContainer .error-doc #docViewerScreen, 
+#docViewerContainer .timeout-doc #docViewerScreen, 
+#docViewerContainer .loading-doc #docViewerScreen, 
+#docViewerContainer .error-doc #docViewerScrollBar, 
+#docViewerContainer .timeout-doc #docViewerScrollBar, 
+#docViewerContainer .loading-doc #docViewerScrollBar, 
+#docViewerViewport.error-doc #docViewerScreen,
+#docViewerViewport.loading-doc #docViewerScreen,
+#docViewerViewport.timeout-doc #docViewerScreen,
+#docViewerViewport.error-doc #docViewerScrollBar,
+#docViewerViewport.loading-doc #docViewerScrollBar,
+#docViewerViewport.timeout-doc #docViewerScrollBar {
+    visibility: hidden;
+}	
+</pre>
+<code>DRY(Don't Repeat Yourself)</code>
+      </article>
+
+      <article>
+        <h3>Then CSS3<code style="float:right">css3 is big</code></h3>
+		<pre>
+#docViewerTips {
+	width: 180px; height: 20px;
+	/* Safari and Chrome */
+	-webkit-border-radius: 3px;
+	/* Opera */
+	-o-border-radius: 3px;
+	/* IE */
+	-ms-border-radius: 3px;
+	/* Firefox */
+	-moz-border-radius: 3px;
+	/* W3C */
+	border-radius: 3px;
+	/* Safari and Chrome */
+	-webkit-box-shadow:3px 2px 5px #808080;
+	/* Firefox */
+	-moz-box-shadow:3px 2px 5px #808080;
+	/* W3C */
+	box-shadow:3px 2px 5px #808080;
+}
+</pre>
+      </article>
+	  
+      <article>
+        <h3>&nbsp;</h3>
+		
+		<p align="middle">
+		<img  align=absmiddle width="200" height="200" src="images/lessfile.png"/> + 
+		<img  align=absmiddle width="200" height="200" src="images/engine.png"/> =
+		<img  align=absmiddle width="200" height="200" src="images/cssfile.png"/>
+		</p>
+		<br />
+		<p align="middle"><code>.less + less engine = .css</code></p>
+      </article>
+      
+	  
+      <article>
+        <h1>Features</h1>
+		<p><a href="https://github.com/cloudhead/less.js/wiki">https://github.com/cloudhead/less.js/wiki</a></p>
+      </article>
+	  
+      <article>
+        <h3>Variables</h3>
+        <pre>    
+@nice-blue: #5B83AD;
+@light-blue: @nice-blue + #111;
+
+#header { color: @light-blue; }
+		</pre>
+Outputs:
+		<pre> 
+#header { color: #6c94be; }
+        </pre>
+      </article>
+	  
+
+
+      <article>
+        <h3>Operations</h3>
+        
+        <pre>
+@base: 5%;
+@filler: @base * 2;
+@other: @base + @filler;
+
+color: #888 / 4;
+background-color: @base-color + #111;
+height: 100% / 2 + @filler;
+        </pre>
+	 </article>
+	 
+      <article>
+        <h3>Nested rules</h3>
+        <p>
+       与html节点结构相对应，写的更少，最重要的是可读性更高，更容易维护</p>
+        
+        <pre>       
+//code less
+ul#main-nav {
+ list-style-type: none;
+ li {
+   color: blue;
+   a { color: black;}
+ }
+}
+        </pre>
+      </article>
+	  
+      <article>
+        <h3>Mixins</h3>
+        <p>
+       兼容性一直是前端的痛,Less但书写跨浏览样式更容易</p>
+        
+        <pre>
+// mixins    
+.opacity(@val:1){
+  opacity: @val;
+  filter: "alpha(opacity=@{val}*100)";
+}
+
+.opacity(0.5);
+        </pre>
+      </article>
+
+      <article>
+        <h3>Functions</h3>
+        
+        <pre>
+@base-color: hsl(30, 40%, 60%)
+
+#header {
+  color: lightness(@base-color, 10%);
+}
+
+#footer {
+  color: saturation(@base-color, -10%);
+};
+        </pre>
+      </article>	  
+ 
+	  
+      <article>
+        <h3>Namespaces</h3>
+        
+        <pre>
+#bundle {
+  .button {
+    display: block;
+    border: 1px solid black;
+    background-color: grey;
+    :hover { background-color: white }
+  }
+  .tab { ... }
+  .citation { ... }
+}
+        </pre>
+		
+		<pre>
+#header a {
+  color: orange;
+  #bundle > .button;
+}		
+		</pre>
+	 </article>
+
+      <article>
+        <h3>Accessors</h3>
+        
+        <pre>
+#defaults {
+  @width: 960px;
+  @color: black;
+}
+
+.article { color: #294366; }
+
+.comment {
+  width: #defaults[@width];
+  color: .article['color']; 
+}
+        </pre>
+	 </article>
+	 
+	 
+      <article>
+        <h3>Scope</h3>
+        
+        <pre>
+@var: red;
+
+#page {
+  @var: white;
+  #header {
+	color: @var; // white
+  }
+}
+        </pre>
+	  </article>
+	  
+      <article>
+        <h3>Comments</h3>
+        
+        <pre>
+/* One hell of a comment */
+@var: red;
+
+// Get in line!
+@var: white;
+        </pre>
+	  </article>
+	  
+	  
+      <article>
+        <h3>Importing</h3>
+        
+        <pre>
+@import "library";
+@import "typo.css";
+        </pre>
+      </article>
+	  
+      <article>
+        <h1>Less In Action</h1>
+      </article>
+	  
+      <article>
+        <h3>&nbsp;</h3>
+		 <textarea class="codearea" id="code1"></textarea>
+		 <button onclick="less2css('code1','code2')">LESS -> CSS</button>
+		 <textarea class="codearea" id="code2"></textarea>
+         
+      </article>
+
+      <article>
+        <h1>Thanks...</h1>
+      </article>
+    </section>
+
+  </body>
+</html>
