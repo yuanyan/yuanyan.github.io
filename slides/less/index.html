@@ -70,8 +70,12 @@
 		  <li>Official: <a href="http://lesscss.org" target="_blank">http://lesscss.org</a></li>
           <li>Github: <a href="https://github.com/cloudhead/less.js" target="_blank">https://github.com/cloudhead/less.js</a></li>
           <!--<img style="float:right; margin:-20px;" src="https://chart.googleapis.com/chart?chs=450x450&cht=qr&chl=https://github.com/cloudhead/less.js&choe=UTF-8"/>-->
-          
         </ul>
+		<br />
+		<p>已有案例</p>
+		<ul>
+		<li>Twitter: <a href="http://twitter.github.com/bootstrap/" target="_blank">http://twitter.github.com/bootstrap/</a></li>
+		</ul>
       </article>
 
       <article>
@@ -101,22 +105,14 @@
 		<pre>
 #docViewerTips {
 	width: 180px; height: 20px;
-	/* Safari and Chrome */
-	-webkit-border-radius: 3px;
-	/* Opera */
-	-o-border-radius: 3px;
-	/* IE */
-	-ms-border-radius: 3px;
-	/* Firefox */
-	-moz-border-radius: 3px;
-	/* W3C */
-	border-radius: 3px;
-	/* Safari and Chrome */
-	-webkit-box-shadow:3px 2px 5px #808080;
-	/* Firefox */
-	-moz-box-shadow:3px 2px 5px #808080;
-	/* W3C */
-	box-shadow:3px 2px 5px #808080;
+	-webkit-border-radius: 3px; /* Safari and Chrome */
+	-o-border-radius: 3px; /* Opera */
+	-ms-border-radius: 3px; /* IE */
+	-moz-border-radius: 3px; /* Firefox */
+	border-radius: 3px; /* W3C */
+	-webkit-box-shadow:3px 2px 5px #808080; /* Safari and Chrome */
+	-moz-box-shadow:3px 2px 5px #808080; /* Firefox */
+	box-shadow:3px 2px 5px #808080; /* W3C */
 }
 </pre>
       </article>
@@ -133,6 +129,13 @@
 		<p align="middle"><code>.less + less engine = .css</code></p>
       </article>
       
+      <article>
+        <h3>&nbsp;</h3>
+		
+		<p align="middle">
+		<img  align=absmiddle src="images/engine-inner.png"/>
+		</p>
+      </article>
 	  
       <article>
         <h1>Features</h1>
@@ -242,25 +245,6 @@ ul#main-nav {
 }		
 		</pre>
 	 </article>
-
-      <article>
-        <h3>Accessors</h3>
-        
-        <pre>
-#defaults {
-  @width: 960px;
-  @color: black;
-}
-
-.article { color: #294366; }
-
-.comment {
-  width: #defaults[@width];
-  color: .article['color']; 
-}
-        </pre>
-	 </article>
-	 
 	 
       <article>
         <h3>Scope</h3>
@@ -301,16 +285,10 @@ ul#main-nav {
 	  
       <article>
         <h1>Less In Action</h1>
+		<ul>
+		</ul>
       </article>
 	  
-      <article>
-        <h3>&nbsp;</h3>
-		 <textarea class="codearea" id="code1"></textarea>
-		 <button onclick="less2css('code1','code2')">LESS -> CSS</button>
-		 <textarea class="codearea" id="code2"></textarea>
-         
-      </article>
-
       <article>
         <h1>Thanks...</h1>
       </article>
