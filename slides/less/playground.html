@@ -13,11 +13,17 @@
 		}
 		
 		function compile(){
+			$('errors').innerHTML = "";
 			var less = $('source').value;
 			
-			parser.parse(less, function(e, tree){
-				$('result').innerHTML = '<pre>'+tree.toCSS()+'</pre>';
-			})
+			try{
+				parser.parse(less, function(e, tree){
+
+					$('output').innerHTML = '<pre>'+tree.toCSS()+'</pre>';
+				})
+			}catch(e){
+				$('errors').innerHTML = (e.message||'There is an error in your code');
+			}
 		}
 	</script>
 	<style>
@@ -31,8 +37,8 @@ pre { padding: 0.5em 1em; background: #F0F0F0; }
 #main { width: 960px; margin: 0 auto;}
 #playground textarea,
 #playground pre,
-#playground .output,
-#playground .errors {
+#playground #output,
+#playground #errors {
   font-family: Monaco, 'Courier New', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
   font-size: 1em;
 }
@@ -66,10 +72,10 @@ pre { padding: 0.5em 1em; background: #F0F0F0; }
   background: url(/doc/play/pop_out-16.png);
 }
 
-#playground .output { color: #00a; }
-#playground .errors { color: #a00; }
-#playground .output,
-#playground .errors {
+#playground #output { color: #00a; }
+#playground #errors { color: #a00; }
+#playground #output,
+#playground #errors {
   width: 100%;
   overflow: auto;
 }
@@ -91,7 +97,8 @@ pre { padding: 0.5em 1em; background: #F0F0F0; }
 <div id="playground" class="large">
 <textarea id="source" class="edit" spellcheck="false"></textarea>
 <button class="run" onclick="compile()">Compile</button>
-<div id="result" class="output" style="display: block; "></div>
+<div id="output" style="display: block; "></div>
+<div id="errors" style="display: block; "></div>
 </div>
 </div>
 </body>

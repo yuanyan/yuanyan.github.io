@@ -197,8 +197,9 @@ ul#main-nav {
         <pre>
 // mixins    
 .opacity(@val:1){
+  @ieVal: @val*100;
   opacity: @val;
-  filter: "alpha(opacity=@{val}*100)";
+  filter: "alpha(opacity=@{ieVal})";
 }
 
 .opacity(0.5);
@@ -209,15 +210,14 @@ ul#main-nav {
         <h3>Functions</h3>
         
         <pre>
-@base-color: hsl(30, 40%, 60%)
-
-#header {
-  color: lightness(@base-color, 10%);
+#functions {
+  @var: 10;
+  color: color("evil red"); // #660000
+  width: increment(15);
+  height: undefined("self");
+  border-width: add(2, 3);
+  variable: increment(@var);
 }
-
-#footer {
-  color: saturation(@base-color, -10%);
-};
         </pre>
       </article>	  
  
@@ -233,17 +233,15 @@ ul#main-nav {
     background-color: grey;
     :hover { background-color: white }
   }
-  .tab { ... }
-  .citation { ... }
-}
-        </pre>
+  .tab { }
+  .citation { }
+}</pre>
 		
 		<pre>
 #header a {
   color: orange;
   #bundle > .button;
-}		
-		</pre>
+}</pre>
 	 </article>
 	 
       <article>
