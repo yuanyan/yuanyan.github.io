@@ -1,0 +1,323 @@
+
+<!doctype html><html>
+<head>
+<title>Web Timing Demonstration</title>
+
+<script>
+  // Retrieve the performance object in a cross browser way. It is important to
+  // check window.performance first.
+  var performance = window.performance || window.mozPerformance || window.msPerformance || window.webkitPerformance || {};
+
+  var timing = performance.timing || {};
+  var navigation = performance.navigation || {};
+
+  // Retrieve the navigation start time via the traditional method.
+  // This is the earliest time that a web page can get without Web Timing.
+  timing.legacyNavigationStart = new Date().getTime();
+</script>
+
+<style> 
+body {
+  margin:0;
+  padding:40px;
+  background:#FFF;
+  font:70% Arial, Helvetica, sans-serif;
+  color:#555;
+  line-height:180%;
+}
+ 
+h1 {
+  font-size:180%;
+  font-weight:normal;
+  color:#555;
+}
+
+.timeline {
+  background: #111;
+  background: -webkit-gradient(linear, 0 top, 0 bottom, from(#333), color-stop(0.2, #222), to(#222));
+  border: 1px solid black;
+  color: #DDD;
+  position: relative;
+  text-shadow: 1px 1px 1px #111;
+  width: 100%;
+  -webkit-box-reflect: below 0 -webkit-gradient(linear, left top, left bottom, from(transparent), color-stop(0.86, transparent), to(hsla(0,0%,0%,.25)));
+  z-index: 0;
+}
+
+.verticalBar {
+  border-right: 1px dashed hsla(0,100%,100%,.5);
+  height: 100%;
+  text-align: right;
+  position: absolute;
+  visibility: hidden;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+.horizontalBar {
+  background: #1A89D7;
+  background: -webkit-gradient(linear, left top, left bottom, from(#E9EDE8), to(#1A89D7), color-stop(0.4, #2A4D8B));
+  border-radius: 5px;
+  height: 3.5ex;
+  -webkit-transition-property: width;
+  -webkit-transition-duration: .5s;
+  visibility: hidden;
+  white-space: nowrap;
+  z-index: 2;
+}
+
+#spacer {
+  height: 10ex;
+}
+
+#navigationStart {
+  visibility: visible;
+  width: 0%;
+}
+
+#error {
+  display: none;
+  text-align: center;
+  width: 100%;
+}
+
+#form, #contentDiv {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px;
+}
+</style>
+
+<script>
+
+function getOrAddElement(id, type, properties, parent, insertBefore) {
+  var elem = document.getElementById(id);
+  if (!elem) {
+    elem = document.createElement(type);
+    elem.id = id;
+    for (var p in properties) {
+      elem[p] = properties[p];
+    }
+    if (!parent) parent = document.getElementById('contentDiv');
+    if (insertBefore) {
+      parent.insertBefore(elem, insertBefore);
+    } else {
+      parent.appendChild(elem);
+    }
+  }
+  return elem;
+}
+
+function log(label, msg) {
+  var logElem = getOrAddElement('logElem', 'DIV');
+  if (label) label = (''+label).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/\n/g, '<br>');;
+  if (msg) msg = (''+msg).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/\n/g, '<br>');
+  var logLine = ['<br><b>', label, '</b>: ', msg].join('');
+  logElem.innerHTML += logLine;
+}
+
+function logTiming(timingStr) {
+  if (timing) {
+    var absTiming = getTiming(timingStr);
+    var deltaTiming = getDelta('navigationStart', timingStr);
+    log(timingStr, absTiming + ' ' + deltaTiming);
+  }
+}
+
+function logType() {
+  var NAVIGATION_TYPE = ['Navigate', 'Reload', 'Back/Forward'];
+  if (navigation) {
+    log('type', NAVIGATION_TYPE[navigation.type]);
+  }
+}
+
+function logRedirectCount() {
+  if (navigation) {
+    log('redirectCount', navigation.redirectCount);
+  }
+}
+
+function sleep(ms) {
+  var endTime = (new Date().getTime()) + ms;
+  while ((new Date().getTime()) < endTime);
+}
+
+var doRedirect = location.search.search(/[?&]r=1/) > -1;
+var noWorkInBody = location.search && location.search.search(/[?&]b=1/) == -1;
+var noWorkInLoad = location.search && location.search.search(/[?&]l=1/) == -1;
+function updateForm() {
+  var form = document.forms[0];
+  form.redirect.checked = doRedirect;
+  form.body.checked = !noWorkInBody;
+  form.load.checked = !noWorkInLoad;
+  form.bustcache.value = new Date().getTime();
+  updateFormAction();
+}
+
+function updateFormAction() {
+  var baseUrl = window.location.href.split('?')[0];
+  var form = document.forms[0];
+  if (form.redirect.checked) {
+    form.action = 'http://stevesouders.com/bin/resource.cgi';
+    form.redirurl.value = encodeURI(baseUrl + '?r=' + (0+form.r.checked) + '&b=' + (0+form.b.checked) + '&l=' + (0+form.l.checked) + '&bustcache=' + new Date().getTime());
+  } else {
+    form.action = baseUrl;
+  }
+}
+
+function getTiming(timingStr) {
+  if (!timing) return 0;
+  return timing[timingStr];
+}
+
+function getStartTiming() {
+  return getTiming('navigationStart');
+}
+
+function getEndTiming() {
+  return getTiming('loadEventEnd');
+}
+
+function getPercent(timingStr) {
+  var begin = getStartTiming();
+  var end = getEndTiming();
+  var thisTiming = getTiming(timingStr);
+  var totalDuration = end - begin;
+  var thisDuration = thisTiming - begin;
+  return Math.round(100.0 * thisDuration / totalDuration);
+}
+
+function getDelta(startTimingStr, endTimingStr) {
+  var begin = getTiming(startTimingStr);
+  var end = getTiming(endTimingStr);
+  if (!begin || !end) return "n/a";
+  return (end - begin) + "ms";
+}
+
+function setVerticalBar(timingStr) {
+  var elem = document.getElementById(timingStr);
+  var percent = getPercent(timingStr);
+  elem.style.width = percent + '%';
+  elem.innerHTML += " " + getDelta('navigationStart', timingStr);
+  elem.style.visibility = 'visible';
+}
+
+function setHorizontalBar(startTimingStr, endTimingStr) {
+  var elem = document.getElementById(startTimingStr);
+  var startPercent = getPercent(startTimingStr);
+  var endPercent = getPercent(endTimingStr);
+  var width = endPercent - startPercent;
+  if (width > 0)
+    elem.style.width = width + '%';
+  else
+    elem.style.width = '1px';
+  elem.style.marginLeft = (startPercent > 0 ? startPercent : 0) + '%';
+  elem.innerHTML += " " + getDelta(startTimingStr, endTimingStr);
+  elem.style.visibility = 'visible';
+}
+
+function writeTimings() {
+  if (!getTiming('navigationStart')) {
+    document.getElementById('error').style.display = 'block';
+    return;
+  }
+
+  setVerticalBar('unloadEventEnd');
+  setVerticalBar('legacyNavigationStart');
+  setVerticalBar('loadEventEnd');
+
+  setHorizontalBar('redirectStart', 'redirectEnd');
+  setHorizontalBar('fetchStart', 'responseEnd');
+  setHorizontalBar('domainLookupStart', 'domainLookupEnd');
+  setHorizontalBar('connectStart', 'connectEnd');
+  setHorizontalBar('requestStart', 'responseStart');
+  setHorizontalBar('responseStart', 'responseEnd');
+  setHorizontalBar('loadEventStart', 'loadEventEnd');
+
+  logType();
+  logRedirectCount();
+  logTiming('navigationStart');
+  logTiming('unloadEventStart');
+  logTiming('unloadEventEnd');
+  logTiming('redirectStart');
+  logTiming('redirectEnd');
+  logTiming('fetchStart');
+  logTiming('domainLookupStart');
+  logTiming('domainLookupEnd');
+  logTiming('connectStart');
+  logTiming('connectEnd');
+  logTiming('requestStart');
+  logTiming('responseStart');
+  logTiming('responseEnd');
+  logTiming('domLoading');
+  logTiming('domInteractive');
+  logTiming('domContentLoadedEventStart');
+  logTiming('domContentLoadedEventEnd');
+  logTiming('domComplete');
+  logTiming('loadEventStart');
+  logTiming('loadEventEnd');
+  logTiming('legacyNavigationStart');
+}
+</script>
+
+</head>
+
+<body onload="if(!noWorkInLoad)sleep(100);setTimeout('writeTimings()', 0)">
+
+<h1>Web Timing demonstration</h1>
+This page demonstrates <a href="http://dev.w3.org/2006/webapi/WebTiming/">Web Timing</a> functionality at a high level. For a detailed definition of the API, see the <a href="http://dev.w3.org/2006/webapi/WebTiming/">specification</a>.
+
+<div id=spacer></div>
+
+<div class=timeline>
+
+<div class=verticalBar id=navigationStart>Navigation started 0ms</div>
+<div class=verticalBar id=unloadEventEnd style="top:2ex">Last page unloaded</div>
+<div class=verticalBar id=legacyNavigationStart style="top:4ex">Legacy navigation started ~</div>
+<div class=verticalBar id=loadEventEnd>Page loaded</div>
+
+<div id=spacer></div>
+
+<div id=error>
+Sorry. This browser doesn't support Web Timing yet. Visit this page in Chrome 6 or Internet Explorer 9.
+</div>
+
+<div class=horizontalBar id=redirectStart>&nbsp;Redirects</div>
+<div class=horizontalBar id=fetchStart>&nbsp;Fetch</div>
+<div class=horizontalBar id=domainLookupStart>&nbsp;DNS</div>
+<div class=horizontalBar id=connectStart>&nbsp;Connect</div>
+<div class=horizontalBar id=requestStart>&nbsp;Request</div>
+<div class=horizontalBar id=responseStart>&nbsp;Response</div>
+<div class=horizontalBar id=loadEventStart>&nbsp;Load event</div>
+
+</div>
+
+<div id=spacer></div>
+
+<div id=form>
+<b>Configure test page</b><br>
+<form action="/" method=GET>
+<label for=redirect>HTTP Redirect:</label> <input type=checkbox id=redirect name=r value=1><br>
+<label for=body>100ms of script work in body:</label> <input type=checkbox id=body name=b value=1><br>
+<label for=load>100ms of script work in load event:</label> <input type=checkbox id=load name=l value=1><br>
+<input type=hidden name=type value=html>
+<input type=hidden name=status value=302>
+<input type=hidden name=sleep value=0>
+<input type=hidden name=redir value=1>
+<input type=hidden name=redirurl value="">
+<input type=hidden name=bustcache value="">
+<button type=submit onclick="updateFormAction()">Try it</button><br>
+<script>
+  updateForm();
+  if (!noWorkInBody) sleep(100);
+</script>
+</form>
+</div>
+
+<div id=spacer></div>
+
+<div id=contentDiv><b>All properties</b></div>
+
+</body>
+
+</html>

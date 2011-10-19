@@ -1,11 +1,23 @@
+﻿/**
+ * Class: Template
+ */
 module("template.Template", function(){
 
 	/**
+	 * Function: template
 	 * 简单的模板机制
-	 * @example
+	 * 
+	 * Parameters:
+	 * 	temp - {String} 模板
+	 * 	val - {Object} 模板对象
+	 * 
+	 * Returns: 
+	 * 	{String}
+	 * 
+	 * Example:
+	 * (code)
 	 * template("${i},${j}",{i:11,j:22}) === 11,22
-	 * @param {String} temp 模板
-	 * @param {Object} val 模板对象
+	 * (end)
 	 */
 	var template = function(temp, val){
 	

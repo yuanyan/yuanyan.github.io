@@ -1,6 +1,5 @@
-/**
- * @name Event
- * @namespace
+﻿/**
+ * Class: Event
  * 事件机制封装
  * 对标准事件模型与IE事件模型间差异进行封装
  */
@@ -19,6 +18,7 @@ module("event.Event", function(global){
 	var repository={ },guid=1;
 	/**
 	 * 根据一个原生的事件对象,获取一个事件包装对象,主要是为了fix一些浏览器的差异
+	 * @private
 	 * @param {Object} target
 	 * @param {Object} domEvent
 	 * @param {String} type
@@ -187,41 +187,83 @@ module("event.Event", function(global){
 		return obj["_event_guid"]||(obj["_event_guid"] = guid++);
 	};
 	
+	var addEventListener = function(obj, type, handler){
+		if (obj.addEventListener) {
+			obj.addEventListener(type, handler, false);
+		} else if (obj.attachEvent) {
+			obj.attachEvent('on'+type, handler);
+		}
+	}
+	
+	var removeEventListener = function(obj, type, handler){
+		if (obj.addEventListener) {
+			obj.removeEventListener(type, handler, false);
+		} else if (obj.attachEvent) {
+			obj.detachEvent('on'+type, handler);
+		}
+	}
+	
 	/**
+	 * Function: on
+	 * 注册事件
 	 * 
-	 * @param {Object} obj
-	 * @param {String} type
-	 * @param {Function} handler
+	 * Parameters:
+	 * 	obj - {Object}
+	 * 	type - {String} 事件类型
+	 * 	handler - {Function}
 	 */
 	var addListener= function(obj,type,handler){
-		obj["on"+type]= addEventHandle(obj,type,handler);		
+		// IE6 IE7 IE8 中无法通过为属性赋值方式为 IFRAME 元素绑定 load 事件处理函数。
+		// 需使用事件监听方式为 IFRAME 的 onload 事件绑定处理函数
+		// See: http://www.w3help.org/zh-cn/causes/SD9022
+		if( type == "load" ){
+			addEventListener(obj, type, handler);
+		}
+		
+		obj["on"+type]= addEventHandle(obj,type,handler);	
 	};
 	
 	/**
+	 * Function: off
+	 * 移除事件
 	 * 
-	 * @param {Object} obj
-	 * @param {String} type
-	 * @param {Function} handler
+	 * Parameters:
+	 * 	obj - {Object}
+	 * 	type - {String} 事件类型
+	 * 	handler - {Function}
 	 */
 	var removeListener= function(obj,type,handler){
+		// IE6 IE7 IE8 中无法通过为属性赋值方式为 IFRAME 元素绑定 load 事件处理函数, 
+		// 需使用事件监听方式为 IFRAME 的 onload 事件绑定处理函数
+		// See: http://www.w3help.org/zh-cn/causes/SD9022
+		if( type == "load" ){
+			removeEventListener(obj, type, handler);
+		}
+		
 		removeEventHandle(obj,type,handler);
 	};
 	
 	/**
+	 * Function: fire
 	 * 触发事件
-	 * @param {Object} obj
-	 * @param {String} type
-	 * @param {Object} event
+	 * 
+	 * Parameters:
+	 * 	obj - {Object}
+	 * 	type - {String} 事件类型
+	 * 	opt_event - {Object}
 	 */
-	var fireEvent= function(obj,type,event){
-		obj["on"+type](event);
+	var fireEvent= function(obj,type,opt_event){
+		obj["on"+type](opt_event);
 	};
 	
 	/**
+	 * Function: one
 	 * 绑定只触发一次的事件
-	 * @param {Object} obj
-	 * @param {Object} type
-	 * @param {Object} handler
+	 * 
+	 * Parameters:
+	 * 	obj - {Object}
+	 * 	type - {String} 事件类型
+	 * 	handler - {Function}
 	 */
 	var one= function(obj,type,handler){
 		var originalHandler=handler;
@@ -233,11 +275,14 @@ module("event.Event", function(global){
 	};
 	
 	/**
-	 * 
-	 * @param {String} selector 选择器
-	 * @param {String} type 事件类型
-	 * @param {Function} handler 事件处理
-	 * @param {Object} context 
+	 * Function: live
+	 *  事件委托
+	 *  
+	 * Parameters:
+	 * 	selector - {String} 选择器
+	 * 	type - {String} 事件类型
+	 * 	handler - {Function} 事件处理
+	 * 	context - {Object} 
 	 */
 	var live= function(selector, type, handler, context){
 		var originalHandler=handler,select = Selector.select;
@@ -255,8 +300,9 @@ module("event.Event", function(global){
 	
 	/**
 	 * 注册事件
+	 * @private
 	 * @param {Object} obj
-	 * @param {Object} type
+	 * @param {Object} type 事件类型
 	 * @param {Object} handler
 	 */
 	var addEventHandle= function(obj,type,handler){
@@ -290,7 +336,7 @@ module("event.Event", function(global){
 	};
 	
 	/**
-	 * 
+	 * @private
 	 * @param {Object} obj
 	 * @param {Object} type
 	 * @param {Object} handler
@@ -335,37 +381,4 @@ module("event.Event", function(global){
 		"live": live
 	}
     
-}); // 
-
-
-
-/**
- * 
- * 
-    **
-     * 获取当前鼠标位置的坐标
-     * @param {Event} e
-     * @return {Object}
-     *
-    var getPosition = function(e){
-        var X = 0, Y = 0;
-        var event = e || window.event;
-        
-        if (event.pageX) {
-            X = event.pageX;
-            Y = event.pageY;
-        }
-        else 
-            if (event.clientX) {
-                X = event.clientX + document.documentElement.scrollLeft + document.body.scrollLeft;
-                Y = event.clientY + document.documentElement.scrollTop + document.body.scrollTop;
-            }    
-        
-        //封装成对象返回
-        return {
-            x: X,
-            y: Y
-        };
-    };
-	
-**/
+}); 

@@ -1,8 +1,15 @@
-// moo.fx.js version 2.0 
+﻿// moo.fx.js version 2.0 
 //(c) 2006 Valerio Proietti (http://mad4milk.net). MIT-style license.
 /**
- * @name fx.Color
- * @class
+ * Class: Color
+ * 颜色
+ * 
+ * Example:
+ *  (code)
+ * 	var el = document.getElementById('box');
+ * 	var fx = new Color(el);
+ * 	fx.custom("#FFF", "#000"); //从白色渐变到黑色
+ *  (end)
  */
 module("fx.Color", function(){
 	
@@ -10,7 +17,7 @@ module("fx.Color", function(){
 	var Base = module("fx.Base"),
 		langBase = module("lang.Base"),
 		utilColor = module("util.Color");
-	
+	//
     var Color = function(el, options){
         this.initialize(el, options);
     };

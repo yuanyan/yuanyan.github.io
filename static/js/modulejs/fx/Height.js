@@ -1,8 +1,15 @@
-// moo.fx.js version 2.0 
+﻿// moo.fx.js version 2.0 
 //(c) 2006 Valerio Proietti (http://mad4milk.net). MIT-style license.
 /**
- * @name fx.Height
- * @class
+ * Class: Height
+ * 高度
+ *
+ * Example:
+ *  (code)
+ * 	var el = document.getElementById('box');
+ * 	var fx = new Height(el);
+ * 	fx.toggle(); 
+ *  (end)
  */
 module("fx.Height", function(global){
 	

@@ -1,8 +1,15 @@
-// moo.fx.js version 2.0 
+﻿// moo.fx.js version 2.0 
 //(c) 2006 Valerio Proietti (http://mad4milk.net). MIT-style license.
 /**
- * @name fx.Scroll
- * @class
+ * Class: Scroll
+ * 滚动
+ *
+ * Example:
+ *  (code)
+ * 	var el = document.getElementById('box');
+ * 	var fx = new Scroll(el);
+ * 	fx.custom(el.scrollTop, el.scrollTop+400);
+ *  (end)
  */
 module("fx.Scroll", function(global){
 	

@@ -1,8 +1,13 @@
+﻿//Namespaces: global
+
 var module = (function(global, undefined){
 
+	//Group: Native extension
+
 	/**
-	 * ECMA-262-5 15.5.4.20
-	 * Trims whitespace from both ends of the string
+	 * Function: String.prototype.trim
+	 * 	ECMA-262-5 15.5.4.20
+	 * 	Trims whitespace from both ends of the string
 	 */
 	String.prototype.trim ||
 	(String.prototype.trim = function(){
@@ -10,10 +15,13 @@ var module = (function(global, undefined){
 	});
 
 	/**
-	 * ECMA-262-5 15.4.4.18
-	 * Calls a function for each element in the array.
-	 * @param {Object} callbackfn
-	 * @param {Object} thisArg   {optional}
+	 * Function: Array.prototype.forEach
+	 * 	ECMA-262-5 15.4.4.18
+	 * 	Calls a function for each element in the array.
+	 * 
+	 * Parameters:
+	 * 	callbackfn - {Object} 
+	 *	thisArg - {Object} {optional}
 	 */
 	Array.prototype.forEach ||
 	(Array.prototype.forEach = function(callbackfn, thisArg){
@@ -31,20 +39,26 @@ var module = (function(global, undefined){
 	});
 
 	/**
-	 * ECMA-262-5 15.3.4.5
-	 * Sets the value of this inside the function to always be
-	 * the value of thisArg when the function is called. Optionally,
-	 * function arguments can be specified (arg1, arg2, etc) that will
-	 * automatically be prepended to the argument list whenever this
-	 * function is called.
+	 * Function: Function.prototype.bind
+	 * 	ECMA-262-5 15.3.4.5
+	 * 	Sets the value of this inside the function to always be
+	 * 	the value of thisArg when the function is called. Optionally,
+	 * 	function arguments can be specified (arg1, arg2, etc) that will
+	 * 	automatically be prepended to the argument list whenever this
+	 * 	function is called.
 	 *
-	 * @param  {Function} thisArg
-	 * @param  {Object} arg1 {optinal}
-	 * @param  {Object} arg2 {optinal}
-	 * @example var flatFunction = obj.method.bind(obj);
+	 * Parameters:
+	 * 	thisArg - {Function} 
+	 * 	arg1 - {Object} {optinal}
+	 * 	arg2 - {Object} arg2 {optinal}
+	 *
+	 * Example:
+	 *  (code)
+	 *	var flatFunction = obj.method.bind(obj);
+	 *  (end)
 	 */
 	Function.prototype.bind ||
-	(Function.prototype.bind = function(thisArg/*[arg1],[arg2],...*/){
+	(Function.prototype.bind = function(thisArg/* ,[arg1],[arg2],...*/){
 		if (!typeof this === "function") 
 			throw new Error("Bind must be called on a function");
 		
@@ -80,7 +94,7 @@ var module = (function(global, undefined){
 	});
 
 
-
+	//Group: module
 	
 	global.moduleConfig = global.moduleConfig||{};//配置项
 	
@@ -96,91 +110,169 @@ var module = (function(global, undefined){
 	};
 	
 	global.moduleConfig = config;
+	
+	//load regist install 
 
     var DOM = global.document,
-		modules = new Object,//模块仓库
-		moduleInFlight = new Object,
-		isDomReady = false, // 表示 DOM ready 事件是否被触发过，当被触发后设为true
-		isModuleReady = false, 
-		isReady = false, //ready 方法执行一次
-		lastLoadModule = null,
-		readyHandler = [];	// DOM ready事件处理方法
+		modules = {},//模块仓库
+		isReady = false, //domReady 方法执行一次
+		isDomReady = false, // 表示 DOM ready 事件是否被触发过，当被触发后设为true	
+		moduleConstructor = {},
+		
+		registedModules = 0,
+		isModuleReady = false,
+		moduleInstallQueue= []; //模块安装队列
+
+		
     
     var checkModule = function(ns){
         return modules.hasOwnProperty(ns);
     }
     
-    var registModule = function(ns, fn, global){
-        if (!checkModule(ns)) {
-            modules[ns] = fn(global);
-            
-            //log				
-            //console.log(ns + " module registed!");
-        }
-        else {
-            throw new Error("namesapce hava been registed: "+ns);
-        }
-        
-    };
+	/**
+	 * 添加模块
+	 */
+	var addModule = function(namespace, src){
 	
-	var callModule = function(ns){
-		if (checkModule(ns)) {
-           return  modules[ns];       
-        }
-        else {
-            throw new Error("call a unregisted module: "+ns);
-        }
-	}
+		if(!namespace) return;
+		
+		if(namespace instanceof Array){
+			
+			namespace.forEach(function(v){
+				addModule(v, src);
+			});
+		}else{
+		
+		    if (!checkModule(namespace)) {
+				var module = {'namespace':namespace,'src':src};
+				moduleInstallQueue.push(module);
+			}
+			else {
+				throw new Error("namespace hava been registed: "+namespace);
+			}
+		
+		}
+		
+
+    };	
 	
+
 	
 	/**
 	 * 加载模块
 	 */
-	var loadModule = function(namespace){
+	var loadModules = function(){
 	
-		if(modules[namespace] || moduleInFlight[namespace]){
-			return;
+		var host = config.host;
+				
+		if(host[host.length-1] !== '/') {
+			host += "/";
 		}
-		// set module in flight
-		moduleInFlight[namespace] = true;
-		
-		if(config.host[config.host.length-1] !== '/') {
-			config.host += "/";
-		}
-		
-		var script = DOM.createElement("script");
-		script.charset =  config.charset; //字符集设置
-		script.type = 'text/javascript';
-		script.async = true; //异步加载属性设置（HTML5 规范）
-		script.src = config.host + namespace.split(".").join("/") + config.suffix;; 
+	
+		moduleInstallQueue.forEach(function(module){
+			
+			var ns = module['namespace'],
+				src = module['src'];
+				
+			var script = DOM.createElement("script");
+			script.charset =  config.charset; //字符集设置
+			script.type = 'text/javascript';
+			script.async = true; //异步加载属性设置（HTML5 规范）
+			script.src = src || (host + ns.split(".").join("/") + config.suffix); 
 
-		var head = DOM.getElementsByTagName("head")[0] || DOM.body;
-		head.appendChild(script); 
+			var head = DOM.getElementsByTagName("head")[0] || DOM.body;
+			head.appendChild(script); 
+			
+		});	
+
 		
-		isModuleReady  = false;  //更新模块加载状态
-		lastLoadModule = script; //更新最后加载模块
+		
+
 	};
+
+	/**
+	 * 注册模块
+	 */
+    var registModule = function(ns, fn){
+        if (!checkModule(ns)) {
+		
+			moduleConstructor[ns] = fn;
+			
+			//模块注册即事件
+			if( ++registedModules  ===  moduleInstallQueue.length){
+			
+				installModules();
+			}
+  			
+            //console.log(ns + " module registed!");
+        }
+        else {
+            throw new Error("namespace hava been registed: "+ns);
+        }
+		
+		
+        
+    };	
+		
+	/**
+	 * 安装模块
+	 */	
+	var installModules = function(){
+	
+		moduleInstallQueue.forEach(function(module){
+			
+			var ns = module['namespace'],
+				fn = moduleConstructor[ns];
+				
+            modules[ns] = fn(global);			
+			
+		});		
+		
+		isModuleReady = true;
+		if(isDomReady){
+			runReadyHandler();
+		}
+		
+	}
 	
 	/**
-     * @private
+	 * 调用模块
+	 */	
+	var callModule = function(ns){
+		if (checkModule(ns)) {
+           return  modules[ns];       
+        }else {
+            throw new Error("call a unregisted module: "+ns);
+        }
+	};
+
+	
+	var runReadyHandler = function(e){
+
+		for (var i = 0, len = modules['_readyHandler'].length; i < len; i++) {
+			modules['_readyHandler'].shift()(e);
+		}
+	
+	};
+	/**
      * DOM Ready 处理
      */
-    var ready = function(fn){
-		
-		readyHandler.push(fn);
+    var domReady = function(fn){
 
         // ready方法只执行一次
         if (isReady) {
             return;
         }
 		isReady = true;
+		
+		loadModules();
 
         var run = function(e){	
 			isDomReady = true;
-			for (var i = 0, len = readyHandler.length; i < len; i++) {
-				readyHandler.shift()(e);
-			}
-        }
+            if(isModuleReady){
+               runReadyHandler(e);
+            }
+        };
         
         // 如果 当onReady()被调用时页面已经加载完毕，则直接运行处理
         if (DOM.readyState === "complete") {
@@ -235,13 +327,23 @@ var module = (function(global, undefined){
             }
     };	
 	
- 	/**
-	 * 模块声明，模块名称大小写敏感
-	 * @param {String} ns 命名空间
-	 * @param {Function} fn 模块
-	 * @return {Object} module
-	 * @example  module("lang.JSON",function(global){});
-	 */
+	/*
+	Function: module
+		模块声明
+		
+	Parameters:
+		ns - {String} 模块命名空间,大小写敏感
+		fn - {Function} 模块
+		
+	Returns:
+		module - {Object}
+		
+	Example:
+		(code)
+		module("lang.JSON",function(global){});
+		(end)		
+			
+	*/	 
     var module = function(ns, fn){
 		if(ns == undefined) return;
     
@@ -249,62 +351,50 @@ var module = (function(global, undefined){
             return callModule(ns);
         }
         else {//模块注册
-            registModule(ns, fn, global);        
+            registModule(ns, fn);        
         }
         
     };
 	
-	module.load = function(namespace){
+
+	
+	
+	/*
+	Function: module.load
+		模块加载
 		
-		if(namespace instanceof Array){
-			namespace.forEach(function(v){
-				loadModule(v);
-			});
-		}else{
-			loadModule(namespace);
-		}
+	Parameters:
+		namespace - {String|Array}
+		src - {String}
+	*/	 
+	module.load = function(namespace, src){
+			
+		addModule(namespace, src);
 
 	};
     
-    /**
-     * onReady 事件注册
-     * @param {Function} fn
-     */
+	/*
+	Function: module.onReady
+		onReady 事件注册
+		
+	Parameters:
+		fn - {Function}
+	*/	 
 	module.onReady = function(fn){
-
-		function run(){
-			// 如果Dom Ready已经触发过，立即执行处理方法
-			if (isDomReady) {
-				fn.call(DOM);
-			} 
-			// 否则加入readyHandler队列中
-			else {
-				 ready(fn);
-			}
+		
+		if(modules['_readyHandler']){
+			modules['_readyHandler'].push(fn);
+		}else{
+			modules['_readyHandler'] = [fn];
 		}
 		
-		//存在最后需要加载的模块并且还未加载完成
-		if(lastLoadModule && !isModuleReady){ 
-			
-			var callback =function() {
-				isModuleReady = true;
-				run();
-			};
-
-			if (lastLoadModule.attachEvent) 
-				lastLoadModule.attachEvent("onreadystatechange", function() {
-					var target = global.event.srcElement;
-					if(target.readyState == "loaded" || target.readyState === "complete")
-						callback.call(target);
-				});
-			else if(lastLoadModule.addEventListener) 
-				lastLoadModule.addEventListener("load", callback, false);
-
-		}else{
-			run();
-		}
-        
-        
+		domReady(function(e){			
+			if(isModuleReady){
+				fn(e);
+				//fn.isCalled = true;
+			}	
+		});
+	 
         
     };	
 	

@@ -1,8 +1,20 @@
-// moo.fx.js version 2.0 
+﻿// moo.fx.js version 2.0 
 //(c) 2006 Valerio Proietti (http://mad4milk.net). MIT-style license.
+
 /**
- * @name fx.Styles
- * @class
+ * Class: Styles
+ * 元素样式多个属性
+ *
+ * Example:
+ *  (code)
+ * 	var el = document.getElementById('box');
+ *  var fx = new Styles(el);
+ *	//设置top left时，position 必须不为static
+ *	fx.custom({
+ *		top: [el.offsetHeight, el.offsetHeight+500],
+ *		left: [el.offsetWidth, el.offsetWidth+500]
+ *	});	
+ *  (end)
  */
 module("fx.Styles", function(global){
 	//IMPORT

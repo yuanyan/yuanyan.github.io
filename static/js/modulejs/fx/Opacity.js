@@ -1,8 +1,15 @@
-// moo.fx.js version 2.0 
+﻿// moo.fx.js version 2.0 
 //(c) 2006 Valerio Proietti (http://mad4milk.net). MIT-style license.
 /**
- * @name fx.Opacity
- * @class
+ * Class: Opacity
+ * 透明度
+ *
+ * Example:
+ *  (code)
+ * 	var el = document.getElementById('box');
+ * 	var fx = new Opacity(el);
+ * 	fx.toggle(); 
+ *  (end)
  */
 module("fx.Opacity", function(global){
 	

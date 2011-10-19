@@ -1,6 +1,5 @@
-/**
- * @name dom.Node
- * @class
+﻿/**
+ * Class: Node
  */
 module("dom.Node", function (global) {
 	
@@ -18,8 +17,10 @@ module("dom.Node", function (global) {
 
 
     /** 
-     * @constructs
-     * @param {Object} domNode
+     * Constructor: Node
+     * 
+     * Parameters:
+     * 	domNode - {Object} 
      */ 
     function Node(domNode) {
 		
@@ -41,49 +42,66 @@ module("dom.Node", function (global) {
 	
     Node.prototype = 
 	{
-
-        //-----事件方法-----
-
+        /*----- 事件方法 -----*/
+        //Group: Event
         /**
+         * Function: on
          * 添加事件
-         * @param {Object} type
-         * @param {Object} handler
-         * @return {Node} return self
+         * 
+         * Parameters:
+         *  type - {Object}
+         *  handler - {Object}
+         * 
+         * Returns: 
+		 *	{Node} return self
          */
         "on": function (type, handler) {
-            Event.on(this.node, type, handler);
+            Event.on(this[0], type, handler);
             return this;
         },
 
         /**
+         * Function: off
          * 移除事件
-         * @param {Object} type
-         * @param {Object} handler
-         * @return {Node} return self
+         * 
+         * Parameters:
+         * 	type - {Object}
+         *  handler - {Object}
+         * 
+         * Returns: 
+		 * 	{Node} return self
          */
         "off": function (type, handler) {
-            Event.off(this.domNode, type, handler);
+            Event.off(this[0], type, handler);
             return this;
         },
-
-        //-----属性方法-----
-
+		
+        /*----- 属性方法 -----*/
+        //Group: Attribute
         /**
+         * Function: attr
          * 设置元素的属性值
-         * @param {String} name 属性名
-         * @param {String} value 属性值
-         * @return {Node} return self
-         * @example 
+         * 
+         * Parameters:
+         *  name - {String} 属性名
+         *  value - {String} 属性值
+         * 
+         * Returns: 
+		 * 	{Node} return self
+         * 
+         * Example:
+         * (code)
          *   node.attr("key","test");//设置属性值 
+         * (end)
          */
         "attr": function (name, value) {
 
             if (name === undefined) return this;
 
             if (value === undefined) { //获取属性值
-                return this.domNode.getAttribute(name);
+                return this[0].getAttribute(name)||"";
             } else { //设置属性值 
-                this.domNode.setAttribute(name, value);
+                this[0].setAttribute(name, value);
             }
 
             return this;
@@ -91,13 +109,18 @@ module("dom.Node", function (global) {
         },
 
         /**
+         * Function: removeAttr
          * 删除指定的节点属性名
-         * @param {String} name
-         * @return {Node} return self
+         * 
+         * Parameters:
+         * 	name - {String}
+         * 
+         * Returns: 
+		 * 	{Node} return self
          */
         "removeAttr": function (name) {
 
-            if (this.domNode.hasAttribute(name)) {
+            if (this[0].hasAttribute(name)) {
                 this[0].removeAttribute(name);
             }
 
@@ -106,11 +129,17 @@ module("dom.Node", function (global) {
         },
 
         //----- 内容方法 -----
-
+        //Group: Content
+		
         /**
+         * Function: html
          * 设置元素的html内容。
-         * @param {String|Number} html
-         * @return {String|Node}
+         * 
+         * Parameters:
+         *  html - {String}
+         *  
+         * Returns: 
+		 * 	{Node}
          */
         "html": function (html) {
             var elem = this[0];
@@ -120,7 +149,7 @@ module("dom.Node", function (global) {
             }
             // setter
             else {
-                this.empty().append(html);
+                elem.innerHTML = html;
             }
 
             return this;
@@ -129,9 +158,14 @@ module("dom.Node", function (global) {
         },
 
         /**
+         * Function: text
          * 设置元素内容的文本
-         * @param {String|Number} text
-         * @return {String|Node} 
+         * 
+         * Parameters:
+         *  text - {String|Number}
+         * 
+         * Returns: 
+		 * 	{String|Node}
          */
         "text": function (text) {
 
@@ -160,12 +194,18 @@ module("dom.Node", function (global) {
 
         },
 
-        //-----值方法-----
-
+        /*-----值方法-----*/
+		//Group: Value
+		
         /**
+         * Function: val
          * 设置元素的值 value, 通常用于表单元素
-         * @param {String|Number|Array} value
-         * @return {String|Node}
+         * 
+         * Parameters:
+         *  value - {String|Number|Array}
+         * 
+         * Returns: 
+		 * 	{String|Node}
          */
         "val": function (value) {
 
@@ -284,238 +324,38 @@ module("dom.Node", function (global) {
 
         },
 
-        //-----CSS类方法-----
-        /**
-         * 元素是否含有指定的类名
-         * @param {Object} clazz
-         * @return {Boolean}
+
+        /*-----样式方法-----*/
+		//Group: Style
+		
+		/**
+         * Function: css
+         * 设置节点样式
+         * 
+         * Parameters:
+         *  cssText - {String} 样式
+         *  
          */
-        "hasClass": function (clazz) {
-            var flag = false;
-            this.attr("class").split(" ").forEach(function (val) {
-                if (val == calzz) flag = true;
-            });
-
-            return flag;
-
-        },
+		"css": function(cssText){
+			this[0].style.cssText = cssText;
+		},
+		
         /**
-         * 元素添加指定的类名
-         * @param {String} clazz
-         * @return {Node} return self
-         */
-        "addClass": function (clazz) {
-
-            this.attr("class", (this.attr("class") || "") + " " + clazz); //无论之前是否有指定当前类名，都在最后添加
-            return this;
-        },
-        /**
-         * 元素中删除全部或者指定的类
-         * @param {String} clazz
-         * @return {Node} return self
-         */
-        "removeClass": function (clazz) {
-            if (clazz === undefined) { //removeClass() 删除全部类
-                this.removeAttr("class");
-            } else {
-                var newClazzs = [];
-                this.attr("class").split(" ").forEach(function (val) {
-                    if (val != clazz && val != "") newClazzs.push(val);
-                });
-
-                this.removeClass();
-                this.addClass(newClazzs.join(" "));
-            }
-            return this;
-        },
-
-        /**
-         * 如果存在（不存在）就删除（添加）一个类
-         * @param {String} clazz
-         * @return {Node} return self
-         */
-        "toggleClass": function (clazz) {
-            if (this.hasClass(clazz)) {
-                this.removeClass(clazz);
-            } else {
-                this.addClass(clazz);
-            }
-
-            return this;
-
-        },
-
-        //-----文档结构检索方法-----
-        /**
-         * 获取后一个兄弟节点
-         * @return {?Node} nextNode
-         */
-        "next": function () {
-            return new Node(this[0].nextSibling);
-        },
-
-        /**
-         * 获取前一个兄弟节点
-         * @param {Object} match 
-         * @return {?Node} previousNode
-         */
-        "prev": function () {
-            return new Node(this[0].previousSibling);
-        },
-
-        /**
-         * 获取父节点
-         * @return {?Node} parentNode 父节点
-         */
-        "parent": function () {
-            return new Node(this[0].parentNode);
-        },
-
-        /**
-         * 获取所有子节点，或满足条件的子节点
-         * @param {Function} match
-         * @return {Array} nodes 
-         */
-        "childrens": function (match) {
-            //TODO 满足条件的子节点
-            var nodes = [];
-            this[0].childNodes.forEach(function (domNode) {
-                nodes.push(new Node(domNode));
-            });
-            return nodes;
-        },
-
-        //-----文档结构基础方法-----
-
-        /**
-         * 清空当前节点的所有子节点，或满足条件的子节点
-         * @param {Function} match
-         * @return {Node} return self
-         */
-        "empty": function (match) {
-            this.childrens(match).forEach(function (node) {
-                node.destory();
-            });
-            return this;
-        },
-
-        /**
-         * 销毁当前节点
-         * @return {Node} return self
-         */
-        "destroy": function () {
-
-            this[0].parentNode.removeChild(this[0]);
-            return this;
-        },
-
-        /**
-         * 节点克隆
-         * @param {boolean} deep 默认false 
-         * @return {Node} return cloneNode 
-         */
-        "clone": function (deep) {
-            return new Node(this[0].cloneNode(deep || false));
-        },
-
-        //-----文档结构内部插入方法-----
-
-        /**
-         * 向当前子节点尾部添加节点
-         * @param {Object} node 支持原生的domNode和封装Node
-         * @return {Node} return self
-         */
-        "append": function (node) {
-            if (!node.nodeType) { //参数为封装Node时，还原到原生的domNode
-                node = node[0];
-            }
-            this[0].appendChild(node);
-            return this;
-
-        },
-
-
-        /**
-         * 向当前子节点首部添加节点
-         * @param {Object} node 支持原生的domNode和封装Node
-         * @return {Node} return self
-         */
-        "prepend": function (node) {
-            if (!node.nodeType) { //参数为封装Node时，还原到原生的domNode
-                node = node[0];
-            }
-            if (node.hasChildNodes()) { //当前有子节点时
-                this.childrens()[0][0].insertBefore(node);
-            } else {
-                this[0].appendChild(node)
-            }
-            return this;
-
-        },
-
-
-        /**
-         * 当前节点追加到另一个指定的节点内尾部
-         * @param {Object} node 支持原生的domNode和封装Node
-         * @return {Node} return self
-         */
-        "appendTo": function (node) {
-            new Node(node).append(this[0]);
-            return this;
-        },
-
-        /**
-         * 当前节点追加到另一个指定的节点内首部
-         * @param {Object} node 支持原生的domNode和封装Node
-         * @return {Node} return self
-         */
-        "prependTo": function (node) {
-            new Node(node).prepend(this[0]);
-            return this;
-        },
-
-        //-----文档结构外部插入方法-----
-
-        /**
-         * 当前节点前插入节点
-         * @param {Object} node 支持原生的domNode和封装Node
-         * @return {Node} return self
-         */
-        "before": function (node) {
-            if (!node.nodeType) { //参数为封装Node时，还原到原生的domNode
-                node = node[0];
-            }
-            this[0].insertBefore(node);
-            return this;
-        },
-
-        /**
-         * 当前节点后插入节点
-         * @param {Object} node 支持原生的domNode和封装Node
-         * @return {Node} return self
-         */
-        "after": function (node) {
-            //当前为最后一个节点时
-            if (this[0] == this[0].parentNode.lastChild) {
-                this.append(node);
-            } else {
-                this.next().before(node);
-            }
-            return this;
-        },
-
-        //-----样式方法-----
-        /**
+         * Function: style
          * 设置节点样式值
-         * @param {String|Object} name 
-         * @param {String} value
-         * @return {String} return self
+         * 
+         * Parameters:
+         *  name - {String|Object}
+         *  value - {String}
+         *  
+         * Returns: 
+		 * 	{String} return self
          */
-        "css": function (name, value) {
+        "style": function (name, value) {
             //properties
             if (Base.isObject(name)) {
                 for (var k in name) {
-                    this.css(k, name[k]);
+                    this.style(k, name[k]);
                 }
                 return this;
             }
@@ -533,21 +373,358 @@ module("dom.Node", function (global) {
             }
             //setter
             else {
-                //TODO 对某些样式的值类型和范围进行判断
-                elem.style[name] = value || "";
-
+                //部分样式浏览器兼容性处理
+				if(name === "opacity"){				
+					elem.style["opacity"] = value; // CSS3
+					elem.style["filter"] = 'alpha(opacity=' + (value * 100) + ')'; // IE 6/7/8
+					
+				}else if(name === "whiteSpace" && value === "pre-wrap"){
+					elem.style[name] = value;  // CSS3
+					elem.style[name] = "pre";   // IE 6/7
+					elem.style["wordWrap"] = "break-word"; // IE 6/7
+					
+                }else {
+					elem.style[name] = value || "";
+				}
+				
             }
 
             return this;
 
+        },
+		
+        /**
+         * Function: hasClass
+         * 元素是否含有指定的类名
+         * 
+         * Parameters:
+         *  clazz - {Object}
+         * 
+         * Returns: 
+		 * 	{Boolean}
+         */
+        "hasClass": function (clazz) {
+            var flag = false;
+            this.attr("class").split(" ").forEach(function (val) {
+                if (val == clazz) flag = true;
+            });
+
+            return flag;
+
+        },
+		
+        /**
+         * Function: addClass
+         * 元素添加指定的类名
+         * 
+         * Parameters:
+         *  clazz - {String}
+         *  
+         * Returns: 
+		 * 	{Node} return self
+         */
+        "addClass": function (clazz) {
+
+            this.attr("class", (this.attr("class") || "") + " " + clazz); //无论之前是否有指定当前类名，都在最后添加
+            return this;
+        },
+		
+        /**
+         * Function: removeClass
+         * 元素中删除全部或者指定的类
+         * 
+         * Parameters:
+         *  clazz - {String}
+         * 
+         * Returns: 
+		 * 	{Node} return self
+         */
+        "removeClass": function (clazz) {
+            if (clazz === undefined) { //removeClass() 删除全部类
+                this.removeAttr("class");
+            } else {
+                var newClazzs = [];
+                this.attr("class").split(" ").forEach(function (val) {
+                    if (val != clazz && val != "") newClazzs.push(val);
+                });
+
+                this.removeClass();
+                this.addClass(newClazzs.join(" "));
+            }
+            return this;
+        },
+
+        /**
+         * Function: toggleClass
+         * 如果存在（不存在）就删除（添加）一个类
+         * 
+         * Parameters:
+         *  clazz - {String}
+         * 
+         * Returns: 
+		 * 	{Node} return self
+         */
+        "toggleClass": function (clazz) {
+            if (this.hasClass(clazz)) {
+                this.removeClass(clazz);
+            } else {
+                this.addClass(clazz);
+            }
+
+            return this;
 
         },
 
-        //-----尺度方法-----
+        /*-----文档结构检索方法-----*/
+		//Group: Traversal
         /**
+         * Function: next
+         * 获取后一个兄弟节点
+         * 
+         * Returns: 
+		 * 	{?Node} nextNode
+         */
+        "next": function () {
+            return new Node(this[0].nextSibling);
+        },
+
+        /**
+         * Function: prev
+         * 获取前一个兄弟节点
+         * 
+         * Returns: 
+		 * 	{?Node} previousNode
+         */
+        "prev": function () {
+            return new Node(this[0].previousSibling);
+        },
+
+        /**
+         * Function: parent
+         * 获取父节点
+         * 
+         * Returns: 
+		 * 	{?Node} parentNode 父节点
+         */
+        "parent": function () {
+            return new Node(this[0].parentNode);
+        },
+
+        /**
+         * Function: childrens
+         * 获取所有子节点，或满足条件的子节点
+         * 
+         * Parameters:
+         *  match - {Function}
+         * 
+         * Returns: 
+		 * 	{Array} nodes 
+         */
+        "childrens": function (match) {
+            //TODO 满足条件的子节点
+            var nodes = [];
+            this[0].childNodes.forEach(function (domNode) {
+                nodes.push(new Node(domNode));
+            });
+            return nodes;
+        },
+
+		/**
+		 * Function: walk
+		 * 遍历节点
+		 * 
+		 * Parameters:
+		 *  callback - {function(Node):boolean} 回调函数返回true时（考虑大部分情况下回调函数没有返回值为false时，通常为遍历所有），遍历结束
+		 *  opt_node - {Node=} 
+		 */
+		"walk" : function(callback, opt_node){
+			
+			var node = opt_node||this[0];
+			
+	        if (!fn(node)) {
+				//what to do at this node
+				node = node.firstChild;
+				while (node) {
+					this.walk(callback, node); //递归调用
+					node = node.nextSibling;
+				}
+			}
+			
+		},
+		
+        /*-----节点基础方法-----*/
+		//Group: Life
+        /**
+         * Function: empty
+         * 清空当前节点的所有子节点，或满足条件的子节点
+         * 
+         * Parameters:
+         *   match - {Function}
+         * 
+         * Returns: 
+		 * 	{Node} return self
+         */
+        "empty": function (match) {
+            this.childrens(match).forEach(function (node) {
+                node.destory();
+            });
+            return this;
+        },
+
+        /**
+         * Function: destroy
+         * 销毁当前节点
+         * 
+         * Returns: 
+		 * 	{Node} return self
+         */
+        "destroy": function () {
+
+            this[0].parentNode.removeChild(this[0]);
+            return this;
+        },
+
+        /**
+         * Function: clone
+         * 节点克隆
+         * 
+         * Parameters:
+         *  deep - {boolean}默认false 
+         * 
+         * Returns: 
+		 * 	{Node} return cloneNode 
+         */
+        "clone": function (deep) {
+            return new Node(this[0].cloneNode(deep || false));
+        },
+
+        /*-----文档结构内部插入方法-----*/
+		//Group: Insertion
+        /**
+         * Function: append
+         * 向当前子节点尾部添加节点
+         * 
+         * Parameters:
+         * - {Object} node 支持原生的domNode和封装Node
+         * 
+         * Returns: 
+		 * 	{Node} return self
+         */
+        "append": function (node) {
+            if (!node.nodeType) { //参数为封装Node时，还原到原生的domNode
+                node = node[0];
+            }
+            this[0].appendChild(node);
+            return this;
+
+        },
+
+
+        /**
+         * Function: prepend
+         * 向当前子节点首部添加节点
+         * 
+         * Parameters:
+         * - {Object} node 支持原生的domNode和封装Node
+         * 
+         * Returns: 
+		 * 	{Node} return self
+         */
+        "prepend": function (node) {
+            if (!node.nodeType) { //参数为封装Node时，还原到原生的domNode
+                node = node[0];
+            }
+            if (node.hasChildNodes()) { //当前有子节点时
+                this.childrens()[0][0].insertBefore(node);
+            } else {
+                this[0].appendChild(node)
+            }
+            return this;
+
+        },
+
+
+        /**
+         * Function: appendTo
+         * 当前节点追加到另一个指定的节点内尾部
+         * 
+         * Parameters:
+         *   node - {Object} 支持原生的domNode和封装Node
+         *   
+         * Returns: 
+		 * 	{Node} return self
+         */
+        "appendTo": function (node) {
+            new Node(node).append(this[0]);
+            return this;
+        },
+
+        /**
+         * Function: prependTo
+         * 当前节点追加到另一个指定的节点内首部
+         * 
+         * Parameters:
+         *   node - {Object} 支持原生的domNode和封装Node
+         *   
+         * Returns: 
+		 * 	{Node} return self
+         */
+        "prependTo": function (node) {
+            new Node(node).prepend(this[0]);
+            return this;
+        },
+
+        /*-----文档结构外部插入方法-----*/
+
+        /**
+         * Function: before
+         * 当前节点前插入节点
+         * 
+         * Parameters:
+         *   node - {Object}支持原生的domNode和封装Node
+         * 
+         * Returns: 
+		 * 	{Node} return self
+         */
+        "before": function (node) {
+            if (!node.nodeType) { //参数为封装Node时，还原到原生的domNode
+                node = node[0];
+            }
+            this[0].insertBefore(node);
+            return this;
+        },
+
+        /**
+         * Function: after
+         * 当前节点后插入节点
+         * 
+         * Parameters:
+         *   node - {Object} 支持原生的domNode和封装Node
+         *   
+         * Returns: 
+		 * 	{Node} return self
+         */
+        "after": function (node) {
+            //当前为最后一个节点时
+            if (this[0] == this[0].parentNode.lastChild) {
+                this.append(node);
+            } else {
+                this.next().before(node);
+            }
+            return this;
+        },
+
+        /*-----尺度方法-----*/
+		//Group: Dimensions
+        /**
+         * Function: height
          * 设置节点高度
-         * @param {Number} value
-         * @return {Node} return self
+         * 
+         * Parameters:
+         * 	value - {Number}
+         * 
+         * Returns: 
+		 * 	{Node} return self
          */
         "height": function (value) {
             //getter
@@ -558,7 +735,7 @@ module("dom.Node", function (global) {
             //setter
             else {
 
-                this.css("height", value);
+                this.style("height", value);
 
             }
 
@@ -566,9 +743,14 @@ module("dom.Node", function (global) {
 
         },
         /**
+         * Function: width
          * 设置节点宽度
-         * @param {Number} value
-         * @return {Node} return self
+         * 
+         * Parameters:
+         *  value - {Number}
+         *  
+         * Returns: 
+		 * 	{Node} return self
          */
         "width": function (value) {
 
@@ -580,7 +762,7 @@ module("dom.Node", function (global) {
             //setter
             else {
 
-                this.css("width", value);
+                this.style("width", value);
 
             }
 
@@ -589,12 +771,17 @@ module("dom.Node", function (global) {
         },
 
 
-        //-----位置方法-----
-
+        /*-----位置方法-----*/
+		//Group: Position
         /**
+         * Function: offset
          * 设置相对 page 的偏移
-         * @param {Object} obj
-         * @return {Object} obj {left:10,top:10}
+         * 
+         * Parameters:
+         *  obj - {Object}
+         * 
+         * Returns: 
+		 * 	{Object} obj {left:10,top:10}
          */
         "offset": function (obj) {
 
@@ -661,16 +848,19 @@ module("dom.Node", function (global) {
                 current, key;
 
             for (key in obj) {
-                current = parseInt(this.css(key), 10) || 0;
+                current = parseInt(this.style(key), 10) || 0;
                 styles[key] = current + obj[key] - origOffset[key];
             }
-            this.css(styles);
+            this.style(styles);
 
         },
 
         /**
+         * Function: position
          * 设置相对父元素的偏移
-         * @return {Object} obj {left:10,top:10}
+         * 
+         * Returns: 
+		 * 	{Object} obj {left:10,top:10}
          */
         "position": function () {
 
@@ -689,12 +879,12 @@ module("dom.Node", function (global) {
             // Subtract element margins
             // note: when an element has margin: auto the offsetLeft and marginLeft
             // are the same in Safari causing offset.left to incorrectly be 0
-            offset.top -= parseFloat(this.css("marginTop")) || 0;
-            offset.left -= parseFloat(this.css("marginLeft")) || 0;
+            offset.top -= parseFloat(this.style("marginTop")) || 0;
+            offset.left -= parseFloat(this.style("marginLeft")) || 0;
 
             // Add offsetParent borders
-            parentOffset.top += parseFloat(offsetParent.css("borderTopWidth")) || 0;
-            parentOffset.left += parseFloat(offsetParent.css("borderLeftWidth")) || 0;
+            parentOffset.top += parseFloat(offsetParent.style("borderTopWidth")) || 0;
+            parentOffset.left += parseFloat(offsetParent.style("borderLeftWidth")) || 0;
 
             // Subtract the two offsets
             return {
@@ -705,8 +895,11 @@ module("dom.Node", function (global) {
         },
 
         /**
+         * Function: scroll
          * 设置相对滚动条的偏移
-         * @return {Object} obj {left:10,top:10}
+         * 
+         * Returns: 
+		 * 	{Object} obj {left:10,top:10}
          */
         "scroll": function () {
             var elem = this[0];
@@ -724,29 +917,38 @@ module("dom.Node", function (global) {
 
 
         /*-----未支持动画的显示方法-----*/
-
+		//Group: Display
         /**
+         * Function: show
          * 显示节点
-         * @return {Node} return self
+         * 
+         * Returns: 
+		 * 	{Node} return self
          */
         "show": function () {
-            return this.css("display","none");
+            return this.style("display","none");
         },
 		
         /**
+         * Function: hide
          * 隐藏节点
-         * @return {Node} return self
+         * 
+         * Returns: 
+		 * 	{Node} return self
          */
         "hide": function () {
-			return this.css("display","");
+			return this.style("display","");
         },
 		
         /**
+         * Function: toggle 
          * 显示/隐藏状态切换
-         * @return {Node} return self
+         * 
+         * Returns: 
+		 * 	{Node} return self
          */
         "toggle": function () {
-			if(this.css("display")){
+			if(this.style("display")){
 				this.show();	
 			}else{	
 				this.hide();
@@ -755,32 +957,17 @@ module("dom.Node", function (global) {
 			return this;
         },
 		
-		//----- 检索内容与节点方法 -----
-		
+		/*----- 检索内容与节点方法 -----*/
+		//Group: Content Retrieval
 		/**
-		 * 遍历节点
-		 * @param {function(Node):boolean} callback 回调函数返回true时（考虑大部分情况下回调函数没有返回值为false时，通常为遍历所有），遍历结束
-		 * @param {Node=} opt_node
-		 */
-		"walk" : function(callback, opt_node){
-			
-			var node = opt_node||this[0];
-			
-	        if (!fn(node)) {
-				//what to do at this node
-				node = node.firstChild;
-				while (node) {
-					this.walk(callback, node); //递归调用
-					node = node.nextSibling;
-				}
-			}
-			
-		},
-		
-		/**
+		 * Function: contains
 		 * 是否包含指定文本
-		 * @param {String} text
-		 * @return {Boolean} return boolean
+		 * 
+		 * Parameters:
+		 * 	text - {String}
+		 * 
+		 * Returns: 
+		 * 	{Boolean} return boolean
 		 */
 		"contains" :function(text){
 			
