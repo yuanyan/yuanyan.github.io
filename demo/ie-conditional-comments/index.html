@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="ie6"><![endif]-->
+<!--[if IE 7]>   <html class="ie7"><![endif]-->
+<!--[if IE 8]>   <html class="ie8"><![endif]-->
+<!--[if gt IE 8]><!--><html><!--<![endif]-->
+<head>
+    <title>IE Condtional Comments</title>
+    <style>
+        pre {
+            white-space: pre;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+
+        }
+        code {
+            border: 1px solid #DEDEDE;
+            display: block;
+            background-color: #E3E3E3;
+            border-radius: 3px;
+            -webkit-transition: background .25s linear,-webkit-box-shadow .25s linear;
+        }
+        code .keyword              { font-weight: bold }
+        code .string, code .regexp { color: green }
+        code .class, code .special { color: blue }
+        code .number               { color: pink }
+        code .comment              { color: grey }
+    </style>
+
+    <style>
+        .bar { color: black; }
+        .ie8 .bar { color: green; } /* IE8 */
+        .ie7 .bar { color: blue; } /* IE7 */
+        .ie6 .bar { color: red; } /* IE6 and IE5 (but who cares, right?) */
+    </style>
+
+    <style>
+        .foo { color: black; }
+    </style>
+    <!--[if lte IE 8]><link rel="stylesheet" href="lte-ie-8.css"><![endif]-->
+    <!--[if lte IE 7]><link rel="stylesheet" href="lte-ie-7.css"><![endif]-->
+    <!--[if lte IE 6]><link rel="stylesheet" href="lte-ie-6.css"><![endif]-->
+</head>
+<body>
+
+<!--[if IE]><p>You are using Internet Explorer.</p><![endif]-->
+<![if !IE]><p>You are not using Internet Explorer.</p><![endif]>
+
+<!--[if IE 7]><p>Welcome to Internet Explorer 7!</p><![endif]-->
+<!--[if !(IE 7)]><p>You are not using version 7.</p><![endif]-->
+
+<!--[if gte IE 7]><p>You are using IE 7 or greater.</p><![endif]-->
+<!--[if (IE 5)]><p>You are using IE 5 (any version).</p><![endif]-->
+<!--[if (gte IE 5.5)&(lt IE 7)]><p>You are using IE 5.5 or IE 6.</p><![endif]-->
+<!--[if lt IE 5.5]><p>Please upgrade your version of Internet Explorer.</p><![endif]-->
+
+<!--[if true]>You are using an <em>uplevel</em> browser.<![endif]-->
+<![if false]>You are using a <em>downlevel</em> browser.<![endif]>
+
+<!--[if true]><![if IE 7]><p>This nested comment is displayed in IE 7.</p><![endif]><![endif]-->
+
+
+<pre>
+<code>
+&lt;!--[if lte IE 8]&gt;&lt;link rel="stylesheet" href="lte-ie-8.css">&lt;![endif]--&gt;
+&lt;!--[if lte IE 7]&gt;&lt;link rel="stylesheet" href="lte-ie-7.css">&lt;![endif]--&gt;
+&lt;!--[if lte IE 6]&gt;&lt;link rel="stylesheet" href="lte-ie-6.css">&lt;![endif]--&gt;
+</code>
+<code>
+ &lt;style&gt;
+    /* Main stylesheet */
+    .foo { color: black; }
+
+    /* lte-ie-8.css, for IE8 and older */
+    .foo { color: green; }
+
+    /* lte-ie-7.css, for IE7 and older */
+    .foo { color: blue; }
+
+    /* lte-ie-6.css, for IE6 and older */
+    .foo { color: red; }
+
+&lt;/style&gt;
+</code>
+</pre>
+<p class="foo">
+    This snippet will cause lte-ie-8.css to be loaded in IE8, IE7, IE6 and even in IE5. (Older IE versions don’t support conditional comments.)
+    In IE7 and older versions, lte-ie-7.css will be loaded as well. In IE6 all three additional stylesheets will be loaded.
+</p>
+
+<pre>
+<code>
+&lt;!--[if lt IE 7]&gt;&lt;html class="ie6"&gt;&lt;![endif]--&gt;
+&lt;!--[if IE 7]&gt;   &lt;html class="ie7"&gt;&lt;![endif]--&gt;
+&lt;!--[if IE 8]&gt;   &lt;html class="ie8"&gt;&lt;![endif]--&gt;
+&lt;!--[if gt IE 8]&gt;&lt;!--&gt;&lt;html&gt;&lt;!--&lt;![endif]--&gt;
+</code>
+<code>
+&lt;style&gt;
+    .bar { color: black; }
+    .ie8 .bar { color: green; } /* IE8 */
+    .ie7 .bar { color: blue; } /* IE7 */
+    .ie6 .bar { color: red; } /* IE6 and IE5 (but who cares, right?) */
+&lt;/style&gt;
+</code>
+</pre>
+
+
+<p class="bar">
+    Those not willing to use CSS hacks can always apply conditional classnames to the &lt;html&gt; or &lt;body&gt; element.
+This approach allows you to write clean and hack-free CSS at the cost of adding hacks conditional comments to your HTML.
+</p>
+
+<ul>
+<li> <a href="http://mathiasbynens.be/notes/safe-css-hacks">Safe Css Hacks</a>    </li>
+<li> <a href="http://msdn.microsoft.com/en-us/library/ms537512.aspx">About Condtional Comments</a>  </li>
+</ul>
+
+<script src="../../static/js/hijs.js"></script>
+</body>
+</html>
