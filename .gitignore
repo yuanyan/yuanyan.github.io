@@ -13,3 +13,15 @@ Desktop.ini
 # Tmp File
 tmp/
 *.swp
+
+# Jekyll
+_site/*
+_theme_packages/*
+
+# OSX
+.DS_Store
+
+!.gitkeep
+
+.rbenv-version
+.rvmrc

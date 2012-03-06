@@ -104,7 +104,6 @@ body {
 	<li><h2><span id="github"></span> <a href="http://github.com/yuanyan">Github</a></h2></li>
 	</ul>
 </div>
-<div>
 
 <script src="./raphael-min.js"></script>
 <script src="./museo.js"></script>
@@ -130,14 +129,14 @@ window.onload=function(){
 			Icon = r.path(icon[name]).attr(fill).translate(4, 4);
 			
 		(function (icon, path, s) {
-			r.rect(0, 0, 32, 32).attr(none).click(function () {
+			r.rect(0, 0, 32, 32).attr(none).hover(function () {
 				selected && selected.attr(fill);
 				selected = icon.attr({fill: "90-#0050af-#002c62"});
 				container.value = path;
 				container.select();
-			}).hover(function () {
 				s.stop().animate({opacity: 1}, 200);
 			}, function () {
+				selected && selected.attr(fill);
 				s.stop().attr({opacity: 0});
 			});
 		})(Icon, icon[name], s);
@@ -154,16 +153,19 @@ window.onload=function(){
 	for(var i=0; i<6;i++){
 		title[i].animate({fill: Raphael.getColor()}, 2000);
 	}
-	title[6].animate({fill: Raphael.getColor()}, 2000, function () {
+	title[6].animate({fill: Raphael.getColor()}, 1000, function () {
 		
-		var scale = [title[0][0].scale(), title[1][0].scale(), title[2][0].scale()];
-		title[0].animate({scale: ".6 .6"}, 500, function () {
-			title[0].animate({scale: [scale[0].x, scale[0].y]}, 1000);
-			title[1].animate({scale: ".6 .6"}, 500, function () {
-				title[1].animate({scale: [scale[1].x, scale[1].y]}, 1000);
-				title[2].animate({scale: ".6 .6"}, 500, function () {
-					title[2].animate({scale: [scale[2].x, scale[2].y]}, 1000);
-					custom.animate({opacity: .4}, 500);
+		var scale = [title[0].scale(), title[1].scale(), title[2].scale(), title[3].scale()];
+		title[0].animate({scale: ".4 .4"}, 500, function () {
+			title[0].animate({scale: [scale[0].x, scale[0].y]}, 500);
+			title[1].animate({scale: ".35 .35"}, 500, function () {
+				title[1].animate({scale: [scale[1].x, scale[1].y]}, 500);
+				title[2].animate({scale: ".3 .3"}, 500, function () {
+					title[2].animate({scale: [scale[2].x, scale[2].y]}, 500);
+					title[3].animate({scale: ".25 .25"}, 500, function () {
+						title[3].animate({scale: [scale[3].x, scale[3].y]}, 500);
+					});
+					
 				});
 			});
 		});
