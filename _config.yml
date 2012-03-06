@@ -1,6 +1,6 @@
 # This is the default format. 
 # For more see: https://github.com/mojombo/jekyll/wiki/Permalinks
-permalink: /:categories/:year/:month/:day/:title 
+permalink: /:categories/:title
 
 exclude: [".rvmrc", ".rbenv-version", "README.md", "Rakefile", "changelog.md"]
 auto: true
@@ -9,11 +9,11 @@ pygments: true
 # Themes are encouraged to use these universal variables 
 # so be sure to set them if your theme uses them.
 #
-title : Madscript Project
+title : 元彥の程序世界
 tagline:
 author :
-  name : yuanyan
-  email : yuanyan.cao(at)gmail.com
+  name : 元彥
+  email : yuanyan.cao@gmail.com
   github : yuanyan
   twitter : caoyuanyan
   feedburner : madscript
@@ -111,7 +111,7 @@ JB :
   # Set 'provider' to false to turn sharing off globally.
   #
   sharing :
-    provider : false
+    provider : true
     
   # Settings for all other include helpers can be defined by creating 
   # a hash with key named for the given helper. ex:

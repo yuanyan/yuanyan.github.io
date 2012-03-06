@@ -1,7 +1,7 @@
 ---
 layout: page
-title: Hello World!
-tagline: Supporting tagline
+title: 元彥の程序世界
+tagline: 日出
 ---
 {% include JB/setup %}
 
