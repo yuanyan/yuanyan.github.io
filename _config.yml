@@ -10,7 +10,7 @@ pygments: true
 # so be sure to set them if your theme uses them.
 #
 title : Madscript Project
-tagline: Site Tagline
+tagline:
 author :
   name : yuanyan
   email : yuanyan.cao(at)gmail.com

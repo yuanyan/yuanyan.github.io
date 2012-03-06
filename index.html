@@ -21,17 +21,18 @@
 <script src="static/js/html5.js"></script>
 <![endif]-->
 <style>
-header, article, footer, section {display: block;} 
-a:link, a:visited, a:active, a:hover { color: #333; text-decoration:none; }
-body { text-align: center; background:#EEE; padding: 0; font: normal 12px/1.5 Microsoft YaHei,'Tahoma',arial, serif;}
+body, header, article, footer, section {display: block;}
+a:link {color: #333}
+#projects a:link, a:visited, a:active, a:hover { text-decoration:none; }
+body {text-align: center; background:#EEE; padding: 0; font: normal 12px/1.5 Microsoft YaHei,'Tahoma',arial, serif;}
 #wrapper, #projects, #header, #footer { margin: 0 auto;}
-#wrapper {width:700px; padding-top: 120px;}
-#projects {padding-top: 10px;}
+#wrapper {width:700px; padding-top: 200px;}
+article {height: 200px;}
 .project { width: 220px; padding:5px; float:left; }
 .project a { }
 .project h1 {font-family: Microsoft YaHei, arial, serif; font-size:1.5em; color: #333; }
 #copyright {color: #8C8C8C; }
-#footer {padding-top: 120px;}
+#footer {padding-top: 50px;}
 #logo { -webkit-transform: scale(0.8); -webkit-transition: -webkit-transform 1s ease-in-out; }
 #logo:hover {cursor: pointer;}
 #logo.zoomin { -webkit-transform: scale(1.1); }
@@ -89,8 +90,10 @@ module.onReady(function(){
 </article>
 
 <footer id="footer">
-	<p>copyright &copy; 2010-2012 <a id="copyright" href="http://madscript.com/about">Yuanyan</a></p>
-	<img src="static/images/cloud.png" />
+    <p>
+    Copyright &copy; 2010 - <script>document.write(new Date().getFullYear());</script> <a href="http://madscript.com/about">Yuanyan.</a> All Rights Reserved.
+	</p>
+
 </footer>
 
 </section>
