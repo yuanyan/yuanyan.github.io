@@ -1,6 +1,8 @@
 /* Override some defaults */
 html, body {
   background-color: #eee;
+  background: url("../../../../static/images/bg.jpg") center 40px no-repeat;
+  font-family: "Helvetica Neue",Helvetica,Arial,"微软雅黑", sans-serif;font-size:14px;line-height:150%;
 }
 .navbar {
   margin-bottom: 0;
