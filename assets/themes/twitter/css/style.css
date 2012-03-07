@@ -1,11 +1,36 @@
 /* Override some defaults */
-html, body {
-  background-color: #eee;
-  background: url("../../../../static/images/bg.jpg") center 40px no-repeat;
-  font-family: "Helvetica Neue",Helvetica,Arial,"微软雅黑", sans-serif;font-size:14px;line-height:150%;
+html,body{
+    font-family: "Helvetica Neue", Helvetica, Arial, "微软雅黑", sans-serif;
+    font-size: 14px;
+    line-height: 150%;
 }
-.navbar {
-  margin-bottom: 0;
+
+body {
+    position: relative;
+    padding-top: 90px;
+    background-color: #F6F6F1;
+    background: url("http://madscript.com/static/images/bg.jpg") center 40px no-repeat;
+}
+
+.navbar-fixed-top .brand {
+    padding-right: 0;
+    padding-left: 0;
+    margin-left: 20px;
+    float: right;
+    font-weight: bold;
+    color: #000;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .1), 0 0 30px rgba(255, 255, 255, .125);
+    -webkit-transition: all .2s linear;
+    -moz-transition: all .2s linear;
+    transition: all .2s linear;
+}
+
+.navbar-fixed-top .brand:hover {
+    text-decoration: none;
+}
+
+section {
+    padding-top: 60px;
 }
 
 .navbar-inner {
@@ -29,69 +54,74 @@ html, body {
 }
 
 .container > footer {
-  margin-top: 20px;
+    margin-top: 20px;
 }
+
 .container > footer p {
-  text-align: center; /* center align it with the container */
+    text-align: center; /* center align it with the container */
 }
 
 /* The white background content wrapper */
 .content {
-  background-color: #fff;
-  padding: 20px;
-  margin: 0 -20px; /* negative indent the amount of the padding to maintain the grid system */
-  -webkit-border-radius: 0 0 6px 6px;
-     -moz-border-radius: 0 0 6px 6px;
-          border-radius: 0 0 6px 6px;
-  -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.15);
-     -moz-box-shadow: 0 1px 2px rgba(0,0,0,.15);
-          box-shadow: 0 1px 2px rgba(0,0,0,.15);
+    background-color: #fff;
+    padding: 20px;
+    margin: 0 -20px; /* negative indent the amount of the padding to maintain the grid system */
+    -webkit-border-radius: 0 0 6px 6px;
+    -moz-border-radius: 0 0 6px 6px;
+    border-radius: 0 0 6px 6px;
+    -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, .15);
+    -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, .15);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .15);
 }
 
 /* Page header tweaks */
 .page-header {
-  background-color: #f5f5f5;
-  padding: 20px 20px 10px;
-  margin: -20px -20px 20px;
+    background-color: #f5f5f5;
+    padding: 20px 20px 10px;
+    margin: -20px -20px 20px;
 }
 
 .topbar .btn {
-  border: 0;
+    border: 0;
 }
-
 
 /* tag_box ======================================================== */
 
 .tag_box {
-	list-style:none;
-	margin:0;
-	padding:5px 0 ;
-	overflow:hidden;
-}
-.tag_box li {
-	line-height:28px;
-}
-.tag_box.inline li {
-	float:left;
-}
-.tag_box a {
-	padding: 3px 6px;
-	margin: 2px;
-	background: #eee;
-	color:#005F6B;
-	border-radius: 3px;
-	text-decoration:none;
-}
-.tag_box a span{
-	vertical-align:super;
-	font-size:0.8em;
-}
-.tag_box a.active {
-	background:#57A957;
-	border:1px solid #4C964D;
-	color:#FFF;
+    list-style: none;
+    margin: 0;
+    padding: 5px 0;
+    overflow: hidden;
 }
 
-footer p{
+.tag_box li {
+    line-height: 28px;
+}
+
+.tag_box.inline li {
+    float: left;
+}
+
+.tag_box a {
+    padding: 3px 6px;
+    margin: 2px;
+    background: #eee;
+    color: #005F6B;
+    border-radius: 3px;
+    text-decoration: none;
+}
+
+.tag_box a span {
+    vertical-align: super;
+    font-size: 0.8em;
+}
+
+.tag_box a.active {
+    background: #57A957;
+    border: 1px solid #4C964D;
+    color: #FFF;
+}
+
+footer p {
     color: #111;
 }
