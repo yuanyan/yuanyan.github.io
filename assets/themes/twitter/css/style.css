@@ -3,13 +3,12 @@ html,body{
     font-family: "Helvetica Neue", Helvetica, Arial, "微软雅黑", sans-serif;
     font-size: 14px;
     line-height: 150%;
-    background-color: #F6F6F1;
 }
 
 body {
     position: relative;
     padding-top: 40px;
-    background: url("http://madscript.com/static/images/bg.jpg") center 40px no-repeat;
+    background: #F6F6F1 url("http://madscript.com/static/images/bg.jpg") center 40px no-repeat;
 }
 
 .navbar-fixed-top .brand {
