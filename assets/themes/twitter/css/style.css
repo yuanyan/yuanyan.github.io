@@ -1,4 +1,5 @@
-:-webkit-scrollbar{
+/*custom scrollbar*/
+::-webkit-scrollbar{
     width: 9px;
     height: 9px;
     box-sizing: border-box;
