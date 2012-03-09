@@ -1,7 +1,8 @@
 ---
 layout: post
 category : javascript
-header:  JavaScript浮点运算问题分析与解决
+title:  JavaScript浮点运算问题分析与解决
+header:
 tagline:
 tags : [javascript, number, IEEE-754]
 ---
@@ -35,9 +36,8 @@ JavaScript 只有一种数字类型Number，而且在Javascript中所有的数�
     1.0-0.2 == 0.8     True
     1.0-0.1 == 0.9     True
 
-那如何来避免这类 ` 1.0-0.9 != 0.1 ` 的非bug型问题发生呢？下面给出一种目前用的比较多的解决方案：
+那如何来避免这类 ` 1.0-0.9 != 0.1 ` 的非bug型问题发生呢？下面给出一种目前用的比较多的解决方案,
+在判断浮点运算结果前对计算结果进行精度缩小，因为在精度缩小的过程总会自动四舍五入:
 
-在判断浮点运算结果前对计算结果进行精度缩小，因为在精度缩小的过程总会自动四舍五入
-
-(1.0-0.9).toFixed(digits)    `oFixed() 精度参数须在 0 与20 之间`
-如 (1.0-0.9).toFixed(10)==0.1 ，结果为True
+    (1.0-0.9).toFixed(digits)    //toFixed() 精度参数须在 0 与20 之间
+    (1.0-0.9).toFixed(10) === 0.1   //结果为True
