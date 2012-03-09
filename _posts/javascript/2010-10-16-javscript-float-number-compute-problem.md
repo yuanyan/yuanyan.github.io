@@ -8,7 +8,9 @@ tags : [javascript, number, IEEE-754]
 ---
 {% include JB/setup %}
 
-JavaScript 只有一种数字类型Number，而且在Javascript中所有的数字都是以[IEEE-754](http://zh.wikipedia.org/zh-cn/IEEE_754)标准格式表示的。
+## 分析
+
+JavaScript 只有一种数字类型 `Number` ，而且在Javascript中所有的数字都是以[IEEE-754](http://zh.wikipedia.org/zh-cn/IEEE_754)标准格式表示的。
 浮点数的精度问题不是JavaScript特有的，因为有些小数以二进制表示位数是无穷的：
 
     十进制           二进制
@@ -19,7 +21,7 @@ JavaScript 只有一种数字类型Number，而且在Javascript中所有的数�
     0.5              0.1
     0.6              0.1001 1001 1001 1001 ...
 
-所以比如1.1，其程序实际上无法真正的表示1.1，而只能做到一定程度上的准确,这是无法避免的精度丢失：
+所以比如 `1.1` ，其程序实际上无法真正的表示 '1.1'，而只能做到一定程度上的准确,这是无法避免的精度丢失：
 
     1.09999999999999999
 
@@ -36,8 +38,10 @@ JavaScript 只有一种数字类型Number，而且在Javascript中所有的数�
     1.0-0.2 == 0.8     True
     1.0-0.1 == 0.9     True
 
+## 解决
+
 那如何来避免这类 ` 1.0-0.9 != 0.1 ` 的非bug型问题发生呢？下面给出一种目前用的比较多的解决方案,
 在判断浮点运算结果前对计算结果进行精度缩小，因为在精度缩小的过程总会自动四舍五入:
 
-    (1.0-0.9).toFixed(digits)    //toFixed() 精度参数须在 0 与20 之间
-    (1.0-0.9).toFixed(10) === 0.1   //结果为True
+    (1.0-0.9).toFixed(digits)       // toFixed() 精度参数须在 0 与20 之间
+    (1.0-0.9).toFixed(10) === 0.1   // 结果为True
