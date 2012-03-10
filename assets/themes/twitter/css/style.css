@@ -1,34 +1,4 @@
-/* For the "inset" look only */
-html,body {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;       
-    overflow: auto;
-}
-/*custom scrollbar*/
-::-webkit-scrollbar {
-    width: 12px;
-}
- 
-/* Track */
-::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.2); 
-    -webkit-border-radius: 6px;
-    border-radius: 6px;
-}
- 
-/* Handle */
-::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 6px;
-    border-radius: 6px;
-    background: rgba(0,0,0,0.2); 
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.2); 
-}
-::-webkit-scrollbar-thumb:window-inactive {
-	background: rgba(0,0,0,0.2); 
-}
+
 /* Override some defaults */
 html,body{
     font-family: "Helvetica Neue", Helvetica, Arial, "微软雅黑", sans-serif;
