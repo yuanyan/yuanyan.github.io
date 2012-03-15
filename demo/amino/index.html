@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+<head>
+  <script src="amino.js"></script>
+</head>
+  <body>
+
+  <canvas id="demo1" width="400" height="400"></canvas>
+  <canvas id="demo2" width="400" height="400"></canvas>
+
+
+<script language="JavaScript">
+var amino = new Amino();
+
+(function demo1() {
+    var can = amino.addCanvas('demo1');
+    function Connector(r1,r2) {
+        this.r1 = r1;
+        this.r2 = r2;
+        this.paint = function(g) {
+            g.strokeStyle = "black";
+            g.lineWidth = 3;
+            g.beginPath();
+            g.moveTo(this.r1.x,this.r1.y);
+            g.lineTo(this.r2.x,this.r2.y);
+            g.stroke();
+        };
+        return true;
+    };
+    Connector.extend(AminoNode);
+
+    var w = can.getWidth();
+    var h = can.getHeight();
+    var pad = 10;
+    var o = 60;
+
+    var g = new Group();
+    var lines = new Group();
+    var cx = w/2;
+    var cy = h/2;
+
+    var x = cx;
+    var y = cy;
+
+    var colors = ["#ceb25c","#ffe5c2","#cd833b","#cc9966"/*,"#001722"*/];
+
+    var dur = 10;
+    var len = 10;
+    for(var i=0; i<len; i++) {
+        var c = new Circle()
+            .set(x,y,10)
+            //.setFill(colors[Math.floor(Math.random()*4)])
+            .setFill("#ceb25c")
+            .setStroke("black")
+            .setStrokeWidth(5);
+        g.add(c);
+        var x2 = cx + (o-Math.random()*o*2);
+        var y2 = cy + (o-Math.random()*o*2);
+        if(x2 > w-pad) {x2-=w; x2+=pad*2;}
+        if(y2 > h-pad) {y2-=h; y2+=pad*2;}
+        
+        //if last
+        if(i == len-1) {
+            var first = g.getChild(0);
+            x2 = first.getX();
+            y2 = first.getY();
+        }
+        amino.addAnim(new PropAnim(c,"x",x+0, x2, dur)
+            .setLoop(-1)
+            .start()
+            //            .setAutoReverse(false)
+            //.setTween(EASE_OUT)
+        );
+        amino.addAnim(new PropAnim(c,"y",y+0, y2, dur)
+            .setLoop(-1)
+            .start()
+            //            .setAutoReverse(false)
+            //.setTween(EASE_OUT)
+        );
+        
+        x = x2;
+        y = y2;
+
+        if (i>0) {
+            lines.add(new Connector(g.getChild(i-1),g.getChild(i)));
+        }
+        //if last
+        
+        if(i == len-1) {
+            lines.add(new Connector(g.getChild(i),g.getChild(0)));
+        }
+    }
+
+    can.add(lines);
+    can.add(g);
+    //runner.setFPS(30);
+    //runner.DEBUG = false;
+    //can.setFill("black");
+    //runner.clearBackground = true;
+    //runner.transparentBackground = true;
+    //console.log('starting');
+    can.setTransparent(true);
+
+})();
+
+</script>
+
+<script>
+
+(function demo2() {
+	var can = amino.addCanvas('demo2');
+	can.setTransparent(true);
+	var rd = new ImageView("boy.png");
+		
+	can.add(rd);
+
+	//animate r.x from 0 -> 300 over 5.5 seconds
+	amino.addAnim(new PropAnim(rd, "x", 0, 200, 5.5)
+		.setLoop(-1) //repeat
+		.setAutoReverse(true).start() // auto reverse
+	);
+	
+	amino.addAnim(new PropAnim(rd, "y", 0, 200, 5.5)
+		.setLoop(-1) //repeat
+		.setAutoReverse(true).start() // auto reverse
+	);
+})();
+
+amino.autoPaint = true;
+amino.start();
+</script>
+
+  <body>
+<html>
