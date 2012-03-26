@@ -8,7 +8,7 @@
   <canvas id="demo1" width="400" height="400"></canvas>
   <canvas id="demo2" width="400" height="400"></canvas>
 
-
+  <!-- http://projects.joshy.org/Amino3/1.1/doc/doc.html -->
 <script language="JavaScript">
 var amino = new Amino();
 
@@ -110,20 +110,54 @@ var amino = new Amino();
 (function demo2() {
 	var can = amino.addCanvas('demo2');
 	can.setTransparent(true);
-	var rd = new ImageView("boy.png");
-		
-	can.add(rd);
+	var img = new ImageView("boy.png");
+	var img2 = new ImageView("girl.png");
 
+	can.add(img);
+    can.add(img2);
+
+
+    var a1 = new PropAnim(img, "y", 0, 200, 3)
+            .setLoop(-1) //repeat
+            .setAutoReverse(true).start(); // auto reverse
 	//animate r.x from 0 -> 300 over 5.5 seconds
-	amino.addAnim(new PropAnim(rd, "x", 0, 200, 5.5)
-		.setLoop(-1) //repeat
-		.setAutoReverse(true).start() // auto reverse
-	);
-	
-	amino.addAnim(new PropAnim(rd, "y", 0, 200, 5.5)
-		.setLoop(-1) //repeat
-		.setAutoReverse(true).start() // auto reverse
-	);
+
+    var a2 = new PropAnim(img, "x", 0, 200, 5.5)
+            .setLoop(-1) //repeat
+            .setAutoReverse(true).start(); // auto reverse
+
+    var a3 = new PropAnim(img2, "x", 0, 200, 5.5)
+            .setLoop(-1) //repeat
+            .setAutoReverse(true).start(); // auto reverse
+
+    var a4 = new PropAnim(img2, "y", 0, 200, 3)
+            .setLoop(-1) //repeat
+            .setAutoReverse(true).start(); // auto reverse
+
+    var imgState = false,img2State = false;
+
+    can.onClick(img, function(){
+        if(!imgState) {
+            imgState = true;
+            amino.addAnim(a1).addAnim(a2);
+        }
+
+
+        a1.toggle();
+        a2.toggle();
+
+    });
+
+
+    can.onClick(img2, function(){
+        if(!img2State){
+            img2State = true;
+            amino.addAnim(a3).addAnim(a4);
+        }
+
+        a3.toggle();
+        a4.toggle();
+    });
 })();
 
 amino.autoPaint = true;
