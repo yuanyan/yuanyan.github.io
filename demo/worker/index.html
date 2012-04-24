@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+<div id="logs"></div>
+<script>
+    var logs = document.getElementById("logs");
+    function log(msg){
+        logs.innerHTML += msg;
+    }
+
+    function fibonacci1(num){
+        var worker = new Worker("fibonacci.js");
+
+        worker.onmessage = function(event) {
+            log("Got: " + event.data + "\n");
+        };
+
+        worker.onerror = function(event) {
+            log("Worker error: " + event.data + "\n");
+            throw event.data;
+        };
+
+        worker.postMessage(num);
+    }
+
+    function fibonacci2(n) {
+        var s = 0;
+        if(n == 0) return(s);
+        if(n == 1) {
+            s += 1;
+            return(s);
+        }
+        else {
+            return(fibonacci2(n - 1) + fibonacci2(n - 2));
+        }
+    }
+
+    (function init(){
+        var arr = location.hash.split("-");
+        var type = parseInt(arr[0])||1;
+        var num = parseInt(arr[1])||10;
+        window["fibonacci"+type](num);
+    })();
+
+
+</script>
+</body>
+</html>
