@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+
+    <script>
+        // Retrieve the performance object in a cross browser way. It is important to
+        // check window.performance first.
+        var performance = window.performance || window.mozPerformance || window.msPerformance || window.webkitPerformance || {};
+
+        var timing = performance.timing || {};
+        var navigation = performance.navigation || {};
+
+        // Retrieve the navigation start time via the traditional method.
+        // This is the earliest time that a web page can get without Web Timing.
+        timing.legacyNavigationStart = new Date().getTime();
+    </script>
+
+    <style>
+
+        body {
+            margin:0;
+            padding:40px;
+            background:#FFF;
+            font:70% Arial, Helvetica, sans-serif;
+            color:#555;
+            line-height:180%;
+        }
+
+
+        .timeline {
+            background: #111;
+            background: -webkit-gradient(linear, 0 top, 0 bottom, from(#333), color-stop(0.2, #222), to(#222));
+            border: 1px solid black;
+            color: #DDD;
+            position: relative;
+            text-shadow: 1px 1px 1px #111;
+            width: 100%;
+            -webkit-box-reflect: below 0 -webkit-gradient(linear, left top, left bottom, from(transparent), color-stop(0.86, transparent), to(hsla(0,0%,0%,.25)));
+            z-index: 0;
+        }
+
+        .verticalBar {
+            border-right: 1px dashed hsla(0,100%,100%,.5);
+            height: 100%;
+            text-align: right;
+            position: absolute;
+            visibility: hidden;
+            white-space: nowrap;
+            z-index: 1;
+        }
+
+        .horizontalBar {
+            background: #1A89D7;
+            background: -webkit-gradient(linear, left top, left bottom, from(#E9EDE8), to(#1A89D7), color-stop(0.4, #2A4D8B));
+            border-radius: 5px;
+            height: 3.5ex;
+            -webkit-transition-property: width;
+            -webkit-transition-duration: .5s;
+            visibility: hidden;
+            white-space: nowrap;
+            z-index: 2;
+        }
+
+        #spacer {
+            height: 10ex;
+        }
+
+        #navigationStart {
+            visibility: visible;
+            width: 0%;
+        }
+
+</style>
+    <script>
+        function initMeasures() {
+
+            var m={},p = window.performance.timing;
+
+            if ((typeof p.domContentLoadedEventStart != 'undefined') || (typeof window.webkitPerformance != 'undefined')) {
+                m.navigation = (p.loadEventEnd - p.navigationStart); // 页面总加载时间
+                m.unloadEvent = (p.unloadEventEnd - p.unloadEventStart);
+                m.redirect = (p.redirectEnd - p.redirectStart);  // 重定向
+                m.domainLookup = (p.domainLookupEnd - p.domainLookupStart);   // DNS解析
+                m.connect = (p.connectEnd - p.connectStart);   // 建立连接
+                m.request = (p.responseStart - p.requestStart);   // 请求
+                m.response = (p.responseEnd - p.responseStart);   // 返回
+                m.domLoading = (p.domInteractive - p.domLoading);   //
+                m.domInteractive = (p.domContentLoadedEventEnd - p.domInteractive);   //
+                m.domContentLoaded = (p.domContentLoadedEventEnd - p.domContentLoadedEventStart); //  DOM解析
+                m.domComplete = (p.domComplete - p.domLoading);    // 文档加载
+                m.loadEvent = (p.loadEventEnd - p.loadEventStart);  // onload
+                m.fetch = (p.responseEnd - p.fetchStart);
+                //m.firstPaint = (p.firstPaint - p.navigationStart);
+            }
+
+            return m;
+        }
+
+
+        function getTiming(timingStr) {
+            if (!timing) return 0;
+            return timing[timingStr];
+        }
+
+        function getStartTiming() {
+            return getTiming('navigationStart');
+        }
+
+        function getEndTiming() {
+            return getTiming('loadEventEnd');
+        }
+
+        function getPercent(timingStr) {
+            var begin = getStartTiming();
+            var end = getEndTiming();
+            var thisTiming = getTiming(timingStr);
+            var totalDuration = end - begin;
+            var thisDuration = thisTiming - begin;
+            return Math.round(100.0 * thisDuration / totalDuration);
+        }
+
+        function getDelta(startTimingStr, endTimingStr) {
+            var begin = getTiming(startTimingStr);
+            var end = getTiming(endTimingStr);
+            if (!begin || !end) return "n/a";
+            return (end - begin) + "ms";
+        }
+
+        function setVerticalBar(timingStr) {
+            var elem = document.getElementById(timingStr);
+            var percent = getPercent(timingStr);
+            elem.style.width = percent + '%';
+            elem.innerHTML += " " + getDelta('navigationStart', timingStr);
+            elem.style.visibility = 'visible';
+        }
+
+        function setHorizontalBar(startTimingStr, endTimingStr) {
+            var elem = document.getElementById(startTimingStr);
+            var startPercent = getPercent(startTimingStr);
+            var endPercent = getPercent(endTimingStr);
+            var width = endPercent - startPercent;
+            if (width > 0)
+                elem.style.width = width + '%';
+            else
+                elem.style.width = '1px';
+            elem.style.marginLeft = (startPercent > 0 ? startPercent : 0) + '%';
+            elem.innerHTML += " " + getDelta(startTimingStr, endTimingStr);
+            elem.style.visibility = 'visible';
+        }
+
+        function writeTimings() {
+            if (!getTiming('navigationStart')) {
+                document.getElementById('error').style.display = 'block';
+                return;
+            }
+
+            setVerticalBar('unloadEventEnd');
+            setVerticalBar('legacyNavigationStart');
+            setVerticalBar('loadEventEnd');
+
+            setHorizontalBar('redirectStart', 'redirectEnd');
+            setHorizontalBar('fetchStart', 'responseEnd');
+            setHorizontalBar('domainLookupStart', 'domainLookupEnd');
+            setHorizontalBar('connectStart', 'connectEnd');
+            setHorizontalBar('requestStart', 'responseStart');
+            setHorizontalBar('responseStart', 'responseEnd');
+            setHorizontalBar('loadEventStart', 'loadEventEnd');
+        }
+    </script>
+</head>
+<body onload="setTimeout(writeTimings, 100)">
+
+   <div class=timeline>
+
+       <div class=verticalBar id=navigationStart>加载开始 0ms</div>
+       <div class=verticalBar id=unloadEventEnd style="top:2ex">前面页面卸载</div>
+       <div class=verticalBar id=legacyNavigationStart style="top:4ex">传统页面加载点</div>
+       <div class=verticalBar id=loadEventEnd>页面加载</div>
+
+       <div id=spacer></div>
+
+       <div class=horizontalBar id=redirectStart>&nbsp;重定向</div>
+       <div class=horizontalBar id=fetchStart>&nbsp;缓存与请求</div>
+       <div class=horizontalBar id=domainLookupStart>&nbsp;DNS解析</div>
+       <div class=horizontalBar id=connectStart>&nbsp;建立连接</div>
+       <div class=horizontalBar id=requestStart>&nbsp;请求</div>
+       <div class=horizontalBar id=responseStart>&nbsp;返回</div>
+       <div class=horizontalBar id=loadEventStart>&nbsp;页面加载</div>
+
+   </div>
+</body>
+</html>

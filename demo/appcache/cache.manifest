@@ -1,0 +1,12 @@
+CACHE MANIFEST
+# version 1.0
+CACHE:
+style.css
+script.js
+index.html
+
+NETWORK:
+style2.css
+
+FALLBACK:
+img.jpg img_fallback.jpg
