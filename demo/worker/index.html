@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title></title>
+    <title>web workers</title>
     <style>
         body{height:3000px;}
     </style>
 </head>
 <body>
+<label for=fibonacci>fibonacci</label>
+<input id=fibonacci value=40>
+
+<button onclick="fibonacci1()">worker</button>
+<button onclick="fibonacci2()">this</button>
 <div id="logs"></div>
 <script>
     var logs = document.getElementById("logs");
@@ -14,37 +19,35 @@
         logs.innerHTML += msg;
     }
 
-    function fibonacci1(num){
+    function fibonacci1(){
+        var num = parseInt(document.getElementById("fibonacci").value);
         var worker = new Worker("fibonacci.js");
 
         worker.onmessage = function(event) {
-            log("Got: " + event.data + "\n");
-        };
-
-        worker.onerror = function(event) {
-            log("Worker error: " + event.data + "\n");
-            throw event.data;
+            log("fibonacci("+num+") = " + event.data + "<br>");
         };
 
         worker.postMessage(num);
     }
 
-    function fibonacci2(n) {
+    function f(n) {
 
         if(n == 0 || n==1) {
             return n;
         }
         else {
-            return(fibonacci2(n - 1) + fibonacci2(n - 2));
+            return(f(n - 1) + f(n - 2));
         }
     }
+    function fibonacci2(){
+        var num = parseInt(document.getElementById("fibonacci").value);
+        var res = f(num);
+        log("fibonacci("+num+") = " + res + "<br>");
+    }
 
-    (function init(){
-        var arr = location.hash.split("-");
-        var type = parseInt(arr[0][1])||1;
-        var num = parseInt(arr[1])||40;
-        window["fibonacci"+type](num);
-    })();
+
+
+
 
 
 </script>
