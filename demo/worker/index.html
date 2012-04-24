@@ -2,6 +2,9 @@
 <html>
 <head>
     <title></title>
+    <style>
+        body{height:3000px;}
+    </style>
 </head>
 <body>
 <div id="logs"></div>
@@ -38,8 +41,8 @@
 
     (function init(){
         var arr = location.hash.split("-");
-        var type = parseInt(arr[0])||1;
-        var num = parseInt(arr[1])||10;
+        var type = parseInt(arr[0][1])||1;
+        var num = parseInt(arr[1])||40;
         window["fibonacci"+type](num);
     })();
 
