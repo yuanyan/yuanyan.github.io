@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+<script>
+    var i = document.querySelector('#pony');
+    if (navigator.connection.bandwidth > 2) {
+        i.src = "//example.com/pony_hd.png";
+    } else {
+        i.src = "//example.com/pony_ld.png";
+    }
+
+
+    var battery = navigator.battery;
+    battery.onchargingchange = function () {
+        document.querySelector('#charging').textContent=
+                battery.charging ? 'charging' : 'not charging';
+    };
+
+</script>
+
+</body>
+</html>
