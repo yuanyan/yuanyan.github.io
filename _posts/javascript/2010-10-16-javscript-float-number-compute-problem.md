@@ -43,5 +43,24 @@ JavaScript 只有一种数字类型 `Number` ，而且在Javascript中所有的�
 那如何来避免这类 ` 1.0-0.9 != 0.1 ` 的非bug型问题发生呢？下面给出一种目前用的比较多的解决方案,
 在判断浮点运算结果前对计算结果进行精度缩小，因为在精度缩小的过程总会自动四舍五入:
 
-    (1.0-0.9).toFixed(digits)       // toFixed() 精度参数须在 0 与20 之间
-    (1.0-0.9).toFixed(10) === 0.1   // 结果为True
+    (1.0-0.9).toFixed(digits)                   // toFixed() 精度参数须在 0 与20 之间
+    parseFloat((1.0-0.9).toFixed(10)) === 0.1   // 结果为True
+    parseFloat((1.0-0.8).toFixed(10)) === 0.1   // 结果为True
+    parseFloat((1.0-0.7).toFixed(10)) === 0.3   // 结果为True
+    parseFloat((11.0-11.8).toFixed(10)) === -0.8   // 结果为True
+	
+	// 提炼方法
+	function isEqual(a, b, digits){
+		digits = digits == undefined? 10: digits; // 默认精度为10
+		return a.toFixed(digits) === b.toFixed(digits);
+	}
+	
+	isEqual(1.0-0.7, 0.3);  // return true
+	
+	// 原生扩展方式
+	Number.prototype.isEqual = function(number, digits){
+		digits = digits == undefined? 10: digits; // 默认精度为10
+		return this.toFixed(digits) === number.toFixed(digits);
+	}
+	
+	(1.0-0.7).isEqual(0.3); // return true
