@@ -45,19 +45,21 @@ JavaScript 只有一种数字类型 `Number` ，而且在Javascript中所有的�
 
     (1.0-0.9).toFixed(digits)                   // toFixed() 精度参数须在 0 与20 之间
     parseFloat((1.0-0.9).toFixed(10)) === 0.1   // 结果为True
-    parseFloat((1.0-0.8).toFixed(10)) === 0.1   // 结果为True
+    parseFloat((1.0-0.8).toFixed(10)) === 0.2   // 结果为True
     parseFloat((1.0-0.7).toFixed(10)) === 0.3   // 结果为True
     parseFloat((11.0-11.8).toFixed(10)) === -0.8   // 结果为True
 	
-	// 提炼方法
-	function isEqual(a, b, digits){
+## 方法提炼	
+
+	// 通过isEqual工具方法判断数值是否相等
+	function isEqual(number1, number2, digits){
 		digits = digits == undefined? 10: digits; // 默认精度为10
-		return a.toFixed(digits) === b.toFixed(digits);
+		return number1.toFixed(digits) === number2.toFixed(digits);
 	}
 	
 	isEqual(1.0-0.7, 0.3);  // return true
 	
-	// 原生扩展方式
+	// 原生扩展方式，更喜欢面向对象的风格
 	Number.prototype.isEqual = function(number, digits){
 		digits = digits == undefined? 10: digits; // 默认精度为10
 		return this.toFixed(digits) === number.toFixed(digits);
