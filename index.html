@@ -8,14 +8,18 @@ tagline: 元彥の程序世界
 
 <p><code>'yuanyan.json`</code>:</p>
 <pre>
-    {
-        name : '@元彦',
-        email : 'yuanyan.cao(at)gmail.com',
-        github : 'http://github.com/yuanyan',
-        twitter : 'http://twitter.com/caoyuanyan',
-        weibo : 'http://weibo.com/caoyuanyan'
-    }
+{
+    name : '@元彦',
+    email : 'yuanyan.cao(at)gmail.com',
+    github : 'http://github.com/yuanyan',
+    twitter : 'http://twitter.com/caoyuanyan',
+    weibo : 'http://weibo.com/caoyuanyan'
+}
 </pre>
+
+<p>
+<iframe src="http://markdotto.github.com/github-buttons/github-btn.html?user=yuanyan&type=follow&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="162px" height="20px"></iframe>
+</p>
 
 <h2> Posts </h2>
 <ul id="posts">
@@ -24,8 +28,7 @@ tagline: 元彥の程序世界
   {% endfor %}
 </ul>
 
-<h2> Projects <iframe src="http://markdotto.github.com/github-buttons/github-btn.html?user=yuanyan&type=follow&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="132px" height="20px"></iframe>
-</h2>
+<h2> Projects </h2>
 
 <ul id="projects">
 
@@ -58,7 +61,7 @@ tagline: 元彥の程序世界
               return new Date(b.watchers) - new Date(a.watchers);
         });
 
-        projects = projects.slice(0,6);
+        projects = projects.slice(0,10);
 
         $("#projectsTmpl").template( "projectsTmpl" );
         $.tmpl("projectsTmpl", projects).appendTo("#projects");
