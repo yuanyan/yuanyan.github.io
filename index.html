@@ -6,8 +6,8 @@ tagline: 元彥の程序世界
 ---
 {% include JB/setup %}
 
-`yuanyan.json`:
-    
+<p><code>'yuanyan.json`</code>:</p>
+<pre>
     {
         name : '@元彦',
         email : 'yuanyan.cao(at)gmail.com',
@@ -15,23 +15,22 @@ tagline: 元彥の程序世界
         twitter : 'http://twitter.com/caoyuanyan',
         weibo : 'http://weibo.com/caoyuanyan'
     }
+</pre>
 
-## Posts
-
+<h2> Posts </h2>
 <ul class="posts">
   {% for post in site.posts %}
     <li><span><a href="{{ BASE_PATH }}{{ post.url }}">{{ post.title }}</a> {{ post.date | date_to_string }}</span> </li>
   {% endfor %}
 </ul>
 
-## Projects
-<iframe src="http://markdotto.github.com/github-buttons/github-btn.html?user=yuanyan&type=follow"
-  allowtransparency="true" frameborder="0" scrolling="0" width="132px" height="20px"></iframe>
+<h2> Projects </h2>
+<iframe src="http://markdotto.github.com/github-buttons/github-btn.html?user=yuanyan&type=follow&count=true&size=large" allowtransparency="true" frameborder="0" scrolling="0" width="132px" height="20px"></iframe>
+
 <ul class="projects">
 
 </ul>
 
-<!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="static/js/jquery-1.7.1.min.js"><\/script>')</script>
 
@@ -67,4 +66,5 @@ tagline: 元彥の程序世界
         $("#projectsTmpl").template( "projectsTmpl" )
         $.tmpl("projectsTmpl", projects).appendTo("#projects");
      });
+  })();
 </script>
