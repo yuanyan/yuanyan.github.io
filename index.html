@@ -18,7 +18,7 @@ tagline: 元彥の程序世界
 </pre>
 
 <h2> Posts </h2>
-<ul class="posts">
+<ul id="posts">
   {% for post in site.posts %}
     <li><span><a href="{{ BASE_PATH }}{{ post.url }}">{{ post.title }}</a> {{ post.date | date_to_string }}</span> </li>
   {% endfor %}
@@ -27,7 +27,7 @@ tagline: 元彥の程序世界
 <h2> Projects <iframe src="http://markdotto.github.com/github-buttons/github-btn.html?user=yuanyan&type=follow&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="132px" height="20px"></iframe>
 </h2>
 
-<ul class="projects">
+<ul id="projects">
 
 </ul>
 
@@ -38,13 +38,8 @@ tagline: 元彥の程序世界
   <li>
     <h3>
     <a href="${html_url}" target="_blank">${name}</a>
-    <small>${updated_at}</small>
+    <small>${description}</small>
     </h3>
-    <p>${description}</p>
-    <p class="meta">
-       <a class="btn large" href="${html_url}" target="_blank">fork: ${forks}</a>
-       <a class="btn large" href="${html_url}" target="_blank">watchers: ${watchers}</a>
-    </p>
   </li>
 </script>
 
@@ -60,8 +55,10 @@ tagline: 元彥の程序世界
         var projects = data.data;
 
         projects.sort(function(a, b) {
-              return new Date(b.updated_at) - new Date(a.updated_at);
+              return new Date(b.watchers) - new Date(a.watchers);
         });
+
+        projects = projects.slice(0,6);
 
         $("#projectsTmpl").template( "projectsTmpl" );
         $.tmpl("projectsTmpl", projects).appendTo("#projects");
