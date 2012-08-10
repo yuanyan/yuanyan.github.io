@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>demo</title>
+    <style>* {margin: 0; padding: 0;}</style>
+	 <script>
+		var doc=document;
+		// will write in body
+		doc.write("head write something... <br>");
+	 </script>
+</head>
+<body onload="onload">
+ <script>
+	doc.write("body write something... <br>");
+	function onload(){
+		// will not write something, doc.write not work in asyn
+		doc.write("onload write something...");
+	}
+ </script>
+</body>
+</html>
