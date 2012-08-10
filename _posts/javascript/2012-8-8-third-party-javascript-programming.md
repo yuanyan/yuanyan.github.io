@@ -1,7 +1,7 @@
 ---
 layout: post
 category : javascript
-title:  Third-Party Javascript ±à³Ì
+title:  Third-Party Javascript ç¼–ç¨‹
 header:
 tagline:
 tags : [third-party, javascript, ifrmae]
