@@ -9,7 +9,7 @@ tags : [third-party, javascript, ifrmae]
 {% include JB/setup %}
 
 ## 关于 Third-party JavaScript
-什么是Third-party JavaScript？翻译成中文就是第三方JavaScript，举例用户甲访问乙方的网站，但乙方页面却包含来自丙方的JavaScript代码并执行，我们称来自丙方的JavaScript为第三方JavaScript。第三方JavaScript其实我们早已非常熟悉，只是未曾去了解他们的统一称呼。如我们经常在博客中看到博主使用了 [Disqus](http://disqus.com) 提供评论服务，需在页面引入如下JavaScript代码片断：
+什么是Third-party JavaScript？翻译成中文为第三方JavaScript，举个例子：用户甲访问乙方的网站，但乙方页面却包含来自丙方的JavaScript代码并执行，我们称来自丙方的JavaScript为第三方JavaScript。第三方JavaScript其实我们早已非常熟悉，只是未曾去了解他们的统一称呼。如我们经常在博客中看到博主使用了 [Disqus](http://disqus.com) 提供评论服务，需在页面引入如下JavaScript代码片断：
 
 ```html
 <script type="text/javascript">
@@ -24,13 +24,13 @@ tags : [third-party, javascript, ifrmae]
 </script>
 ```
 
-还有 [Jisthis](http://www.jiathis.com/) 提供的“分享到”侧栏则需引入：
+再如 [Jisthis](http://www.jiathis.com/) 提供的“分享到”侧栏需引入：
 
 ```html
 <!-- JiaThis Button BEGIN -->
 <script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_r.js?uid=1336206755505427&move=0" charset="utf-8"></script>
 <!-- JiaThis Button END -->
-···
+```
 
 以上举例的两个是具有UI界面并直接服务甲可以被甲感知的第三方JavaScript，既然有些具有UI的，当然还有一些是无UI的或常规情况下无UI的第三方JavaScript，这其中流量最大的应是 Google 提供的面向乙方提供的网站访问分析服务[Google Analytics](http://www.google.com/analytics/)
 
