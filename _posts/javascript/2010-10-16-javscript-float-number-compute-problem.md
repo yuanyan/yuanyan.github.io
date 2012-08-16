@@ -1,8 +1,8 @@
 ---
 layout: post
 category : javascript
-title:  JavaScript浮点运算问题分析与解决
-header:
+title:  Javascript 浮点运算问题分析与解决
+header: Javascript 浮点运算问题分析与解决
 tagline:
 tags : [javascript, number, IEEE-754]
 ---

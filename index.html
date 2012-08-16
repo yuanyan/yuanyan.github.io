@@ -41,9 +41,6 @@ tagline: 白居易
 
 </ul>
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script>window.jQuery || document.write('<script src="static/js/jquery-1.7.1.min.js"><\/script>')</script>
-<script src="//ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
 <script id="projectsTmpl" type="text/x-jquery-tmpl">
   <li>
     <h3>
@@ -53,25 +50,3 @@ tagline: 白居易
   </li>
 </script>
 
-<script>
-  (function(){
-     var reqPromise= $.ajax({
-         dataType: "jsonp",
-         url: "https://api.github.com/users/yuanyan/repos",
-         jsonp: "callback"
-     });
-
-     reqPromise.done(function(data){
-        var projects = data.data;
-
-        projects.sort(function(a, b) {
-              return new Date(b.watchers) - new Date(a.watchers);
-        });
-
-        projects = projects.slice(0,10);
-
-        $("#projectsTmpl").template( "projectsTmpl" );
-        $.tmpl("projectsTmpl", projects).appendTo("#projects");
-     });
-  })();
-</script>
