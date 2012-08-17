@@ -4,7 +4,7 @@ category : html5
 title:  Appcache Facts 中译版
 header:  Appcache Facts 中译版
 tagline:
-tags : [appcache, html5]
+tags: [appcache, html5]
 ---
 {% include JB/setup %}
 
@@ -72,19 +72,15 @@ Application cache 是 HTML5 中在规范完整性上比较糟糕的特性之一�
 
 ### 参考资源
 
-<ul>
-    <li>AppCacheFacts Demo Site  &ndash; <a href="./demo/">Demo</a></li>
-    <li>Open Web Camp IV presentation <a href="./peterlubbers-owc4/index.html">Building Offline Web Applications with AppCache</a> (2012)</li>
-    <li>Dive Into HTML5 &ndash; <a href="http://diveintohtml5.info/offline.html">Let's Take This Offline</a></li>
-    <li>Google Code Blog &ndash; <a href="http://googlecode.blogspot.com/2009/04/gmail-for-mobile-html5-series-using.html">Using AppCache to Launch Offline</a></a></li>
-    <li>HTML5 Rocks &ndash; <a href="http://www.html5rocks.com/tutorials/appcache/beginner/">A Beginner's Guide to Using the Application Cache</a></li>
-    <li>MDN Doc Center &ndash; <a href="https://developer.mozilla.org/en/offline_resources_in_firefox">Offline resources in Firefox</a></li>
-    <li>Safari Developer Library &ndash; <a href="http://developer.apple.com/library/safari/#documentation/appleapplications/reference/SafariWebContent/Client-SideStorage/Client-SideStorage.html">Storing Data on the Client</a></li>
-    <li>Online validator, JSON(P) validation API, and TextMate bundle) &ndash; <a href="http://manifest-validator.com">Cache Manifest Validator</a></li>
-    <li>A List Apart  &ndash; <a href="http://www.alistapart.com/articles/application-cache-is-a-douchebag/">Application Cache is a Douchebag</a></li>
-</ul>
+* AppCacheFacts Demo Site  &ndash; [Demo](http://appcachefacts.info/demo/)
+* Open Web Camp IV presentation [Building Offline Web Applications with AppCache (2012)](http://appcachefacts.info/peterlubbers-owc4/index.html)
+* Dive Into HTML5 &ndash; [Let's Take This Offline](http://diveintohtml5.info/offline.html)
+* Google Code Blog &ndash; [Using AppCache to Launch Offline](http://googlecode.blogspot.com/2009/04/gmail-for-mobile-html5-series-using.html)
+* HTML5 Rocks &ndash; [A Beginner's Guide to Using the Application Cache](http://www.html5rocks.com/tutorials/appcache/beginner/)
+* MDN Doc Center &ndash; [Offline resources in Firefox](https://developer.mozilla.org/en/offline_resources_in_firefox)
+* Safari Developer Library &ndash; [Storing Data on the Client](http://developer.apple.com/library/safari/#documentation/appleapplications/reference/SafariWebContent/Client-SideStorage/Client-SideStorage.html)
+* Online validator, JSON(P) validation API, and TextMate bundle) &ndash; [Cache Manifest Validator](http://manifest-validator.com)
+* A List Apart  &ndash; [Application Cache is a Douchebag](http://www.alistapart.com/articles/application-cache-is-a-douchebag/)
 
-<p>
-&copy; 2012 <a href="http://twitter.com/shinypb">Mark Christian</a> &amp; <a href="http://twitter.com/ded">Dustin Diaz</a>. License: <a href="http://creativecommons.org/licenses/by/3.0/">CC Attribution 3.0</a>. Patches welcome on <a href="https://github.com/shinyplasticbag/appcachefacts">GitHub</a>.
-</p>
 
+&copy; 2012 [Mark Christian](http://twitter.com/shinypb) &amp; [Dustin Diaz](http://twitter.com/ded). License: [CC Attribution 3.0](http://creativecommons.org/licenses/by/3.0/).
