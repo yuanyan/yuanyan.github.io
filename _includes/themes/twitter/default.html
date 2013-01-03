@@ -5,6 +5,7 @@
     <title>{{ page.title }} - 元彥の程序世界</title>
     {% if page.description %}<meta name="description" content="{{ page.description }}">{% endif %}
     <meta name="author" content="{{ site.author.name }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>
@@ -30,12 +31,20 @@
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
-          <a class="brand" href="{{ HOME_PATH }}">{{ site.title }}</a>
+        <button type="button"class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+
+        <a class="brand" href="{{ HOME_PATH }}">{{ site.title }}</a>
+        <div class="nav-collapse collapse">
           <ul class="nav">
             {% assign pages_list = site.pages %}
             {% assign group = 'navigation' %}
             {% include JB/pages_list %}
           </ul>
+        </div>
         </div>
       </div>
     </div>
@@ -52,6 +61,36 @@
       </footer>
 
     </div> <!-- /container -->
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="static/js/jquery-1.7.1.min.js"><\/script>')</script>
+    <script src="{{ ASSET_PATH }}/bootstrap/js/bootstrap.min.js"></script>
+
+    <script src="//ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+    <script>
+        (function(){
+            if( !( $("#projects")[0] && $("#projectsTmpl")[0] ) ) return null;
+
+            var reqPromise= $.ajax({
+                dataType: "jsonp",
+                url: "https://api.github.com/users/yuanyan/repos",
+                jsonp: "callback"
+            });
+
+            reqPromise.done(function(data){
+                var projects = data.data;
+
+                projects.sort(function(a, b) {
+                    return new Date(b.watchers) - new Date(a.watchers);
+                });
+
+                projects = projects.slice(0,10);
+
+                $("#projectsTmpl").template( "projectsTmpl" );
+                $.tmpl("projectsTmpl", projects).appendTo("#projects");
+            });
+        })();
+    </script>
 
     {% include JB/analytics %}
   </body>

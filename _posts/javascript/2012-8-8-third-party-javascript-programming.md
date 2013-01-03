@@ -2,7 +2,7 @@
 layout: post
 category : javascript
 title:  Third-party Javascript 编程
-header:
+header: Third-party Javascript 编程
 tagline:
 tags : [third-party, javascript, ifrmae]
 ---

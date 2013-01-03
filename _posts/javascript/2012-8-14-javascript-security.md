@@ -2,7 +2,7 @@
 layout: post
 category : javascript
 title:  Javascript 安全
-header:
+header: Javascript 安全
 tagline:
 tags : [javascript, 安全]
 ---

@@ -8,7 +8,6 @@ html,body{
 
 body {
     position: relative;
-    padding-top: 40px;
     background: #F6F6F1 url("http://madscript.com/static/images/bg.jpg") center 40px repeat;
 }
 
@@ -65,13 +64,20 @@ section {
 .content {
     background-color: #fff;
     padding: 20px;
-    margin: 0 -20px; /* negative indent the amount of the padding to maintain the grid system */
+    margin: 40px -20px 0 -20px; /* negative indent the amount of the padding to maintain the grid system */
     -webkit-border-radius: 0 0 6px 6px;
     -moz-border-radius: 0 0 6px 6px;
     border-radius: 0 0 6px 6px;
     -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, .15);
     -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, .15);
     box-shadow: 0 1px 2px rgba(0, 0, 0, .15);
+}
+
+@media (max-width: 979px){
+    .content {
+        margin: -20px -20px 0 -20px;
+    }
+
 }
 
 /* Page header tweaks */
@@ -125,3 +131,4 @@ section {
 footer p {
     color: #111;
 }
+
