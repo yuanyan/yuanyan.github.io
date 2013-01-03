@@ -1,0 +1,146 @@
+<html>
+<head>
+    <style>
+        html,body {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            background: #000;
+        }
+        #canvas {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 100px;
+            height: 100px;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+        }
+        #video_canvas {
+            border: solid 1px #fff;
+            display: none;
+        }
+        #content {
+            margin: 0;
+            padding: 0;
+            display: none;
+        }
+        #info {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            color: #fff;
+            font-weight: bold;
+        }
+    </style>
+    <script>
+        function init() {
+            var canvas = document.getElementById('canvas')
+            var video = document.getElementById('video')
+            var video_canvas = document.getElementById('video_canvas')
+            var video_context = video_canvas.getContext('2d')
+            var info = document.getElementById('info')
+
+            if(!navigator.getUserMedia){
+                return info.innerHTML = "Native web camera streaming is not supported in this browser!"
+            }
+
+            function computeHistogram(context, width, height, levels) {
+                var img = context.getImageData(0, 0, width, height)
+                var h = new Array(levels)
+                for (var i = 0; i < h.length; ++i)
+                    h[i] = 0
+                var max = 0
+
+                for (var i = 0; i < img.data.length; i += 4) {
+                    var brightness = (img.data[i] + img.data[i+1] + img.data[i+2]) / 3
+                    var h_index = Math.floor(brightness / 256 * levels)
+                    h[h_index] += 1
+                    if (max < h[h_index])
+                        max = h[h_index]
+                }
+
+                return { histogram: h, max_value: max }
+            }
+
+            function drawHistogram(h, max, context, width, height) {
+                context.strokeRect(0.5, 0.5, width - 1, height - 1)
+                var bar_width = width / h.length
+                var unit_height = height / max
+                for (var i = 0; i < h.length; ++i)
+                {
+                    context.fillRect(bar_width * i, height - h[i] * unit_height, bar_width, h[i] * unit_height)
+                }
+            }
+
+            function onMetadata() {
+            }
+
+            function onPlay() {
+                var context = canvas.getContext('2d')
+                context.strokeStyle = '#fff'
+                context.fillStyle = '#fff'
+                context.lineWidth = 1
+                context.lineJoin = 'bevel'
+
+                var last_video_width = 0
+
+                function redraw() {
+                    if (video.videoWidth != last_video_width)
+                    {
+                        last_video_width = video.videoWidth
+                        video_canvas.width = video.videoWidth / 4
+                        video_canvas.height = video.videoHeight / 4
+                        video_context = video_canvas.getContext('2d')
+                        info.innerHTML = "Video size: " + video.videoWidth + "x" + video.videoHeight
+                    }
+
+                    video_context.drawImage(video,
+                            0, 0,
+                            video_canvas.width, video_canvas.height)
+                    var h_data = computeHistogram(video_context,
+                            video_canvas.width, video_canvas.height,
+                            10)
+                    context.clearRect(0, 0, canvas.width, canvas.height)
+                    drawHistogram(h_data.histogram, h_data.max_value, context, canvas.width, canvas.height)
+
+                    if (!video.paused)
+                        setTimeout(redraw, 100)
+                }
+
+                redraw()
+            }
+
+
+            canvas.width = 100
+            canvas.height = 100
+
+            video_canvas.width = 0
+            video_canvas.height = 0
+
+            video.addEventListener('loadedmetadata', onMetadata, false)
+
+            video.addEventListener('play', onPlay, false)
+            navigator.getUserMedia("video", function(stream) {
+                video.src = stream
+                document.getElementById('content').style.display = 'block'
+            }, function(error) { alert("Cannot enable video input, error code: " + error.code) })
+        }
+
+
+        window.addEventListener('load', init, false)
+
+
+    </script>
+</head>
+<body>
+<div id='content'>
+    <video controls autoplay id="video"></video>
+    <canvas id="canvas" width="100" height="100"></canvas>
+    <div id='info'>init...</div>
+    <canvas id="video_canvas"></canvas>
+</div>
+</body>
+</html>

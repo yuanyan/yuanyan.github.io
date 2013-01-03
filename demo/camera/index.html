@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <title>web camera display demo</title>
+    <style>
+        html,body {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            background: #000;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+        }
+
+    </style>
+</head>
+<body>
+<h1>web camera display demo</h1>
+<video autoplay></video>
+<script type="text/javascript">
+    var video = document.getElementsByTagName('video')[0],
+         heading = document.getElementsByTagName('h1')[0];
+
+    if(navigator.getUserMedia) {
+        navigator.getUserMedia('video', successCallback, errorCallback);
+        function successCallback( stream ) {
+            video.src = stream;
+        }
+        function errorCallback( error ) {
+            heading.textContent = "An error occurred: [CODE " + error.code + "]";
+        }
+    } else {
+        heading.textContent = "Native web camera streaming is not supported in this browser!";
+    }
+</script>
+
+</body>
+</html>
