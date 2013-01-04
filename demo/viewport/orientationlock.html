@@ -12,17 +12,26 @@
 	<meta name="viewport" content="initial-scale=1.0,maximum-scale=1.0" />
 	
 	<link rel="stylesheet" href="common/style.css" type="text/css" media="screen">
-
+	
 	<!-- important files (non-optional) -->
-	<script src="../src/viewporter.js"></script>
+	<script src="src/viewporter.js"></script>
 
 	<!-- the following two are optional, and just for this demo -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 	<script src="common/debug.js"></script>
+
+	<script>
+		// orientation locking
+		$(window).bind('viewportready viewportchange', function() {
+			$('#orientationlock').toggle(!viewporter.isLandscape());
+		});
+	</script>
 	
 </head>
 <body>
-<div id="viewporter"><!-- This wrapper element is also required -->
+<div id="viewporter">
+	
+	<div id="orientationlock"><p>Please rotate your device to use this demo application.</p></div>
 
 	<div id="checker-bl">
 		<p><strong>window width:</strong> <span id="viewporter-debug-width"></span></p>
