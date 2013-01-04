@@ -1,10 +1,10 @@
 ---
 layout: post
-category : javascript
+category : html5
 title:  慎用 requestAnimationFrame
 header: 慎用 requestAnimationFrame
 tagline:
-tags : [HTML5,requestAnimationFrame]
+tags : [HTML5, requestAnimationFrame]
 ---
 {% include JB/setup %}
 
