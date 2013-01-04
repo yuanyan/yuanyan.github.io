@@ -61,11 +61,18 @@
       </footer>
 
     </div> <!-- /container -->
+	
+	<div id="thumbs" class="hide">
+      <a href="http://madscript.com/static/bg/1.jpg"></a>      
+      <a href="http://madscript.com/static/bg/2.jpg"></a>      
+      <a href="http://madscript.com/static/bg/3.jpg"></a>           
+      <a href="http://madscript.com/static/bg/4.jpg"></a>           
+	</div>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="static/js/jquery-1.7.1.min.js"><\/script>')</script>
     <script src="{{ ASSET_PATH }}/bootstrap/js/bootstrap.min.js"></script>
-
+    <script src="{{ ASSET_PATH }}/js/jquery.superbgimage.min.js"></script>
     <script src="//ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
     <script>
         (function(){
@@ -91,6 +98,26 @@
             });
         })();
     </script>
+	<script>
+		(function(){
+			 // Options for SuperBGImage
+			  $.fn.superbgimage.options = {
+				inlineMode: 0, // 0-resize to browser size, 1-do not resize to browser-size
+				randomtransition: 1, // 0-none, 1-use random transition (0-7)
+				transition: 1, // 0-none, 1-fade, 2-slide down, 3-slide left, 4-slide top, 5-slide right, 6-blind horizontal, 7-blind vertical, 90-slide right/left, 91-slide top/down
+				transitionout: 1, // 0-no transition for previous image, 1-transition for previous image
+				randomtransition: 1, // 0-none, 1-use random transition (0-7)						
+				slideshow: 1, // 0-none, 1-autostart slideshow						
+				slide_interval: 7000, // interval for the slideshow
+				randomimage: 1, // 0-none, 1-random image
+				speed: 1000, // animation speed
+				preload:1
+			  };
+
+			 // initialize SuperBGImage
+			 $('#thumbs').superbgimage();
+		})();
+	</script>
 
     {% include JB/analytics %}
   </body>
