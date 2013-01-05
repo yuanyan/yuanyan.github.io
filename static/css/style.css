@@ -19,7 +19,7 @@ body {
     float: right;
     font-weight: bold;
     color: #fff;
-	color: rgba(0,0,0,1)
+	color: rgba(255,255,255,1)
     text-shadow: 0 1px 0 rgba(255, 255, 255, .1), 0 0 30px rgba(255, 255, 255, .125);
     -webkit-transition: all .2s linear;
     -moz-transition: all .2s linear;
@@ -82,7 +82,7 @@ section {
 /* The white background content wrapper */
 .content {
     background-color: #fff;
-    background-color: rgba(17,17,17,0.6);
+    background-color: rgba(255,255,255,0.67);
     padding: 20px;
     margin: 40px -20px 0 -20px; /* negative indent the amount of the padding to maintain the grid system */
     -webkit-border-radius: 0 0 6px 6px;
