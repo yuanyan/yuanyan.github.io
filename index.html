@@ -6,27 +6,6 @@ tagline: 白居易
 ---
 {% include JB/setup %}
 
-<div class="row">
-
-<div class="span2">
-<p><img alt="yuanyan" src="http://www.gravatar.com/avatar/8a27ebae306bac68b54c32832ded3e01?s=120&r=pg&d=404"></p>
-<p><iframe src="http://ghbtns.com/github-btn.html?user=yuanyan&type=follow&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="162px" height="20px"></iframe></p>
-</div>
-
-<div class="span10">
-<pre>
-{
-    "name" : "@元彦",
-    "id" : "yuanyan",
-    "email" : "yuanyan.cao(at)gmail.com",
-    "github" : "http://github.com/yuanyan",
-    "twitter" : "http://twitter.com/caoyuanyan",
-    "weibo" : "http://weibo.com/caoyuanyan"
-}
-</pre>
-</div>
-
-</div>
 
 <h2> Posts </h2>
 <ul id="posts">
@@ -43,10 +22,10 @@ tagline: 白居易
 
 <script id="projectsTmpl" type="text/x-jquery-tmpl">
   <li>
-    <h3>
+    <span>
     <a href="${html_url}" target="_blank">${name}</a>
-    <small>${description}</small>
-    </h3>
+    ${description}
+    </span>
   </li>
 </script>
 
