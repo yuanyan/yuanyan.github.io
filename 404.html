@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>404</title>
+<style>.side_infos iframe { margin-bottom: -5px;}</style>
 </head>
 <body>
 <p style="display:none">你访问的页面找不回来了，但是我们可以一起寻找失踪宝贝</p>
@@ -34,7 +35,7 @@
 
         var shareTitle = '404页面';
         var shareSite = '宝贝回家';
-        var shareSummary = '宝贝回家, 让我们一起寻找失踪宝贝';
+        var shareSummary = '你访问的页面找不回来了，但是我们可以一起寻找失踪宝贝';
         var shareChildPic = (document.getElementsByTagName('IMG')[0] || {}).src;
         var shareChildUrl = (document.getElementsByTagName('a')[5] || {}).href;
         var shareChildDesc = (getElementsByClassName(document, 'info_person')[0] || {}).innerText;
@@ -78,11 +79,10 @@
         }
         shareBtns.push(['<a version="1.0" class="qzOpenerDiv" href="http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?', s2.join('&'), '" target="_blank">分享</a>'].join(''));
 
-
         shareBtnDiv.innerHTML += shareBtns.join(' ');
     })();
 </script>
-<script src="http://connect.qq.com/widget/loader/loader.js" widget="shareqq" charset="utf-8"></script>	
+<script src="http://connect.qq.com/widget/loader/loader.js" widget="shareqq" charset="utf-8"></script>
 <script src="http://qzonestyle.gtimg.cn/qzone/app/qzlike/qzopensl.js#jsdate=20111201" charset="utf-8"></script>
 
 </body>
