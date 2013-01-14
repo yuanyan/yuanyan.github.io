@@ -58,10 +58,8 @@ hr {
 }
 
 .credit img {
-    margin-right: 3px;
-    border-radius: 25px;
+    border-radius: 500px;
 }
-
 
 @media (max-width: 480px) {
     h1 {

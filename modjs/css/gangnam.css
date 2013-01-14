@@ -16,6 +16,10 @@ img {
     vertical-align: baseline;
 }
 
+footer img {
+    border-radius: 500px;
+}
+
 #install {
     font-size: 16px;
 }
@@ -27,7 +31,7 @@ img {
     margin-right: 0;
 }
 
-
+¡¢
 .hero-unit h1 {
     text-shadow: 0 1px 3px rgba(0, 0, 0, .4), 0 0 30px rgba(0, 0, 0, .075);
     font-size: 5em;
@@ -281,3 +285,5 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     -o-transition: all .4s linear;
     transition: all .4s linear;
 }
+
+
