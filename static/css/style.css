@@ -1,30 +1,15 @@
-
-html {
-    background: #004a86;
-    background: -webkit-radial-gradient(center center, circle cover, #0091d5 0%, #0091d5 15%, #004a86 100%);
-    background: -moz-radial-gradient(center center, circle cover, #0091d5 0%, #0091d5 15%, #004a86 100%);
-    background: -ms-radial-gradient(center center, circle cover, #0091d5 0%, #0091d5 15%, #004a86 100%);
-    background: -o-radial-gradient(center center, circle cover, #0091d5 0%, #0091d5 15%, #004a86 100%);
-    background: radial-gradient(center center, circle cover, #0091d5 0%, #0091d5 15%, #004a86 100%);
-}
-
-
-body {
-    min-height: 100%;
-    margin: 0;
-    padding: 0 20px;
-    background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQAgMAAADzfxo+AAAADFBMVEX///////////8AAAD1GyhhAAAABHRSTlMoNhsAX8Wz8wAAAC5JREFUOMtjCMUCGOr///7/fz8qMWQEs1YtWrVKC5UY9dGoj0Z9NOqjUR8NckEAV3eSqNB2GKwAAAAASUVORK5CYII="); }
-
-
-
 html,body{
     font-family: "Helvetica Neue", Helvetica, Arial, "微软雅黑", sans-serif;
     font-size: 14px;
     line-height: 150%;
-    height: 100%;
 	color: black;
 }
 
+
+body {
+    position: relative;
+    background: #F6F6F1 url("http://madscript.com/static/images/bg.png") center 40px repeat;
+}
 
 body > .navbar {
     font-size: 13px;
