@@ -47,25 +47,25 @@ tags : [DOM, layout, 性能]
 得到以下可导致触发 layout 的操作：
 
 
-* Element
+* `Element`:
 clientHeight, clientLeft, clientTop, clientWidth, focus(), getBoundingClientRect(), getClientRects(), innerText, offsetHeight, offsetLeft, offsetParent, offsetTop, offsetWidth, outerText, scrollByLines(), scrollByPages(), scrollHeight, scrollIntoView(), scrollIntoViewIfNeeded(), scrollLeft, scrollTop, scrollWidth
 
-* Frame, Image
+* `Frame, Image`:
 height, width
 
-* Range
+* `Range`:
 getBoundingClientRect(), getClientRects()
 
-* SVGLocatable
+* `SVGLocatable`:
 computeCTM(), getBBox()
 
-* SVGTextContent
+* `SVGTextContent`:
 getCharNumAtPosition(), getComputedTextLength(), getEndPositionOfChar(), getExtentOfChar(), getNumberOfChars(), getRotationOfChar(), getStartPositionOfChar(), getSubStringLength(), selectSubString()
 
-* SVGUse
+* `SVGUse`:
 instanceRoot
 
-* window
+* `window`:
 getComputedStyle(), scrollBy(), scrollTo(), scrollX, scrollY, webkitConvertPointFromNodeToPage(), webkitConvertPointFromPageToNode()
 
 
