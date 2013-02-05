@@ -43,8 +43,9 @@ tags : [DOM, layout, 性能]
 那上文中必须更新的必要条件是什么？ 在 [Rendering: repaint, reflow/relayout, restyle](http://www.phpied.com/rendering-repaint-reflowrelayout-restyle/) 一文中已做比较详细的解答，可移步了解~
 
 
-搜索Chrome浏览器实现中调用 [updateLayoutIgnorePendingStylesheets](http://code.google.com/p/chromium/source/search?q=-%3EupdateLayoutIgnorePendingStylesheets()) 方法的代码,
+搜索Chrome浏览器实现中调用 [updateLayoutIgnorePendingStylesheets](http://code.google.com/p/chromium/source/search?q=%22-%3EupdateLayoutIgnorePendingStylesheets%22) 方法的代码,
 得到以下可导致触发 layout 的操作：
+
 
 * Element
 clientHeight, clientLeft, clientTop, clientWidth, focus(), getBoundingClientRect(), getClientRects(), innerText, offsetHeight, offsetLeft, offsetParent, offsetTop, offsetWidth, outerText, scrollByLines(), scrollByPages(), scrollHeight, scrollIntoView(), scrollIntoViewIfNeeded(), scrollLeft, scrollTop, scrollWidth
