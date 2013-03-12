@@ -8,17 +8,17 @@ tagline: Thomas Carlyle
 
 
 <h2> Posts </h2>
-<ul id="posts">
+<ol id="posts">
   {% for post in site.posts %}
     <li><span><a href="{{ BASE_PATH }}{{ post.url }}">{{ post.title }}</a> {{ post.date | date_to_string }}</span> </li>
   {% endfor %}
-</ul>
+</ol>
 
 <h2> Projects </h2>
 
-<ul id="projects">
-
-</ul>
+<ol id="projects">
+    loading...
+</ol>
 
 <script id="projectsTmpl" type="text/x-jquery-tmpl">
   <li>

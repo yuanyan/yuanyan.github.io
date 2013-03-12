@@ -34,6 +34,7 @@ body > .navbar .brand:hover {
     text-shadow: 0 1px 0 rgba(255,255,255,.1), 0 0 30px rgba(255,255,255,.4);
 }
 
+
 section {
     padding-top: 60px;
 }
@@ -155,3 +156,14 @@ footer p {
     color: #111;
 }
 
+
+@media (max-width: 980px) {
+    /* Unfloat brand */
+    body > .navbar .brand {
+        float: left;
+        margin-left: 0;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+}
