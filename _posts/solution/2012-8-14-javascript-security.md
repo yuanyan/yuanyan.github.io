@@ -1,8 +1,8 @@
 ---
 layout: post
-category : javascript
-title:  Javascript 安全
-header: Javascript 安全
+category : solution
+title:  Javascript 安全方案
+header: Javascript 安全方案
 tagline:
 tags : [javascript, 安全]
 ---
