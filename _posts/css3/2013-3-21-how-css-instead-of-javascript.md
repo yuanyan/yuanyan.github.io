@@ -4,12 +4,12 @@ category : css3
 title:  重新审视那位优雅的CSS
 header: 重新审视那位优雅的CSS
 tagline:
-tags : [css3,javascript]
+tags : [css3, javascript]
 ---
 {% include JB/setup %}
 
 向来不喜铺垫，依旧先上菜后调侃。从一个盒中小鱼demo讲起：
-http://www.w3.org/Talks/2013/0128-CSS-Utrecht/demo-transforms/demo-translate3d-cube.html
+[http://www.w3.org/Talks/2013/0128-CSS-Utrecht/demo-transforms/demo-translate3d-cube.html]
 
 demo的精彩之处在于没有用一行Javascript代码便实现了所有小鱼在盒子中漫游的行为，因其只使用CSS引擎默认的选择器机制。
 
@@ -40,7 +40,7 @@ demo的精彩之处在于没有用一行Javascript代码便实现了所有小鱼
     <em id=moveme></em>
 
 
-代码中的关键是 :target 伪类选择器。 看 MDN 中是如何描述 ：target 的？ https://developer.mozilla.org/en-US/docs/CSS/:target
+代码中的关键是 :target 伪类选择器。 看 MDN 中是如何描述 ：target 的？ [https://developer.mozilla.org/en-US/docs/CSS/:target]
 
     The :target pseudo-class represents the unique element, if any, with an id matching the fragment identifier of the URI of the document..
 
@@ -49,7 +49,7 @@ demo的精彩之处在于没有用一行Javascript代码便实现了所有小鱼
     The anchor can be any element with an id attribute, e.g. <h1 id="section2"> in our example. The target element h1 can be represented by the :target pseudo-class.
 
 
-MDN 中也提供了关于 :target 伪类选择器的一种应用，只用CSS实现了lightbox的组件。
+MDN 中也提供了关于 :target 伪类选择器的一种应用[https://mdn.mozillademos.org/files/4607/lightbox.html]，只用CSS实现了lightbox的组件。
 
 前端童鞋应考虑如何尽量只用CSS来控制前端视图层的交互行为，JS在前端虽是无所不能的，但与CSS相比，无论是维护性与优雅度都无法企及CSS的实现方案。
 让各自的职责明确也是前端的架构的要点，CSS与JS各司其职，别老想用JS来解决一切问题。
