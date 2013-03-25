@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta charset="UTF-8">
+    <title>登录并授权</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, target-densitydpi=medium-dpi" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <script type="text/javascript">
+        var T=[];T.push(new Date()-0);
+    </script>
+    <link id="link" href="http://pub.idqqimg.com/qconn/widget/mobile/login/css/main320.css?v=2013031901" rel="stylesheet" type="text/css" media="all" />
+</head>
+<body>
+<header class="page_header">
+    <span class="logo"></span>
+    <h1 id="login_header">
+
+        授权并登录
+
+    </h1>
+    <p>
+        亿万用户已选择QQ帐号登录应用
+    </p>
+</header>
+
+<div class="content" style="display:none;width: 370px;" id="qlogin"></div>
+
+<div id="web_login">
+    <div class="page_content">
+        <div class="login_form_panel">
+
+            <div class="login_form_row">
+                <form  method="post" id="loginform">
+                    <div class="input_wrap">
+                        <div class="inner_wrap">
+                            <input type="text" class="input_id" id="u" name="u" tabindex="1" placeholder="QQ帐号/邮箱/手机号" autocapitalize='off'/>
+                            <button id="clear_u" class="clear hide"></button>
+                        </div>
+                        <div class="inner_wrap">
+                            <input type="password" class="input_pwd" id="p" name="p" maxlength="16" tabindex="2"  placeholder="QQ密码" autocapitalize='off'/>
+                            <button id="clear_p" class="clear hide"></button>
+                        </div>
+                    </div>
+                    <div id="verifyinput"  class="verify_code" style="display:none;">
+                        <span id="verifyshow" class="hide" style="display:none;"></span>
+                        <div class="input_wrap input_wrap_code">
+                            <input id="verifycode" type="text" name="verifycode" type="text" style="ime-mode:disabled" class="input_code"  value="!LKD" maxlength="5" tabindex="3" placeholder="验证码" autocapitalize='off'/>
+                        </div>
+                        <div class="verify_show">
+                            <img id="imgVerify" onload="imgLoadReport()" alt="验证码"/>
+                            <button id="verifytip" style="display:none;" tabindex="4">换一张</button>
+                        </div>
+                    </div>
+
+                    <!--业务ID-->
+                    <input type="hidden" name="aid" id="aid" value="15004501"/>
+                    <!--登录成功后台的跳转页面-->
+                    <input type="hidden" id="u1" name="u1" value="#"/>
+                    <!--登录失败提示方式-->
+                    <input type="hidden" id="fp" name="fp" value="loginerroralert"/>
+                    <!--ptredirect 0:需要密保的时候，后台返回此参数	1:top	2:parent 	3:self-->
+                    <input type="hidden" id="ptredirect" name="ptredirect" value="2"/>
+                    <!--加密方式，目前为1-->
+                    <input type="hidden" id="h" name="h" value="1"/>
+                    <!--只是一个统计，说明是从统一登录框提交的-->
+                    <input type="hidden" id="from_ui" name="from_ui" value="1"/>
+                    <!--快速登录按钮wording，业务完全可以使用自定义样式背景图片实现，现只提供给微博使用-->
+                    <input type="hidden" id="wording" name="wording" value="登录"/>
+                    <!--自定义快速登录样式，注意，需要放到指定的域名文件夹下-->
+                    <!-- <input type="hidden" id="css" value="http://imgcache.qq.com/ptcss/xxxxx.css"> -->
+                    <!--密保样式，值为在安全中心注册的名字-->
+                    <input type="hidden" name="mibao_css" value=""/>
+                    <div style="display:none">
+                        <input id="low_login_enable" checked value="1" type="checkbox" name="low_login_enable"/>
+                        <select disabled="disabled" name="low_login_hour">
+                            <option value="8640" id="label_1_year" selected>一年</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="cookie_login hide">
+                <div class="useravatar">
+
+                </div>
+                <div class="userinfo">
+                    <div class="usernick">0</div>
+                    <div class="userqq" >0</div>
+                </div>
+                <button id="userSwitch" class="switch" tabindex="5" href="javascript:void(0);"  style="display:none;"  ><span></span>切换帐户</button>
+            </div>
+
+            <div class="btn_group hidecancel">
+                <button id="btn_cancel" class="btn btn_white btn_cancel hide">
+                    取消
+                </button>
+                <button class="btn btn_lightblue btn_login" tabindex="6">
+
+                    授权并登录
+
+                </button>
+            </div>
+
+            <div class="authorized_form_list hidecontrol">
+                <p>蘑菇街将获得以下权限:</p>
+                <ul class="api_list">
+
+
+
+
+
+
+
+
+                    <li id="item_1010" value="1010" state=""class="selected" checked="checked"_dis="1">
+                        <span class="ico_authorize"></span>
+                        <span>访问你的详细资料</span>
+                    </li>
+
+
+
+
+
+
+
+                    <li id="item_2010" value="2010" state=""class="selected" checked="checked"_dis="0">
+                        <span class="ico_authorize"></span>
+                        <span>访问你的腾讯微博资料</span>
+                    </li>
+
+
+
+
+
+
+
+                    <li id="item_1020" value="1020" state=""class="selected" checked="checked"_dis="0">
+                        <span class="ico_authorize"></span>
+                        <span>发表分享到QQ空间</span>
+                    </li>
+
+
+
+
+
+
+
+                    <li id="item_2030" value="2030" state=""class="selected" checked="checked"_dis="0">
+                        <span class="ico_authorize"></span>
+                        <span>获得你的微博好友信息</span>
+                    </li>
+
+
+
+
+
+
+
+                    <li id="item_1022" value="1022" state=""class="selected" checked="checked"_dis="0">
+                        <span class="ico_authorize"></span>
+                        <span>同步动态至QQ空间</span>
+                    </li>
+
+
+
+
+
+
+
+                    <li id="item_1040" value="1040" state=""class="selected" checked="checked"_dis="0">
+                        <span class="ico_authorize"></span>
+                        <span>访问你的空间相册</span>
+                    </li>
+
+
+
+
+
+
+
+                    <li id="item_4010" value="4010" state=""class="selected" checked="checked"_dis="0">
+                        <span class="ico_authorize"></span>
+                        <span>同步动态至Q+</span>
+                    </li>
+
+                </ul>
+                <div class="control">
+                    <span class="show_all"></span>
+                    <span id="controlText">查看全部</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div style="display:none;" id="switch" class="lineright"></div>
+<footer class="page_footer">
+    Copyright&copy;2010 - 2013 Tencent. All Rights Reserved.
+</footer>
+<!-- <div id="mask" class="mask hide">
+</div> -->
+<div id="msgbox" class="msgbox alert hide">
+    <div id="errWin" class="text">您输入的帐号密码不正确，请重新输入。</div>
+    <!-- <button id="errConfirm" class="btn ok">确定</button> -->
+</div>
+<script type="text/javascript">
+    document.domain = /\.pengyou\.com$/.test(location.hostname) ? 'pengyou.com' : 'qq.com';
+    /**
+     * 是否需要快速登录，默认需要
+     * 0：不需要
+     * 1：需要
+     */
+    pt_need_qlogin = 0;
+    T.push(new Date()-0);
+</script>
+<!--<script type="text/javascript" src="http://imgcache.qq.com/ptlogin/ac/v9/js/login_div_phone.js?v=2013031101"></script>-->
+<script type="text/javascript" src="http://pub.idqqimg.com/qconn/widget/mobile/login/js/sdk_login.js?v=2013031901"></script>
+<script type="text/javascript">
+    var __skey = 0;
+    window.login && login.init();
+</script>
+</body>
+</html>
