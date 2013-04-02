@@ -165,7 +165,8 @@
         var h = 16-options.height;
 
         // webkit seems to render fonts lighter than firefox
-        context.font = (browser.webkit ? 'bold ' : '') + options.font;
+        //context.font = 'bold ' : '') + options.font;
+        context.font = options.font;
         context.fillStyle = options.background;
         context.strokeStyle = options.background;
         context.lineWidth = 1;
