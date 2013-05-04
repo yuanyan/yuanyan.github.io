@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Markdown Editor - 元彥の程序世界</title>
+    <title>Markdown Editor</title>
+	<meta charset="utf-8">
     <style>
       html,body{margin:0;padding:0;font-family:helvetica,arial,sans-serif;line-height:1.4em; }
       #md,#footer,#header { width: 900px; margin:10px auto;  }
@@ -31,7 +32,7 @@
       var md = new EpicEditor(document.getElementById('md'));
       md.options({
         file:{
-          defaultContent:"#元彥の程序世界\n"
+          defaultContent:"#Title\n"
         },
 		focusOnLoad:true,
 		themes:{
