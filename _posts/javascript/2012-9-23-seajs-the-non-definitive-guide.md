@@ -19,28 +19,28 @@ seajs 是从最近半年才开始实践，与 requirejs 相较是更值得去推
 掀起seajs的盖头来:
 
 
-	<script src="path/to/sea.js"></script>
-	<script>
-	seajs.use("main");
-	</script>
+    <script src="path/to/sea.js"></script>
+    <script>
+    seajs.use("main");
+    </script>
 
 另一种方式：
 
-	<script data-main="main" src="path/to/sea.js"></script>
+    <script data-main="main" src="path/to/sea.js"></script>
 
 seajs初始化时会自动去遍历查找seajs的script的data-main属性， data-main="main" 完全等同于 seajs.use("main");
 
 
 ## 配置
 
-	seajs.config({
-		base: ""
-		,alias: {}
-		,map: {}
-		,preload: []
-		,debug: true
-		,charset: 'utf-8'
-	});
+    seajs.config({
+        base: ""
+        ,alias: {}
+        ,map: {}
+        ,preload: []
+        ,debug: true
+        ,charset: 'utf-8'
+    });
 
 
 base 默认值为 path/to/sea.js 的中 path/to 路径
@@ -61,19 +61,19 @@ base 默认值为 path/to/sea.js 的中 path/to 路径
 
 避免缓存的方案是在请求上加上时间戳，现在我们让所有的请求都加上时间戳：
 
-	seajs.config({
-		map: [
-			[/^.*$/, function(url) {
-				return url += (url.indexOf('?') === -1 ? '?' : '&') + 'ts=' + new Date；
-			}]
-		]
-	})
+    seajs.config({
+        map: [
+            [/^.*$/, function(url) {
+                return url += (url.indexOf('?') === -1 ? '?' : '&') + 'ts=' + new Date；
+            }]
+        ]
+    })
 
 seajs 提供一种快速配置的方式来避免缓存，原理与上面完全一致：
 
-	seajs.config({
-		debug : 2;
-	});
+    seajs.config({
+        debug : 2;
+    });
 
 
 ## 预加载
@@ -81,14 +81,14 @@ seajs 提供一种快速配置的方式来避免缓存，原理与上面完全�
 为了让IE6/7/8 支持 ES5 的一些API，我们会引入es5-shim来修补，而在这些古老的浏览器使用ES5 API必然需要预先加载好才可以继续执行。
 通过preload 配置中的空字符串会被忽略掉这一约定，我们不仅可以预加载，还可以按特征检测来智能加载的，让高级浏览量无需额外的请求es-shim：
 
-	seajs.config({
-		alias:{
-			'es5-shim': '//cdnjs.cloudflare.com/ajax/libs/es5-shim/1.2.4/es5-shim.min'
-		}
-		,preload:[Array.isArray ? '' : 'es5-shim']
-	})
+    seajs.config({
+        alias:{
+            'es5-shim': '//cdnjs.cloudflare.com/ajax/libs/es5-shim/1.2.4/es5-shim.min'
+        }
+        ,preload:[Array.isArray ? '' : 'es5-shim']
+    })
 
-	seajs.use('main');
+    seajs.use('main');
 
 
 seajs 中并不是读取到有preload配置就立即加载的，只能是通过 seajs.use 这个入口来触发执行预加载, 如上示例 seajs 会在执行 main 模块前确保
@@ -104,18 +104,18 @@ seajs 中并不是读取到有preload配置就立即加载的，只能是通过 
 
 seajs 虽然没有原生支持对非CMD规范文件的支持，但通过seajs.modify 与 preload 组合可以让非CMD的文件也可以被正确的 require 到：
 
-	seajs.config({
-		alias:{
-			'jquery': '//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min'
-		}
-		,preload:["jquery"]
-	})
+    seajs.config({
+        alias:{
+            'jquery': '//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min'
+        }
+        ,preload:["jquery"]
+    })
 
-	seajs.modify('jquery', function (require, exports, module) {
-		 module.exports = jQuery;
-	});
+    seajs.modify('jquery', function (require, exports, module) {
+         module.exports = jQuery;
+    });
 
-	seajs.use('main');
+    seajs.use('main');
 
 
 目前在seajs中如需使用 非CMD文件 preload 配置是必不可少。
@@ -123,14 +123,14 @@ seajs 虽然没有原生支持对非CMD规范文件的支持，但通过seajs.mo
 ## 开发ing
 
 
-	// main.js
-	define(function(require){
-		var $ = require('jquery');
-		var _ = require('undersoce');
-		var qplus = require('qplus');
+    // main.js
+    define(function(require){
+        var $ = require('jquery');
+        var _ = require('undersoce');
+        var qplus = require('qplus');
 
 
-	});
+    });
 
 
 ## 开发很顺心，发布很揪心
