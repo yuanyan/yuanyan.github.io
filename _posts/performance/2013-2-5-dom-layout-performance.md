@@ -47,7 +47,7 @@ tags : [DOM, layout, 性能]
 与 [Document::updateLayoutIgnorePendingStylesheets](https://code.google.com/p/chromium/codesearch#chromium/src/third_party/WebKit/Source/core/dom/Document.cpp&q=updateLayout%20package:%5Echromium$%20file:%5Esrc/third_party/WebKit/Source/core/&dr=CSs&l=1750)
 两个方法：
 
-···
+```cpp
 void Document::updateLayout()
 {
     ASSERT(isMainThread());
@@ -95,7 +95,7 @@ void Document::updateLayoutIgnorePendingStylesheets()
     m_ignorePendingStylesheets = oldIgnore;
 }
 
-···
+```
 
 从 updateLayoutIgnorePendingStylesheets 方法的内部实现可知，其也是对 updateLayout 方法的扩展，并且在现有的 layout 更新模式中，大部分场景都是调用 updateLayoutIgnorePendingStylesheets 来进行layout的更新。
 
