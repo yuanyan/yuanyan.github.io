@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Fluid Images Demo</title>
+    <style>
+        li {
+            list-style: none;
+            margin: 5px;
+            border: #000 solid 5px;
+
+            width: 250px;
+            height: 250px;
+            overflow: hidden;
+
+            -webkit-filter: grayscale(1);
+        }
+        li img{
+            height: auto;
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+<h1>图片自适应高宽方案</h1>
+
+<h3>方案 1</h3>
+<p>高宽设置为100%，图片将按父级元素长宽拉伸或缩小，图片失真</p>
+<pre>
+li {
+    width: 250px;
+    height: 250px;
+}
+img {
+    height: 100%;
+    width: 100%;
+}
+</pre>
+
+<h3>方案 2</h3>
+<p>高宽设置为指定max值，图片将按原始等比缩小，图片不失真</p>
+<pre>
+li {
+    width: 250px;
+    height: 250px;
+}
+img {
+    max-width: 250px;
+    max-height: 250px;
+}
+</pre>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/max-width">IE7+ 支持 max-width/max-height, IE6- 不支持</a></p>
+<p>IE6 下可以使用 css expression 或 js 方式, 避免复杂化，推荐css expression，可忽略性能问题</p>
+<pre>
+  &lt!--[if lte IE 6]&gt&ltstyle&gt
+    li img{
+        width: expression(this.width > 250 ? 250+"px" : "auto" );
+    }
+&lt/style&gt&lt![endif]--&gt
+</pre>
+
+<h3>方案 3</h3>
+<p>父级设置overflow：hidden，img高宽设置为auto，图片按源像素大小显示，图片不失真，超出指定区域则不显示</p>
+<pre>
+li {
+    width: 250px;
+    height: 250px;
+    overflow: hidden;
+}
+img {
+    height: auto;
+    width: auto;
+}
+</pre>
+
+
+<ul>
+    <li><img src="http://placekitten.com/50/50"/></li>
+    <li><img src="http://placekitten.com/200/150"/></li>
+    <li><img src="http://placekitten.com/300/100"/></li>
+    <li><img src="http://placekitten.com/500/600"/></li>
+    <li><img src="http://placekitten.com/100/300"/></li>
+</ul>
+</body>
+</html>
