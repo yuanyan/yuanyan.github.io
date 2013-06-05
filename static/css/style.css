@@ -2,7 +2,7 @@ html,body{
     font-family: "Helvetica Neue", Helvetica, Arial, "微软雅黑", sans-serif;
     font-size: 14px;
     line-height: 150%;
-	color: black;
+    color: black;
 }
 
 
@@ -53,7 +53,7 @@ section {
     background-repeat: repeat-x;
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#99000000', endColorstr = '#99000000');
     border-radius: 0;
-	border: 0;
+    border: 0;
     -webkit-border-radius: 0;
     -moz-border-radius: 0;
     -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
@@ -62,18 +62,18 @@ section {
 }
 
 .navbar .nav > .active > a, .navbar .nav > .active > a:hover, .navbar .nav > .active > a:focus {
-   color: white;
-   color: rgba(255, 255, 255, 0.8);
-   background-color: transparent;
+    color: white;
+    color: rgba(255, 255, 255, 0.8);
+    background-color: transparent;
 }
 
 .navbar .nav > li > a:focus, .navbar .nav > li > a:hover {
-	color: white;
-   color: rgba(255, 255, 255, 0.8);
+    color: white;
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .navbar .nav > li > a {
-	text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6);
 }
 
 .container > footer {
@@ -87,7 +87,7 @@ section {
 /* The white background content wrapper */
 .content {
     background-color: #fff;
-    background-color: rgba(255,255,255,0.67);
+    background-color: rgba(255,255,255,0.9);
     padding: 20px;
     margin: 40px -20px 0 -20px; /* negative indent the amount of the padding to maintain the grid system */
     -webkit-border-radius: 0 0 6px 6px;
@@ -108,7 +108,7 @@ section {
 
 /* Page header tweaks */
 .page-header {
-	border-bottom: 1px solid rgba(238, 238, 238, 0.6)
+    border-bottom: 1px solid rgba(238, 238, 238, 0.6)
 }
 
 .topbar .btn {
@@ -164,6 +164,12 @@ footer p {
         margin-left: 0;
         padding-left: 10px;
         padding-right: 10px;
+    }
+
+    .content {
+        -webkit-border-radius: 0 0 0 0;
+        -moz-border-radius: 0 0 0 0;
+        border-radius: 0 0 0 0;
     }
 
 }
