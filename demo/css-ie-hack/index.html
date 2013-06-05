@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=utf-8>
+    <title>CSS IE Hack</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #fff;
+            font: 13px/20px "Helvetica Neue", Helvetica, Arial, sans-serif;
+            color: #333;
+        }
+
+        body style {
+            display: block;
+            float: left;
+            background: #333;
+            color: white;
+            white-space: pre;
+            padding: 20px;
+            width: 50%;
+            font: 12px monaco, monospace;
+            margin: 0 50px 0 0;
+        }
+
+        p { margin: 0 50px 50px 0; text-indent: 50px; }
+        h1 { margin: 0 0 30px 0; font-size: 40px; line-height: 1; }
+
+    </style>
+</head>
+
+<body>
+
+<style scoped contenteditable>/* For the "inset" look only */
+body {
+    background-color:white;      /*w3c*/
+    background-color:red\9;      /*all ie*/
+    background-color:yellow\0;    /*ie8*/
+    +background-color:pink;        /*ie7*/
+    _background-color:orange;       /*ie6*/
+}
+:root body { background-color:purple\9; }  /*ie9*/
+</style>
+
+
+<pre>
+
+1. 什么是“QQ登录OAuth2.0”
+OAuth： OAuth（开放授权）是一个开放标准，允许用户授权第三方网站访问他们存储在另外的服务提供者上的信息，而不需要将用户名和密码提供给第三方网站或分享他们数据的所有内容。
+
+QQ登录OAuth2.0：对于用户相关的OpenAPI（例如获取用户信息，动态同步，照片，日志，分享等），为了保护用户数据的安全和隐私，第三方网站访问用户数据前都需要显式的向用户征求授权。
+QQ登录OAuth2.0采用OAuth2.0标准协议来进行用户身份验证和获取用户授权，相对于之前的OAuth1.0协议，其认证流程更简单和安全。
+因此，请使用OAuth 1.0协议的网站升级为OAuth 2.0协议，升级方法详见OAuth1.0升级到OAuth2.0指引。
+
+Tips：
+如果您想对OAuth2.0开放标准进行扩展阅读，请参看：OAuth标准（英文） | OAuth维基百科（中文）
+2. QQ登录OAuth2.0接入方式
+QQ登录OAuth2.0支持网站接入和移动应用接入。
+
+网站可通过以下两种方式接入：
+（1）使用QQ互联提供的SDK包，用户体验统一，只需要修改少量代码，不需要理解验证授权流程，需要快速接入QQ登录的网站和移动应用可选用此方法。
+QQ互联提供JavaScript，PHP，Java等多个版本的SDK，详见：SDK下载
+QQ登录JS SDK详见：JS SDK使用说明
+（2）根据QQ登录OAuth2.0协议，自主开发，此方法自定义程度较高，需要与现有系统进行整合的网站和移动应用可选用此方法。
+详见：OAuth2.0开发文档
+
+移动应用开发可通过以下两种方式接入：
+（1）使用QQ互联提供的iOS,Android等平台的SDK包，用户体验统一，只需要修改少量代码，不需要理解验证授权流程，需要快速接入QQ登录的应用可选用此方法。
+iOS与Android版本的SDK均支持web view与浏览器两种方式，即支持跳转到手机浏览器上进行QQ登录与验证流程，开发者可在SDK包中选择浏览器模式即可，但浏览器方式用户跳跃较大，不建议使用。
+详见：SDK下载
+（2）根据QQ登录OAuth2.0协议，自主开发，此方法自定义程度较高，需要与现有系统进行整合的移动应用可选用此方法。
+建议移动应用使用webview的方式打开登录页面，登录成功后，获取accesstoken与openid，webview控件关闭，用户体验较好。
+详见：OAuth2.0开发文档
+对于Android2.1以下版本，访问https时会遇到签名证书验证的问题，解决方案可参考这里。
+3. QQ登录OAuth2.0总体处理流程
+QQ登录OAuth2.0总体处理流程如下：
+Step1：申请接入，获取appid和apikey；
+Step2：开发应用，并设置协作者帐号进行测试联调；
+Step3：放置QQ登录按钮；
+Step4：通过用户登录验证和授权，获取Access Token；
+Step5：通过Access Token获取用户的OpenID；
+Step6：调用OpenAPI，来请求访问或修改用户授权的资源。
+4. QQ登录OAuth2.0开发说明
+开发者需要根据腾讯提供的UI规范，请求说明，接口说明进行UI和代码的开发。
+详细信息请参见OAuth2.0开发文档。
+</pre>
+
+
+</body>
+
+</html>
