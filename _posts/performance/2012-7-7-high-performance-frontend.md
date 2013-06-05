@@ -17,7 +17,7 @@ tags : [performance, 前端, 性能]
 <pre> &lt;iframe id=iframe1 &gt;&lt;/iframe&gt;
  document.getElementById(‘iframe1’).setAttribute(‘src’， ‘url’);</pre>
 <p>但其仅在高级浏览器 中有效，对于Internet Explorer 8及以下的浏览器无效。除此之外我们必须知道iframe是文档内最消耗资源的元素之一，在<a onclick="javascript:pageTracker._trackPageview('/outgoing/stevesouders.com/efws/costofelements.php');" href="http://stevesouders.com/efws/costofelements.php">Steve Souders 的测试中 </a>，在测试页面中分别加载100个A、DIV、SCRIPT、STYLE和 IFRAME元素，并且分别在Chrome、Firefox、Internet Explorer、Opera、Safari中运行了10次。结果显示创建iframe元素的开销比创建其他类型的DOM元素要高1~2个数量级。在测试中所有的DOM元素都是空的，如加载大的脚本或样式块可能比加载某些iframe元素耗时更长，但从基准测试结果来看，即使是空的iframe，其开销也是非常昂贵的，鉴于iframe的高开销，我们应尽量避免使用。尤其是对于移动设备，对于目前大部分还是只有有限的CPU与内存的情况下，更应避免使用iframe。</p>
-<h1>避免空链接属性</h1>
+<h2>避免空链接属性</h2>
 <p>空的链接属性是指img、link、script、ifrrame元素的src或href属性被设置了，但是属性却为空。如&lt;img src=””&gt;，我们创建了一个图片，并且暂时设置图片的地址为空，希望在未来动态的去修改它。但是即使图片的地址为空，浏览器依旧会以默认的规则去请求空地址：</p>
 <ol>
 <li>Internet Explorer 8及以下版本浏览器只在img类型元素上出现问题，IE会把img的空地址解析为当前页面地址的目录地址。例如：如果当前页面地址为<a onclick="javascript:pageTracker._trackPageview('/outgoing/example.com/dir/page.html');" href="http://example.com/dir/page.html">http://example.com/dir/page.html</a>，IE会把空地址解析为<a onclick="javascript:pageTracker._trackPageview('/outgoing/example.com/dir/');" href="http://example.com/dir/">http://example.com/dir/</a>地址并请求。</li>
@@ -57,13 +57,18 @@ tags : [performance, 前端, 性能]
 
 <h2 align="left">避免使用@import</h2>
 <p align="left">有两种方式加载样式文件，一种是link元素，另一种是CSS 2.1加入@import。而在外部的CSS文件中使用@import会使得页面在加载时增加额外的延迟。虽然规则允许在样式中调用@import来导入其它的CSS，但浏览器不能并行下载样式，就会导致页面增添了额外的往返耗时。比如，第一个CSS文件first.css包含了以下内容：@import url(“second.css”)。那么浏览器就必须先把first.css下载、解析和执行后，才发现及处理第二个文件second.css。简单的解决方法是使用&lt;link&gt;标记来替代@import，比如下面的写法就能够并行下载CSS文件，从而加快页面加载速度：<span id="more-1629"></span></p>
-<div><div id="highlighter_868773" class="syntaxhighlighter  html"><table border="0" cellpadding="0" cellspacing="0"><caption>双击选中源代码</caption><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="html plain">&lt;</code><code class="html keyword">link</code> <code class="html color1">rel</code><code class="html plain">=</code><code class="html string">"stylesheet"</code> <code class="html color1">href</code><code class="html plain">=</code><code class="html string">""</code><code class="html plain">first.css"" /&gt;</code></div><div class="line number2 index1 alt1"><code class="html plain">&lt;</code><code class="html keyword">link</code> <code class="html color1">rel</code><code class="html plain">=</code><code class="html string">"stylesheet"</code> <code class="html color1">href</code><code class="html plain">=</code><code class="html string">"second.css"</code> <code class="html plain">/&gt;</code></div></div></td></tr></tbody></table></div></div>
+
+    <link rel="stylesheet" href=""first.css"" />
+    <link rel="stylesheet" href="second.css" />
+
 <p align="left">需要注意的是一个页面中的CSS文件不宜过多，否则应该简化及合并外部的CSS文件以节省往返请求时间(RTT)提升页面加载速度。</p>
 <h2 align="left">避免AlphaImageLoader滤镜</h2>
 <p align="left">IE独有属性AlphaImageLoader用于修正7.0以下版本中显示PNG图片的半透明效果。这个滤镜的问题在于浏览器加载图片时它会终止内容的呈现并且冻结浏览器。在每一个元素（不仅仅是图片）它都会运算一次，增加了内存开支，因此它的问题是多方面的。完全避免使用AlphaImageLoader的最好方法就是使用PNG8格式来代替，这种格式能在IE中很好地工作。如果你确实需要使用AlphaImageLoader，请使用下划线_filter又使之对IE7以上版本的用户无效。</p>
 <h2 align="left">避免CSS表达式</h2>
 <p align="left">CSS表达式是动态设置CSS属性的强大（但危险）方法。Internet Explorer从第5个版本开始支持CSS表达式。下面的例子中，使用CSS表达式可以实现隔一个小时切换一次背景颜色：</p>
-<div><div id="highlighter_360013" class="syntaxhighlighter  css"><table border="0" cellpadding="0" cellspacing="0"><caption>双击选中源代码</caption><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="css keyword">background-color</code><code class="css plain">: expression((new Date()).getHours()%</code><code class="css value">2</code><code class="css plain">?</code><code class="css string">"#FFFFFF"</code><code class="css plain">: </code><code class="css string">"#000000"</code> <code class="css plain">);</code></div></div></td></tr></tbody></table></div></div>
+
+    background-color: expression((new Date()).getHours()%2?"#FFFFFF": "#000000" );
+
 <p align="left">如上所示，expression中使用了JavaScript表达式。CSS属性根据JavaScript表达式的计算结果来设置。expression方法在其它浏览器中不起作用，因此在跨浏览器的设计中单独针对Internet Explorer设置时会比较有用。</p>
 <p align="left">表达式的问题就在于它的计算频率要比我们想象的多。不仅仅是在页面显示和缩放时，就是在页面滚动、乃至移动鼠标时都会要重新计算一次。给CSS表达式增加一个计数器可以跟踪表达式的计算频率。在页面中随便移动鼠标都可以轻松达到10000次以上的计算量。一个减少CSS表达式计算次数的方法就是使用一次性的表达式，它在第一次运行时将结果赋给指定的样式属性，并用这个属性来代替CSS表达式。如果样式属性必须在页面周期内动态地改变，使用事件句柄来代替CSS表达式是一个可行办法。如果必须使用CSS表达式，一定要记住它们要计算成千上万次并且可能会对你页面的性能产生影响。</p>
 <h2 align="left">避免通配选择器</h2>
@@ -72,16 +77,24 @@ tags : [performance, 前端, 性能]
 <p align="left">我们中的大多数人都是从左到右的阅读习惯，可能也会习惯性的设定浏览器也是从左到右的方式进行匹配规则，因为会推测这条规则的开销并不高。我们这样假象浏览器会像这样的方式工作：找到唯一的id为header为的元素，然后把这个样式规则应用到直系子元素中的a元素上。我们知道文档中只有一个id为header的元素，并且它只有几个a类型的子节点，所以这个CSS选择器应该相当高效。</p>
 <p align="left">事实上，却恰好相反，CSS选择器是从右到左进行规则匹配。了解这个机制后，例子中看似高效的选择器在实际中的匹配开销是很高的，浏览器必须遍历页面中所有的a元素并且确定其父元素的id是否为header。</p>
 <p align="left">如果把例子的子选择器改为后代选择器则会开销更多，在遍历页面中所有a元素后还需向其上级遍历直到根节点。</p>
-<div><div id="highlighter_911939" class="syntaxhighlighter  css"><table border="0" cellpadding="0" cellspacing="0"><caption>双击选中源代码</caption><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="css plain">#header&nbsp; a {</code><code class="css keyword">font-weight</code><code class="css plain">:blod;}</code></div></div></td></tr></tbody></table></div></div>
+
+    #header > a {font-weight:blod;}
+
 <p align="left">理解了CSS选择器从右到左匹配的机制后，可以理解选择器中最右边的规则往往决定了浏览器继续左移匹配的工作量，我们把最右边选择规则称之为关键选择器。</p>
 <p align="left">通配选择器使用 * 符合表示，可匹配文档中的每一个元素。如下例规则将所有元素的字体大小设置为20px：</p>
-<div><div id="highlighter_69693" class="syntaxhighlighter  css"><table border="0" cellpadding="0" cellspacing="0"><caption>双击选中源代码</caption><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="css spaces">&nbsp;</code><code class="css plain">* { </code><code class="css keyword">font-size</code><code class="css plain">:</code><code class="css value">20px</code><code class="css plain">;}</code></div></div></td></tr></tbody></table></div></div>
+
+    * { font-size:20px;}
+
 <p align="left">通配选择器作用于所有的元素，如规则最右边为通配符：</p>
-<div><div id="highlighter_224578" class="syntaxhighlighter  css"><table border="0" cellpadding="0" cellspacing="0"><caption>双击选中源代码</caption><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="css plain">.selected * {</code><code class="css keyword">color</code><code class="css plain">: </code><code class="css value">red</code><code class="css plain">;}</code></div></div></td></tr></tbody></table></div></div>
+
+    .selected * {color: red;}
+
 <p align="left">浏览器匹配文档中所有的元素后分别向上逐级匹配class为selected的元素，直到文档的根节点，因此其匹配开销是非常大的，通常比开销最小的ID选择器高出1~3个数量级，所以应避免使用关键选择器是通配选择器的规则。</p>
 <h2 align="left">避免单规则的属性选择器</h2>
 <p align="left">属性选择器根据元素的属性是否存在或其属性值进行匹配，如下例规则会把herf属性值等于”#index”的链接元素设置为红色：</p>
-<div><div id="highlighter_539798" class="syntaxhighlighter  css"><table border="0" cellpadding="0" cellspacing="0"><caption>双击选中源代码</caption><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="css plain">.selected [href=”#index”] {</code><code class="css keyword">color</code><code class="css plain">: </code><code class="css value">red</code><code class="css plain">;}</code></div></div></td></tr></tbody></table></div></div>
+
+    .selected [href=”#index”] {color: red;}
+
 <p align="left">但其匹配开销是非常大的，浏览器先匹配所有的元素，检查其是否有href属性并且herf属性值等于”#index”， 然后分别向上逐级匹配class为selected的元素，直到文档的根节点。所以应避免使用关键选择器是单规则属性选择器的规则。</p>
 <h2 align="left">避免类正则的属性选择器</h2>
 <p align="left">CSS3添加了复杂的属性选择器，可以通过类正则表达式的方式对元素的属性值进行匹配。当然这些类型的选择器定是会影响性能的，正则表达式匹配会比基于类别的匹配会慢很多。大部分情况下我们应尽量避免使用 *=， |=， ^=， $=， 和 ~=语法的属性选择器。</p>
