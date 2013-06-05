@@ -1,10 +1,10 @@
 ---
 layout: post
 category : performance
-title:  高性能前端
-header: 高性能前端
+title:  高性能Web前端
+header: 高性能Web前端
 tagline:
-tags : [performance, 前端, 性能]
+tags : [performance, Web前端, 性能]
 ---
 {% include JB/setup %}
 
@@ -128,3 +128,5 @@ jQuery('#top').find('p.classB');</pre>
 </ol>
 <h4 align="left">使用微类库</h4>
 <p align="left">通常开发者都会使用JavaScript类库，如jQuery、Mootools、YUI、Dojo等，但是开发者往往只是使用JavaScript类库中的部分功能。为了更大的提升性能，应尽量避免使用这类大而全的类库，而是按需使用微类库来辅助开发。</p>
+
+
