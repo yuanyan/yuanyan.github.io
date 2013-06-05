@@ -9,7 +9,7 @@ tags : [svg, canvas]
 {% include JB/setup %}
 
 canvas是h5体系集中的一种基于像素操作的图形技术，svg同样也是h5中一部分，只是svg基于矢量形状，两者有各种的优势。
-以下数据来自微软童鞋的测试，传送门： [http://msdn.microsoft.com/zh-cn/library/ie/gg193983(v=vs.85).aspx](http://msdn.microsoft.com/zh-cn/library/ie/gg193983(v=vs.85).aspx)：
+以下数据来自微软童鞋的测试，传送门： http://msdn.microsoft.com/zh-cn/library/ie/gg193983(v=vs.85).aspx：
 
 
     图面较小时、对象数量较大 (>10k)（或同时满足这二者）时 canvas 性能更佳;
