@@ -73,12 +73,14 @@ tags : [performance, 前端, 性能]
 <p align="left">表达式的问题就在于它的计算频率要比我们想象的多。不仅仅是在页面显示和缩放时，就是在页面滚动、乃至移动鼠标时都会要重新计算一次。给CSS表达式增加一个计数器可以跟踪表达式的计算频率。在页面中随便移动鼠标都可以轻松达到10000次以上的计算量。一个减少CSS表达式计算次数的方法就是使用一次性的表达式，它在第一次运行时将结果赋给指定的样式属性，并用这个属性来代替CSS表达式。如果样式属性必须在页面周期内动态地改变，使用事件句柄来代替CSS表达式是一个可行办法。如果必须使用CSS表达式，一定要记住它们要计算成千上万次并且可能会对你页面的性能产生影响。</p>
 <h2 align="left">避免通配选择器</h2>
 <p align="left">CSS选择器对性能的影响源于浏览器匹配选择器和文档元素时所消耗的时间，所以优化选择器的原则是应尽量避免需要消耗更多匹配时间的选择器。而在这之前我们需要了解CSS选择器匹配的机制，如例子的子选择器规则：</p>
-<div><div id="highlighter_934875" class="syntaxhighlighter  css"><table border="0" cellpadding="0" cellspacing="0"><caption>双击选中源代码</caption><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="css plain">#header &gt; a {</code><code class="css keyword">font-weight</code><code class="css plain">:blod;}</code></div></div></td></tr></tbody></table></div></div>
+
+    #header > a {font-weight:blod;}
+
 <p align="left">我们中的大多数人都是从左到右的阅读习惯，可能也会习惯性的设定浏览器也是从左到右的方式进行匹配规则，因为会推测这条规则的开销并不高。我们这样假象浏览器会像这样的方式工作：找到唯一的id为header为的元素，然后把这个样式规则应用到直系子元素中的a元素上。我们知道文档中只有一个id为header的元素，并且它只有几个a类型的子节点，所以这个CSS选择器应该相当高效。</p>
 <p align="left">事实上，却恰好相反，CSS选择器是从右到左进行规则匹配。了解这个机制后，例子中看似高效的选择器在实际中的匹配开销是很高的，浏览器必须遍历页面中所有的a元素并且确定其父元素的id是否为header。</p>
 <p align="left">如果把例子的子选择器改为后代选择器则会开销更多，在遍历页面中所有a元素后还需向其上级遍历直到根节点。</p>
 
-    #header > a {font-weight:blod;}
+    #header a {font-weight:blod;}
 
 <p align="left">理解了CSS选择器从右到左匹配的机制后，可以理解选择器中最右边的规则往往决定了浏览器继续左移匹配的工作量，我们把最右边选择规则称之为关键选择器。</p>
 <p align="left">通配选择器使用 * 符合表示，可匹配文档中的每一个元素。如下例规则将所有元素的字体大小设置为20px：</p>
