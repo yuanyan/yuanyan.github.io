@@ -8,7 +8,7 @@ tags : [qqfind, performance, 性能, 优化]]
 ---
 {% include JB/setup %}
 
-> 暂不公布案例，请期待
+    暂不公布案例，请期待
 
 以上案例皆为外相，正本清源，关注Web加载过程中4个关键时间点：
 1. Time to First Byte              服务端返回时间
