@@ -11,12 +11,14 @@ tags : [qqfind, performance, 性能, 优化]]
     暂不公布案例，请期待
 
 以上案例皆为外相，正本清源，关注Web加载过程中4个关键时间点：
+
 1. Time to First Byte              服务端返回时间
 2. Time to Start Render         白屏结束时间
 3. Time to Interactive            用户可交互时间
 4. Time to Document Ready  文档加载完成时间
 
 而优化过程大多围绕关键点展开，方式大致可归为以下4类：
+
 1. 减少请求 -    合并文件、更多的使用CSS代替图片、内嵌小型文件
 2. 加快响应   -  DNS预解析、接入机多地部署、SPDY/HTTP2.0、资源CDN部署、压缩HTML、压缩CSS、压缩JS、压缩图片
 3. 并行加载请求 -  拆分大型文件
