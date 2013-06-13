@@ -4,7 +4,7 @@ category : performance
 title:  QQ查找项目前端优化小记
 header: QQ查找项目前端优化小记
 tagline:
-tags : [qqfind, performance, 性能, 优化]]
+tags : [qqfind, performance, 性能, 优化]
 ---
 {% include JB/setup %}
 

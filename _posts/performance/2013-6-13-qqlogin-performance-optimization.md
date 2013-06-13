@@ -8,6 +8,7 @@ tags : [qqlogin, performance, 性能, 优化]
 ---
 {% include JB/setup %}
 
+## 小记各点，此文不展开
 
 * 移除QFZL, 告别历史遗留因素的束缚
 * 关键业务代码内嵌
