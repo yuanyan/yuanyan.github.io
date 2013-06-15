@@ -5,7 +5,6 @@ html,body{
     color: black;
 }
 
-
 body {
     position: relative;
     background-color: #A0302C;
@@ -108,7 +107,8 @@ section {
 
 /* Page header tweaks */
 .page-header {
-    border-bottom: 1px solid rgba(238, 238, 238, 0.6)
+    border-bottom: 1px solid rgba(238, 238, 238, 0.6);
+	margin: 0;
 }
 
 .topbar .btn {
