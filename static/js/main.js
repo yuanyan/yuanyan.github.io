@@ -263,26 +263,26 @@
 
 
 $(document).ready(function(){
-    if( !( $("#projects")[0] && $("#projectsTmpl")[0] ) ) return null;
-
-    var reqPromise= $.ajax({
-        dataType: "jsonp",
-        url: "https://api.github.com/users/yuanyan/repos",
-        jsonp: "callback"
-    });
-
-    reqPromise.done(function(data){
-        var projects = data.data;
-
-        projects.sort(function(a, b) {
-            return new Date(b.watchers) - new Date(a.watchers);
-        });
-
-        projects = projects.slice(0,10);
-
-        $("#projectsTmpl").template( "projectsTmpl" );
-        $.tmpl("projectsTmpl", projects).appendTo("#projects");
-    });
+//    if( !( $("#projects")[0] && $("#projectsTmpl")[0] ) ) return null;
+//
+//    var reqPromise= $.ajax({
+//        dataType: "jsonp",
+//        url: "https://api.github.com/users/yuanyan/repos",
+//        jsonp: "callback"
+//    });
+//
+//    reqPromise.done(function(data){
+//        var projects = data.data;
+//
+//        projects.sort(function(a, b) {
+//            return new Date(b.watchers) - new Date(a.watchers);
+//        });
+//
+//        projects = projects.slice(0,10);
+//
+//        $("#projectsTmpl").template( "projectsTmpl" );
+//        $.tmpl("projectsTmpl", projects).appendTo("#projects");
+//    });
 
 
     Tinycon.setBubble((new Date).getDay());
