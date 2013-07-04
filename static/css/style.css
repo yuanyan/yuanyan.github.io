@@ -8,6 +8,7 @@ html,body{
 body {
     position: relative;
     background-color: #A0302C;
+    overflow-x: hidden;
     /*background: #F6F6F1 url("http://madscript.com/static/images/bg.png") center 40px repeat;*/
 }
 
@@ -187,4 +188,40 @@ footer p {
     -moz-transition: -moz-transform ease-out 0.1s,opacity 0.2s, box-shadow 0.5s ease-out 75ms;
     transition: transform ease-out 0.1s, opacity 0.2s, box-shadow 0.5s ease-out 75ms;
 
+}
+
+.navbar .brand {
+    animation: flipper 8s ease-in 16s infinite;
+    -moz-animation: flipper 8s ease-in 16s infinite;
+    -webkit-animation: flipper 8s ease-in 16s infinite;
+
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    -moz-transform-style: preserve-3d;
+    display: inline-block;
+}
+
+@-webkit-keyframes flipper {
+    0% {
+        -webkit-transform: perspective(300px) rotateY(0deg);
+    }
+    15%, 100% {
+        -webkit-transform: perspective(300px) rotateY(360deg);
+    }
+}
+@-moz-keyframes flipper {
+    0% {
+        -moz-transform: perspective(300px) rotateY(0deg);
+    }
+    15%, 100% {
+        -moz-transform: perspective(300px) rotateY(360deg);
+    }
+}
+@keyframes flipper {
+    0% {
+        transform: perspective(300px) rotateY(0deg);
+    }
+    15%, 100% {
+        transform: perspective(300px) rotateY(360deg);
+    }
 }
