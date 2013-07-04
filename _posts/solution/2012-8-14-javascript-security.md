@@ -22,7 +22,7 @@ tags : [javascript, 安全]
     </script>
 
 这断代码最后的执行结果是 alert i am flaw 的填出框，这与HTML解析机制有关，HTML从上而下进行分析，解析引擎遇到
-第一个起始标签 <script> 时把其压入栈中，直到遇到紧随的第一个闭合标签 </script>，导致引擎会认为
+第一个起始标签 `<script>` 时把其压入栈中，直到遇到紧随的第一个闭合标签 `</script>`，导致引擎会认为
 
     <script> var str = " </script>
 
@@ -45,27 +45,27 @@ tags : [javascript, 安全]
 
 过滤 expression
 
-color:expression(alert(\"hello\")
+    color:expression(alert(\"hello\")
 
 过滤 @import
 
-@import 'unsafe.css'
+    @import 'unsafe.css'
 
 过滤 behavior
 
-behavior: url(unsafe.htc)
+    behavior: url(unsafe.htc)
 
 过滤 binding
 
--moz-binding: url("http://www.mozilla.org/xbl/htmlBindings.xml#checkbox");
+    -moz-binding: url("http://www.mozilla.org/xbl/htmlBindings.xml#checkbox");
 
 过滤 url
 
-url(javascript:alert(3))
+    url(javascript:alert(3))
 
 过滤 content
 
-content: " (" attr(href) ")";
+    content: " (" attr(href) ")";
 
 
 
