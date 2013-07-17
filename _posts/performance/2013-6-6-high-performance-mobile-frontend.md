@@ -17,16 +17,17 @@ JS动画是为在低级浏览器中实现动画能力的一种方案，而在移
 然而在移动端，CSS动画相比PC会面对更多的性能问题，主要体现在动画的卡顿与闪烁。
 
 目前对提升移动端CSS动画体验的主要方法有几点：
+
 1. 尽可能多的利用硬件能力，如使用3D变形来开启GPU加速。
-```
+
    -webkit-transform: translate3d(0, 0, 0);
    -moz-transform: translate3d(0, 0, 0);
    -ms-transform: translate3d(0, 0, 0);
    transform: translate3d(0, 0, 0);
-```
+
 
 如动画过程有闪烁（通常发生在动画开始的时候），可以尝试下面的Hack：
-```
+
    -webkit-backface-visibility: hidden;
    -moz-backface-visibility: hidden;
    -ms-backface-visibility: hidden;
@@ -36,42 +37,40 @@ JS动画是为在低级浏览器中实现动画能力的一种方案，而在移
    -moz-perspective: 1000;
    -ms-perspective: 1000;
    perspective: 1000;
-```
+
 
 如下面一个元素通过translate3d右移500px的动画流畅度会明显优于使用left属性：
-```
-#ball-1 {
-  transition: -webkit-transform .5s ease;
-  -webkit-transform: translate3d(0, 0, 0);
-}
-#ball-1.slidein {
-  -webkit-transform: translate3d(500px, 0, 0);
-}
-```
 
-```
-#ball-2 {
-  transition: left .5s ease;
-  left：0;
-}
-#ball-2.slidein {
-  left：500px;
-}
-```
+	#ball-1 {
+	  transition: -webkit-transform .5s ease;
+	  -webkit-transform: translate3d(0, 0, 0);
+	}
+	#ball-1.slidein {
+	  -webkit-transform: translate3d(500px, 0, 0);
+	}
+
+
+	#ball-2 {
+	  transition: left .5s ease;
+	  left：0;
+	}
+	#ball-2.slidein {
+	  left：500px;
+	}
+
 
 
 注：3D变形会消耗更多的内存与功耗，应确实有性能问题时才去使用它，兼在权衡
 
 2. 尽可能少的使用box-shadows与gradients
 
-box-shadows与gradients往往都是页面的性能杀手，尤其是在一个元素同时都使用了它们。
+  box-shadows与gradients往往都是页面的性能杀手，尤其是在一个元素同时都使用了它们。
 
 3. 尽可能的让动画元素不在文档流中，以减少重排
 
-```
   position: fixed;
   position: absolute;
-```
+
 
 
 持续更新中...
