@@ -4,7 +4,7 @@ category : es6
 title:  ECMAScript6之箭向函数
 header: ECMAScript6之箭向函数
 tagline:
-tags : [ES6, ECMAScript6, Arrow Functions, JavaScript]
+tags : [ES6, ECMAScript6, 箭向函数, JavaScript]
 ---
 {% include JB/setup %}
 
@@ -35,18 +35,19 @@ tags : [ES6, ECMAScript6, Arrow Functions, JavaScript]
 
 什么是词法绑定？上例子：
 
+```
     var counter1 = {
         cur : 0,
         inc: () => ++this.cur
     }
     counter1.inc() // -> NaN
-
+    
     var counter2 = {
         cur : 0,
         inc: function(){ return ++this.cur }
     }
     counter2.inc() // -> 1
-
+```
 
 我们看到例子中counter1虽然是通过箭向函数简化了输入，但最后输出的结果多少会有些不解，为什么呢？答案就是本节的标题，箭向函数中的this是词法绑定的。
 
@@ -67,6 +68,7 @@ tags : [ES6, ECMAScript6, Arrow Functions, JavaScript]
 2. 总是会返回末尾的执行结果，像 reduce map 常用的计算数组的操作往往都需要返回值
 3. 在以往的经验中我们往往会像下面例子中那样在另一回调函数中通过that变量来帮助引用到外层函数的this
 
+```
     var yuanyan = {
         name: "yuanyan",
         sayHi: function () {
@@ -76,6 +78,7 @@ tags : [ES6, ECMAScript6, Arrow Functions, JavaScript]
             });
         }
     }
+```
 
 而通过箭向函数则无需再使用that，因其绑定了词法的this：
 
@@ -95,13 +98,13 @@ tags : [ES6, ECMAScript6, Arrow Functions, JavaScript]
 原因是为了区分两种不一样的箭头符号：
 
 1. `->`
-2. '=>'
+2. `=>`
 
-称`->` 是箭头，而'=>'是箭向，而Arrow Functions中目前只使用了'=>'符号，所以这里称其为箭向函数。
+称`->`是箭头，而`=>`是箭向，而Arrow Functions中目前只使用了`=>`符号，所以这里称其为箭向函数。
 
 
 ## Refs
-* http://people.mozilla.org/~jorendorff/es6-draft.html#sec-13.2
-* http://wiki.ecmascript.org/doku.php?id=harmony:arrow_function_syntax
-* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/arrow_functions
-* http://www.2ality.com/2012/04/arrow-functions.html
+* [http://people.mozilla.org/~jorendorff/es6-draft.html#sec-13.2]
+* [http://wiki.ecmascript.org/doku.php?id=harmony:arrow_function_syntax]
+* [https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/arrow_functions]
+* [http://www.2ality.com/2012/04/arrow-functions.html]
