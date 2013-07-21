@@ -25,3 +25,5 @@ _theme_packages/*
 
 .rbenv-version
 .rvmrc
+
+_site/

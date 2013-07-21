@@ -35,7 +35,7 @@ tags : [ES6, ECMAScript6, 箭向函数, JavaScript]
 
 什么是词法绑定？上例子：
 
-```
+
     var counter1 = {
         cur : 0,
         inc: () => ++this.cur
@@ -47,7 +47,6 @@ tags : [ES6, ECMAScript6, 箭向函数, JavaScript]
         inc: function(){ return ++this.cur }
     }
     counter2.inc() // -> 1
-```
 
 我们看到例子中counter1虽然是通过箭向函数简化了输入，但最后输出的结果多少会有些不解，为什么呢？答案就是本节的标题，箭向函数中的this是词法绑定的。
 
@@ -104,7 +103,7 @@ tags : [ES6, ECMAScript6, 箭向函数, JavaScript]
 
 
 ## Refs
-* [http://people.mozilla.org/~jorendorff/es6-draft.html#sec-13.2]
-* [http://wiki.ecmascript.org/doku.php?id=harmony:arrow_function_syntax]
-* [https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/arrow_functions]
-* [http://www.2ality.com/2012/04/arrow-functions.html]
+* [http://people.mozilla.org/~jorendorff/es6-draft.html#sec-13.2](http://people.mozilla.org/~jorendorff/es6-draft.html#sec-13.2)
+* [http://wiki.ecmascript.org/doku.php?id=harmony:arrow_function_syntax](http://wiki.ecmascript.org/doku.php?id=harmony:arrow_function_syntax)
+* [https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/arrow_functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/arrow_functions)
+* [http://www.2ality.com/2012/04/arrow-functions.html](http://www.2ality.com/2012/04/arrow-functions.html)
