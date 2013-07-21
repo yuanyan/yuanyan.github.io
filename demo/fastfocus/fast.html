@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,minimum-scale=1.0">
+</head>
+<body>
+<form action="/search">
+<input id="search" type="search" value="" autocomplete="off" autocorrect="off" maxlength="64" class="se-input">
+</form>
+
+<script>
+var seInput = document.getElementById('search');
+seInput.addEventListener('touchstart', function(e){
+	seInput.focus();
+},false);
+</script>
+</body>
+</html>
