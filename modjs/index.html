@@ -10,14 +10,12 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Modjs - 来自腾讯的前端流程工具, 旨在帮助开发人员快速构建健壮的高性能的Web应用</title>
+    <title>ModJS - JavaScript前端流程工具，帮助开发者自动化构建高性能HTML5应用</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Mod 是基于NodeJS的前端流程工具, 旨在帮助开发人员快速构建健壮的高性能的Web应用">
-    <meta name="author" content="yuanyan@tencent.com">
-
+    <meta name="description" content="JavaScript前端流程工具，帮助开发者自动化构建高性能HTML5应用">
+    <meta name="author" content="yuanyan">
     <!-- Le styles -->
-    <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.css" />
-    <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap-responsive.css" />
+    <link rel="stylesheet" href="http://pub.idqqimg.com/lib/bootstrap/latest/css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/gangnam.css" />
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -26,35 +24,69 @@
 
 </head>
 <body style="gangnam">
+
+<div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="./">Mod.js</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="">
+                <a href="./readme.html">Read Me</a>
+              </li>
+              <li class="">
+                <a href="./getting-started.html">Get started</a>
+              </li>
+              <li class="">
+                <a href="./configuring-tasks.html">Configuring Tasks</a>
+              </li>
+              <li class="">
+                <a href="./creating-plugins.html">Creating Plugins</a>
+              </li>
+              <li class="">
+                <a href="./build-in-tasks.html">Build-in Tasks</a>
+              </li>
+              <li class="">
+                <a href="./plugin-api.html">Plugin API</a>
+              </li>
+              <li class="">
+                <a href="https://github.com/modjs">Official Plugins</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
 <div class="container">
 
     <!-- Main hero unit for a primary marketing message or call to action -->
     <div class="row-fluid hero-unit">
         <div class="span12">
 
-            <h1>MOD</h1>
-            <p>Mod 是可信赖的现代前端构建工具, 旨在快速构建健壮且高性能的Web应用程序</p>
+            <h1><img width="200" src="https://f.cloud.github.com/assets/677114/781449/97479306-ea22-11e2-8c06-a6f403e0f81a.png"></h1>
+            <p>JavaScript前端流程工具，帮助开发者自动化构建高性能HTML5应用</p>
 
             <!--<p><a class="btn btn-primary btn-large" href="#">Learn more &raquo;</a></p>-->
 
-            <p id="install">安装 <code>npm install modjs -g</code>  当前版本 <code>0.2.x</code> </p>
+            <p id="install">快速安装：<code>npm install modjs -g</code>  最新版本：<a href="https://npmjs.org/package/modjs"><img src="https://badge.fury.io/js/modjs.png" alt="NPM version" style="max-width:100%;"></a> 累计安装：<code id="installed">loading...</code>
+</p>
 
             <p>
                 <iframe width="100px" scrolling="0" height="20px" frameborder="0" allowtransparency="true" src="http://mdo.github.com/github-buttons/github-btn.html?user=modulejs&amp;repo=modjs&amp;type=watch&amp;count=true" class="github-btn"></iframe>
                 <iframe width="100px" scrolling="0" height="20px" frameborder="0" allowtransparency="true" src="http://mdo.github.com/github-buttons/github-btn.html?user=modulejs&amp;repo=modjs&amp;type=fork&amp;count=true" class="github-btn"></iframe>
-
+            </p>
+            
+            <p>
+                
                 <!--<a href="https://twitter.com/share" class="twitter-share-button" data-url="http://modulejs.github.com/modjs" data-text="MOD: Modern build tool for web">Tweet</a>-->
                 <!--<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="http://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>-->
 
                 <!-- ShareTo Button BEGIN -->
-                <a class="shareto_button" href="http://shareto.com.cn/share.html"><img src="http://s.shareto.com.cn/btn/lg-share-cn.gif" width="125" height="20" alt="分享道" style="border:0"/></a>
-                <script type="text/javascript" src="http://s.shareto.com.cn/js/shareto_button.js" charset="utf-8"></script>
+                <!-- <a class="shareto_button" href="http://shareto.com.cn/share.html"><img src="http://s.shareto.com.cn/btn/lg-share-cn.gif" width="125" height="20" alt="分享道" style="border:0"/></a>
+                <script type="text/javascript" src="http://s.shareto.com.cn/js/shareto_button.js" charset="utf-8"></script>  -->
                 <!-- ShareTo Button END -->
-
             </p>
-
-
-            <p><a href="./readme.html">README文档</a></p>
 
         </div>
 
@@ -65,19 +97,19 @@
 
     <div class="features row-fluid">
         <div class="span4">
-            <h2>灵活的插件化机制</h2>
+            <h3>灵活的插件化机制</h3>
             <img src="image/features/1.png">
             <p>通过插件自定义任务，插件使用自动下载</p>
         </div>
 
         <div class="span4">
-            <h2>项目脚手架生成</h2>
+            <h3>项目脚手架生成</h3>
             <img src="image/features/2.png">
             <p>告别人肉创建，解放双方</p>
         </div>
 
         <div class="span4">
-            <h2>AMD、CMD、CommonJS模块打包</h2>
+            <h3>AMD、CMD模块打包</h3>
             <img src="image/features/3.png">
             <p>集成requirejs、seajs模块加载器</p>
         </div>
@@ -86,19 +118,19 @@
     <hr>
     <div class="features row-fluid">
         <div class="span4">
-            <h2>CSS 模块打包</h2>
+            <h3>CSS 模块打包</h3>
             <img src="image/features/4.png">
             <p>CSS @import 模块合并打包</p>
         </div>
 
         <div class="span4">
-            <h2>压缩合并一体化</h2>
+            <h3>压缩合并一体化</h3>
             <img src="image/features/5.png">
             <p>HTML CSS Javascript 压缩合并 so easy</p>
         </div>
 
         <div class="span4">
-            <h2>源码智能化压缩</h2>
+            <h3>源码智能化压缩</h3>
             <img src="image/features/6.png">
             <p>零配置自动识别源码是否被压缩过，避免二次压缩带来的问题</p>
         </div>
@@ -107,19 +139,19 @@
     <hr>
     <div class="features row-fluid">
         <div class="span4">
-            <h2>源码规范检测</h2>
+            <h3>源码规范检测</h3>
             <img src="image/features/7.png">
             <p>HTML CSS Javascript 规范性检测</p>
         </div>
 
         <div class="span4">
-            <h2>源码自定义检测</h2>
+            <h3>源码自定义检测</h3>
             <img src="image/features/8.png">
             <p>自定义规则检测， 避免 alert 等疏忽</p>
         </div>
 
         <div class="span4">
-            <h2>工具跨平台支持</h2>
+            <h3>工具跨平台支持</h3>
             <img src="image/features/9.png">
             <p>基于 NodeJS</p>
         </div>
@@ -134,9 +166,22 @@
 
 </div> <!-- /container -->
 
-<script src="vendor/jquery/jquery-1.7.2.min.js"></script>
-<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+<script src="http://pub.idqqimg.com/lib/jquery/1.9.0/jquery.min.js"></script>
+<script src="http://pub.idqqimg.com/lib/bootstrap/latest/js/bootstrap.min.js"></script>
 <script>
+    var name = "modjs";
+    $.ajax({
+        dataType: "jsonp",
+        url: 'http://isaacs.iriscouch.com/downloads/_design/app/_view/pkg?group_level=3&start_key=["' + name + '"]&end_key=["' + name + '",{}]',
+        success:function(data){
+            var installed = 0;
+            $(data.rows).each(function(index, row){
+                installed += row.value;
+            })
+            $("#installed").html(installed);
+        }
+    });
+    
     $(".features img").hover(
             function () {
                 $(this).addClass('animated tada');
@@ -147,7 +192,7 @@
     );
     // 4.1
     $(".hero-unit h1").click(function(evt) {
-        $('html').toggleClass('fool');
+        // $('html').toggleClass('fool');
         evt.preventDefault();
     });
 </script>
