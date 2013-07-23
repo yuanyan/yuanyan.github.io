@@ -71,7 +71,7 @@ body > .navbar .brand:hover {
 
 
 body {
-    background: url('../image/bg-home.jpg') center -40px no-repeat white;
+    background: url('../img/bg-home.jpg') center -40px no-repeat white;
 
 }
 
@@ -124,6 +124,19 @@ footer img:hover {
     margin-top: 15px;
 }
 
+.introducing {
+	text-align: center;
+	color: #5A5A5A;
+}
+
+.introducing-img {
+	display: block;
+	margin: 0 auto 30px;
+	height: 145px;
+	width: 145px;
+	
+}
+
 .features,.hero-unit, footer{
     text-align: center;
     margin: 0 auto;
@@ -133,6 +146,27 @@ footer img:hover {
     width: 100px;
 }
 
+.section-header {
+	text-align: center;
+	font-weight: bolder;
+	color: #252B34;
+	margin-top: 0px;
+	position: relative;
+	margin-bottom: 40px;
+}
+
+.section-header hr {
+	border-top: 1px solid #BEC0C3;
+	border-bottom: 2px solid #FFF;
+	width: 36%;
+	position: absolute;
+}
+
+
+.section-header hr.right {
+	right: 0px;
+	top: 0px;
+}
 
 /*
 Animate.css - http://daneden.me/animate
