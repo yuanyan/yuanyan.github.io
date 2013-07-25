@@ -71,8 +71,7 @@ body > .navbar .brand:hover {
 
 
 body {
-    background: url('../img/bg-home.jpg') center -40px no-repeat white;
-
+    background: url('../img/bg-home.jpg') center 40px repeat-x white;
 }
 
 img {
@@ -110,6 +109,7 @@ footer img:hover {
 .hero-unit p {
     margin: 1em 0;
     font-size: 20px;
+	color: white;
 }
 
 .hero-unit code{
