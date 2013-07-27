@@ -10,9 +10,9 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>ModJS - JavaScript前端流程工具，帮助开发者自动化构建高性能HTML5应用</title>
+    <title>Mod.js - JavaScript Workflow Tooling For Web Application</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="JavaScript前端流程工具，帮助开发者自动化构建高性能HTML5应用">
+    <meta name="description" content="JavaScript Workflow Tooling For Web Application">
     <meta name="author" content="yuanyan">
     <!-- Le styles -->
     <link rel="stylesheet" href="http://pub.idqqimg.com/lib/bootstrap/latest/css/bootstrap.min.css" />
@@ -32,27 +32,13 @@
           <a class="brand" href="./">Mod.js</a>
           <div class="nav-collapse collapse">
             <ul class="nav">
-              <li class="">
-                <a href="./readme.html">Read Me</a>
-              </li>
-              <li class="">
-                <a href="./getting-started.html">Get started</a>
-              </li>
-              <li class="">
-                <a href="./configuring-tasks.html">Configuring Tasks</a>
-              </li>
-              <li class="">
-                <a href="./creating-plugins.html">Creating Plugins</a>
-              </li>
-              <li class="">
-                <a href="./build-in-tasks.html">Build-in Tasks</a>
-              </li>
-              <li class="">
-                <a href="./plugin-api.html">Plugin API</a>
-              </li>
-              <li class="">
-                <a href="https://github.com/modjs">Official Plugins</a>
-              </li>
+                <li><a href="./readme.html">README</a></li>
+                <li><a href="./getting-started.html">Getting Started</a></li>
+                <li><a href="./configuring-tasks.html">Configuring Tasks</a></li>
+                <li><a href="./creating-plugins.html">Creating Plugins</a></li>
+                <li><a href="./build-in-tasks.html">Build-in Tasks</a></li>
+                <li><a href="./plugin-api.html">Plugin API</a></li>
+                <li><a href="https://github.com/modjs">Official Plugins</a></li>
             </ul>
           </div>
         </div>
@@ -65,12 +51,12 @@
     <div class="row-fluid hero-unit">
         <div class="span12">
 
-            <h1><img width="200" src="https://f.cloud.github.com/assets/677114/781449/97479306-ea22-11e2-8c06-a6f403e0f81a.png"></h1>
-            <p>JavaScript前端流程工具，帮助开发者自动化构建高性能HTML5应用</p>
+            <h1><img width="200" height="105" src="https://f.cloud.github.com/assets/677114/781449/97479306-ea22-11e2-8c06-a6f403e0f81a.png"></h1>
+            <p>JavaScript Workflow Tooling For Web Application</p>
 
             <!--<p><a class="btn btn-primary btn-large" href="#">Learn more &raquo;</a></p>-->
 
-            <p id="install">快速安装：<code>npm install modjs -g</code>  最新版本：<a href="https://npmjs.org/package/modjs"><img src="https://badge.fury.io/js/modjs.png" alt="NPM version" style="max-width:100%;"></a> 累计安装：<code id="installed">loading...</code>
+            <p id="install"><b>Installing:</b> <u>npm install modjs -g</u>  <b>Version:</b> <a href="https://npmjs.org/package/modjs"><img src="https://badge.fury.io/js/modjs.png" alt="NPM version" style="max-width:100%;"></a> <b>Downloads:</b> <u id="installed">loading...</u>
 </p>
 
             <p>
@@ -95,16 +81,16 @@
         <!--<img id="hero-logo" src="img/home-hero.png">-->
         <!--</div>-->
     </div>
-	 <!--
-	<div class="row-fluid">
-		<h2 class="section-header">
-				<hr class="left visible-desktop">
-				<span>Introducing</span>
-				<hr class="right visible-desktop">
-		</h2>
-	<div>
-	
-	<div class="introducing row-fluid">
+     <!--
+    <div class="row-fluid">
+        <h2 class="section-header">
+                <hr class="left visible-desktop">
+                <span>Introducing</span>
+                <hr class="right visible-desktop">
+        </h2>
+    <div>
+    
+    <div class="introducing row-fluid">
       <div class="span4">
         <img class="introducing-img" src="img/introducing/tasks.png">
         <h3>基于任务的自动化流程</h3>
@@ -113,80 +99,80 @@
         <img class="introducing-img" src="img/introducing/ide.png">
         <h3>IDE集成</h3>
       </div>
-	  <div class="span4">
+      <div class="span4">
         <img class="introducing-img" src="img/introducing/ui.png">
-		<h3>支持UI界面（开发中）与命令行</h3>
+        <h3>支持UI界面（开发中）与命令行</h3>
       </div>
-	<div> -->
-	
-	<div class="row-fluid">
-		<h2 class="section-header">
-				<hr class="left visible-desktop">
-				<span>Features</span>
-				<hr class="right visible-desktop">
-		</h2>
-	<div>
-	
+    <div> -->
+    
+    <div class="row-fluid">
+        <h2 class="section-header">
+                <hr class="left visible-desktop">
+                <span>Features</span>
+                <hr class="right visible-desktop">
+        </h2>
+    <div>
+    
     <div class="features row-fluid">
 
         <div class="span4">
-            <h3>灵活的插件化机制</h3>
             <img src="img/features/1.png">
-            <p>通过插件自定义任务，插件使用自动下载</p>
+            <h3>Plugins Auto-installing</h3> 
+            <p>Extensible, easily write plugins</p>
         </div>
 
         <div class="span4">
-            <h3>项目脚手架生成</h3>
             <img src="img/features/2.png">
-            <p>告别人肉创建，解放双方</p>
+            <h3>Generators</h3> 
+            <p>Project boilerplate generate</p>
         </div>
 
         <div class="span4">
-            <h3>AMD、CMD模块打包</h3>
             <img src="img/features/3.png">
-            <p>集成requirejs、seajs模块加载器</p>
+            <h3>Modular JS Compile</h3>
+            <p>AMD, CMD (will support ES6 Module, CommonJS Module soon)</p>
         </div>
 
      </div>
     <hr>
     <div class="features row-fluid">
         <div class="span4">
-            <h3>CSS 模块打包</h3>
             <img src="img/features/4.png">
-            <p>CSS @import 模块合并打包</p>
+            <h3>CSS Optimization</h3>
+            <p>@import file auto combination</p>
         </div>
 
         <div class="span4">
-            <h3>压缩合并一体化</h3>
             <img src="img/features/5.png">
-            <p>HTML CSS Javascript 压缩合并 so easy</p>
+            <h3>Basic Operation</h3>
+            <p>Support cat, rm, mv, mkdir, cp, rev</p>
         </div>
 
         <div class="span4">
-            <h3>源码智能化压缩</h3>
             <img src="img/features/6.png">
-            <p>零配置自动识别源码是否被压缩过，避免二次压缩带来的问题</p>
+            <h3>Source Minify</h3>
+            <p>Reduce HTML, JS, CSS, JPEG, PNG file sizes</p>
         </div>
 
     </div>
     <hr>
     <div class="features row-fluid">
         <div class="span4">
-            <h3>源码规范检测</h3>
             <img src="img/features/7.png">
-            <p>HTML CSS Javascript 规范性检测</p>
+            <h3>Source Stripping</h3>
+            <p>Automatically remove debugging code</p>
         </div>
 
         <div class="span4">
-            <h3>源码自定义检测</h3>
             <img src="img/features/8.png">
-            <p>自定义规则检测， 避免 alert 等疏忽</p>
+            <h3>Build With Main HTML</h3>
+            <p>Quick build without Modfile</p>
         </div>
 
         <div class="span4">
-            <h3>工具跨平台支持</h3>
             <img src="img/features/9.png">
-            <p>基于 NodeJS</p>
+            <h3>Built-in Web Server</h3>
+            <p>Quick start a static web server</p>
         </div>
 
     </div>

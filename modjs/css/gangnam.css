@@ -7,7 +7,10 @@ body, p{
     width: 940px;
 }
 
-
+h3 {
+    font-size: 22px;
+    line-height: 28px;
+}
 
 /* Change the docs' brand */
 body > .navbar {
@@ -109,7 +112,7 @@ footer img:hover {
 .hero-unit p {
     margin: 1em 0;
     font-size: 20px;
-	color: white;
+	color: #eee;
 }
 
 .hero-unit code{
