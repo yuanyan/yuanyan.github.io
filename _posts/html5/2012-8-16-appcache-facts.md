@@ -14,48 +14,48 @@ Application cache 是 HTML5 中在规范完整性上比较糟糕的特性之一�
 
 **Fact** ：服务器返回 manifest 文件的MIME类型必须是 text/cache-manifest, 否则虽配置 manifest 文件但 Appcache 功能并不会启用。
 
-	建议 manifest 文件以 .appcache 为文件后缀名，
-	并在 Web 服务器中添加 MIME 类型类型，如在 Apache 的.htaccess 配置中添加：
-	AddType text/cache-manifest .appcache
+    建议 manifest 文件以 .appcache 为文件后缀名，
+    并在 Web 服务器中添加 MIME 类型类型，如在 Apache 的.htaccess 配置中添加：
+    AddType text/cache-manifest .appcache
 
 **Fact** ：Appcache 的 manifest 文件有三个可选的配置项目： CACHE， NETWORK， FALLBACK。
 
-	CACHE 项配置所有需要存储在本地应用缓存中的资源文件，浏览器会在页面加载完
-	成后即时的自动在后台下载。如果浏览器之前已经下载过CACHE列表中的某个资源则
-	不会再次下载。
+    CACHE 项配置所有需要存储在本地应用缓存中的资源文件，浏览器会在页面加载完
+    成后即时的自动在后台下载。如果浏览器之前已经下载过CACHE列表中的某个资源则
+    不会再次下载。
 
-	NETWORK 项配置与 CACHE 正相反，它告诉浏览器哪些资源要求是在有网络的环境下，
-	如后台的API接口调用，可以配置在 NETWORK 项。 如我们的接口地址是 http://example.com/api/
-	前缀格式的URL，则只需配置其URL的前缀格式，无需列出所有URL，浏览器会自动去匹配。
+    NETWORK 项配置与 CACHE 正相反，它告诉浏览器哪些资源要求是在有网络的环境下，
+    如后台的API接口调用，可以配置在 NETWORK 项。 如我们的接口地址是 http://example.com/api/
+    前缀格式的URL，则只需配置其URL的前缀格式，无需列出所有URL，浏览器会自动去匹配。
 
-	如果我们需要配置为所有的URL地址为CACHE或NETWORK，Chrome 与 Safari 要求用户
-	配置为 *，Firefox要求为 http://* 和 https://*，兼容上考虑我们可在配置
-	中分别加入 *，http://* 和 https://* 使其在所有浏览器中都被识别。
+    如果我们需要配置为所有的URL地址为CACHE或NETWORK，Chrome 与 Safari 要求用户
+    配置为 *，Firefox要求为 http://* 和 https://*，兼容上考虑我们可在配置
+    中分别加入 *，http://* 和 https://* 使其在所有浏览器中都被识别。
 
-	FALLBACK 项配置为告诉浏览器在离线环境下或服务器故障时这些网络资源不可用
-	时的使用哪些替代资源。
+    FALLBACK 项配置为告诉浏览器在离线环境下或服务器故障时这些网络资源不可用
+    时的使用哪些替代资源。
 
 **Fact** ：在SSL安全连接下，所有在 manifest 配置的资源列表需符合同源策略。即所有的地址都必须是相对地址。但Chrome除外，在SSL下，即使有非同源的资源，Chrome仍旧会下载至应用缓存中。
 
 **Fact** ：manifest 文件任何的改变包括注释都会触发浏览器更新应用缓存中的所有资源。通常 manifest 的配置策略在每次发布是并不会有改变，为了更新应用缓存我们会在 manifest 的中加入版本注释，在下次发布中则修改 # version 1 注释来知会浏览器更新应用缓存。
 
-	CACHE MANIFEST
-	# version 1
-	CACHE
-	/logo.png
-	...
+    CACHE MANIFEST
+    # version 1
+    CACHE
+    /logo.png
+    ...
 
 **Fact** ：当需要更新已存在的应用缓存时，浏览器会向服务器发送标准的  If-Modified-Since 请求头，当远程的资源未改变与本地缓存一致时，浏览器则不再重新下载。浏览器不会自动去检测列表中资源，必须手动去改变 manifest 文件来触发，我们推荐通过改变 manifest 中的版本注释来触发检测，简单且有效。
 
 **Fact** ：manifest 中的任何资源的改变只在的下次页面加载中生效。因为如页面已经被缓存，浏览器会立即从缓存中获取资源，然后才开启后台进程去检测 manifest 文件中是否有资源需要被刷新。所以最新版本的资源只会在浏览器下次启动时被从缓存中获取。我们可以绑定 updateready 事件来获知后台更新完新版本资源的时机，然后提示用户是否需重新加载页面：
 
-	if (window.applicationCache) {
-		applicationCache.addEventListener('updateready', function() {
-			if (confirm('页面更新完成，是否重新加载?')) {
-				window.location.reload();
-			}
-		});
-	}
+    if (window.applicationCache) {
+        applicationCache.addEventListener('updateready', function() {
+            if (confirm('页面更新完成，是否重新加载?')) {
+                window.location.reload();
+            }
+        });
+    }
 
 老版本如能提供正常的功能体验的情况下，建议在当次打开时继续使用老版本，或在页面顶部提醒用户避免突然的弹窗确认。
 
@@ -71,6 +71,18 @@ Application cache 是 HTML5 中在规范完整性上比较糟糕的特性之一�
 
 **Fact** ：当应用需要使用 appcache 时，Firefox 会在首次打开应用时询问用户是否授权使用。
 
+**Fact** ：Android Webview 默认没有开启 Appcache，可通过如下配置在Webview中支持Appcache功能
+
+    webView.getSettings().setDomStorageEnabled(true);
+    // 设置缓存总容量为 8 mb
+    webView.getSettings().setAppCacheMaxSize(1024*1024*8);
+    // 缓存路径
+    String appCachePath = getApplicationContext().getCacheDir().getAbsolutePath();
+    webView.getSettings().setAppCachePath(appCachePath);
+    webView.getSettings().setAllowFileAccess(true);
+    webView.getSettings().setAppCacheEnabled(true);
+    // 设置缓存策略
+    webView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
 
 ### 参考资源
 
