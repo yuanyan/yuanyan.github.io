@@ -1,14 +1,13 @@
----
+﻿---
 layout: post
 category : css3
 title:  重新审视那位优雅的CSS
 header: 重新审视那位优雅的CSS
 tagline:
-tags : [css3, javascript]
 ---
 {% include JB/setup %}
 
-向来不喜铺垫，依旧先上菜后调侃。从一个盒中小鱼demo讲起：
+从一个盒中小鱼demo讲起：
 [http://www.w3.org/Talks/2013/0128-CSS-Utrecht/demo-transforms/demo-translate3d-cube.html](http://www.w3.org/Talks/2013/0128-CSS-Utrecht/demo-transforms/demo-translate3d-cube.html)
 
 demo的精彩之处在于没有用一行Javascript代码便实现了所有小鱼在盒子中漫游的行为，因其只使用CSS引擎默认的选择器机制。
