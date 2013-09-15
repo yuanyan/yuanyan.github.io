@@ -67,7 +67,7 @@ tags : [ES6, ECMAScript6, 箭向函数, JavaScript]
 2. 总是会返回末尾的执行结果，像 reduce map 常用的计算数组的操作往往都需要返回值
 3. 在以往的经验中我们往往会像下面例子中那样在另一回调函数中通过that变量来帮助引用到外层函数的this
 
-```
+
     var yuanyan = {
         name: "yuanyan",
         sayHi: function () {
@@ -77,7 +77,7 @@ tags : [ES6, ECMAScript6, 箭向函数, JavaScript]
             });
         }
     }
-```
+
 
 而通过箭向函数则无需再使用that，因其绑定了词法的this：
 
