@@ -71,10 +71,10 @@ tags : [ES6, ECMAScript6, 箭向函数, JavaScript]
     var yuanyan = {
         name: "yuanyan",
         sayHi: function () {
-            var that = this;  // (*)
+            var that = this;
             setTimeout(function () {
                 console.log(that.name + " says hi")
-            });
+            })
         }
     }
 
