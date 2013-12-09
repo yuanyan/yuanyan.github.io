@@ -18,13 +18,14 @@
     <link rel="stylesheet" href="http://pub.idqqimg.com/lib/bootstrap/latest/css/bootstrap.min.css" />
     <!-- <link rel="stylesheet" href="http://pub.idqqimg.com/lib/bootstrap/latest/css/bootstrap-responsive.min.css" /> -->
     <link rel="stylesheet" href="css/gangnam.css" />
+    <link rel="stylesheet" href="vendor/prism/prism.css" />
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
     <script src="vendor/shim/html5.js"></script>
     <![endif]-->
 
 </head>
-<body style="gangnam">
+<body id="outerspace">
 
 <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -43,21 +44,20 @@
           </div>
         </div>
       </div>
-    </div>
+</div>
 
 <div class="container">
-
     <!-- Main hero unit for a primary marketing message or call to action -->
     <div class="row-fluid hero-unit">
         <div class="span12">
-
-            <h1><img width="200" height="105" src="https://f.cloud.github.com/assets/677114/781449/97479306-ea22-11e2-8c06-a6f403e0f81a.png"></h1>
+            
+            <h1><img src="https://f.cloud.github.com/assets/677114/1474125/3f5b2460-4629-11e3-8a3d-6b4e0162e0cf.png"></h1>
             <p>JavaScript Workflow Tooling For Web Application</p>
 
             <!--<p><a class="btn btn-primary btn-large" href="#">Learn more &raquo;</a></p>-->
 
             <p id="install"><b>Installing:</b> <u>npm install modjs -g</u>  <b>Version:</b> <a href="https://npmjs.org/package/modjs"><img src="https://badge.fury.io/js/modjs.png" alt="NPM version" style="max-width:100%;"></a> <b>Downloads:</b> <u id="installed">loading...</u>
-</p>
+            </p>
 
             <p>
                 <iframe width="100px" scrolling="0" height="20px" frameborder="0" allowtransparency="true" src="http://mdo.github.com/github-buttons/github-btn.html?user=modulejs&amp;repo=modjs&amp;type=watch&amp;count=true" class="github-btn"></iframe>
@@ -75,6 +75,8 @@
                 <!-- ShareTo Button END -->
             </p>
 
+            <!--<div class="rocket"><img src="./img/rocket.png"></div>-->
+
         </div>
 
         <!--<div class="span6">-->
@@ -88,22 +90,22 @@
                 <span>Introducing</span>
                 <hr class="right visible-desktop">
         </h2>
-    <div>
+    </div>
     
     <div class="introducing row-fluid">
       <div class="span4">
         <img class="introducing-img" src="img/introducing/tasks.png">
-        <h3>基于任务的自动化流程</h3>
+        <h3>One-key</h3>
       </div>
       <div class="span4">
         <img class="introducing-img" src="img/introducing/ide.png">
-        <h3>IDE集成</h3>
+        <h3>IDE</h3>
       </div>
       <div class="span4">
         <img class="introducing-img" src="img/introducing/ui.png">
-        <h3>支持UI界面（开发中）与命令行</h3>
+        <h3>GUI</h3>
       </div>
-    <div> -->
+    </div> -->
     
     <div class="row-fluid">
         <h2 class="section-header">
@@ -111,7 +113,7 @@
                 <span>Features</span>
                 <hr class="right visible-desktop">
         </h2>
-    <div>
+    </div>
     
     <div class="features row-fluid">
 
@@ -179,6 +181,64 @@
 
     <hr>
 
+    <div class="row-fluid">
+        <h2 class="section-header">
+            <hr class="left visible-desktop">
+            <span>Example</span>
+            <hr class="right visible-desktop">
+        </h2>
+    </div>
+
+    <div class="example row-fluid">
+        <div class="container">
+
+            <div class="exampleContainer clearfix">
+                <div class="leftContainer">
+                    <div class="caption">Write Modfile.js this:</div>
+                    <pre><code class="language-console">module.exports = {
+    tasks: {
+        build: {
+            src: "./index.html"
+        }
+    }
+}</code></pre>
+
+                     <div class="caption">Run this:</div>
+                     <pre><code class="language-console">$ mod</code></pre>
+                </div>
+                <div class="rightContainer">
+                    <div>
+                        <div class="caption">Get this:</div>
+                        <pre><code class="language-console"> Running task build
+  build ./index.html building...
+  optimizecss img/icon.png > dist/img/icon.png
+  rev dist/img/icon.png > dist/img/234394cd.icon.png
+  optimizecss img/icon.png > dist/img/icon.png
+  rev dist/img/icon.png > dist/img/234394cd.icon.png
+  build css/main.css > dist/css/main.css
+  rev dist/css/main.css > dist/css/f1fb1ed4.main.css
+  build ./img/icon.png > dist/img/icon.png
+  rev dist/img/icon.png > dist/img/234394cd.icon.png
+  build js/foo.js > dist/js/foo.js
+  rev dist/js/foo.js > dist/js/5619bfaa.foo.js
+  build js/bar.js > dist/js/bar.js
+  rev dist/js/bar.js > dist/js/bac07922.bar.js
+  build js/baz.js,js/qux.js > dist/js/baz_qux_2_106.js
+  rev dist/js/baz_qux_2_106.js > dist/js/d987b931.baz_qux_2_106.js
+  build js/quux.js,js/corge.js > dist/js/quux_corge_2_109.js
+  rev dist/js/quux_corge_2_109.js > dist/js/68f3f22f.quux_corge_2_109.js
+  build ./index.html > dist/index.html
+
+ ✓ OK
+</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
     <footer>
         <p><a href="http://github.com/modulejs"> <img src="http://gravatar.com/avatar/cd822c0bacb048f5e2d66dce1fe78a73.png?s=50" width="25" height="25" alt="modulejs"></a></p>
     </footer>
@@ -187,6 +247,7 @@
 
 <script src="http://pub.idqqimg.com/lib/jquery/1.9.0/jquery.min.js"></script>
 <script src="http://pub.idqqimg.com/lib/bootstrap/latest/js/bootstrap.min.js"></script>
+<script src="vendor/prism/prism.js"></script>
 <script>
     var name = "modjs";
     $.ajax({

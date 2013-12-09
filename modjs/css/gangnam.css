@@ -1,6 +1,12 @@
 body, p{
     font:12px / 1.5 "Microsoft YaHei", Helvetica, tahoma, Arial, serif;
     /*font-family: 'Droid Serif', serif;*/
+    color: #fff;
+}
+
+hr {
+    border-top: none;
+    border-bottom: none;
 }
 
 .container{
@@ -26,8 +32,8 @@ body > .navbar .brand {
   padding-left: 0;
   margin-left: 20px;
   float: right;
-  font-weight: bold;
-  color: #29B768;
+  font-weight: 500;
+  color: #54B645;
   text-shadow: 0 1px 0 rgba(255,255,255,.1), 0 0 30px rgba(255,255,255,.125);
   -webkit-transition: all .2s linear;
      -moz-transition: all .2s linear;
@@ -38,7 +44,63 @@ body > .navbar .brand:hover {
   text-shadow: 0 1px 0 rgba(255,255,255,.1), 0 0 30px rgba(255,255,255,.4);
 }
 
+#outerspace, .rocket, .rocket img{
+    -webkit-transition: all 10s ease-in-out;
+    transition: all 10s ease-in-out; 
+}
 
+/* initial state */
+#outerspace {
+    position: relative;
+    /*background: #000 url(../img/outerspace.jpg);*/
+    background: #333;
+    background-position: left bottom;
+}
+
+
+#outerspace:hover {
+    /*background-position: -50% bottom;*/
+}
+
+.rocket {
+    z-index: -1;
+    position: absolute;
+    top: -100px;
+    left: -60px;
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+}
+
+.rocket img {
+    -webkit-animation:.2s rocket linear infinite alternate,1s rocket2 linear infinite alternate;
+    animation:.2s rocket linear infinite alternate,1s rocket2 linear infinite alternate;
+}
+
+/* hover final state */
+#outerspace:hover .rocket {
+    -webkit-transform: translate(1000px,300px) rotate(70deg);
+    transform: translate(1000px,300px) rotate(70deg);
+}
+
+@-webkit-keyframes rocket{
+    0%{
+        -webkit-transform:translate(0,0);
+    }
+    100%{
+        -webkit-transform:translate(-2px,2px);
+    }
+}
+
+@-webkit-keyframes rocket2{
+    0%{
+        margin-top:0;
+        margin-left:0;
+    }
+    100%{
+        margin-top:2px;
+        margin-left:1px;
+    }
+}
 
 /* ------ */
 
@@ -62,8 +124,8 @@ body > .navbar .brand:hover {
             border-radius: 5px;
 }
 ::-webkit-scrollbar-thumb {
-    background: #29B768;
-            border-radius: 5px;
+    background: #34722F;
+     border-radius: 5px;
 }
 ::-webkit-scrollbar-button {
     width:0;
@@ -100,7 +162,6 @@ footer img:hover {
     margin-right: 0;
 }
 
-��
 .hero-unit h1 {
     text-shadow: 0 1px 3px rgba(0, 0, 0, .4), 0 0 30px rgba(0, 0, 0, .075);
     font-size: 5em;
@@ -112,7 +173,7 @@ footer img:hover {
 .hero-unit p {
     margin: 1em 0;
     font-size: 20px;
-	color: #eee;
+    color: #eee;
 }
 
 .hero-unit code{
@@ -128,16 +189,16 @@ footer img:hover {
 }
 
 .introducing {
-	text-align: center;
-	color: #5A5A5A;
+    text-align: center;
+    color: #5A5A5A;
 }
 
 .introducing-img {
-	display: block;
-	margin: 0 auto 30px;
-	height: 145px;
-	width: 145px;
-	
+    display: block;
+    margin: 0 auto 30px;
+    height: 145px;
+    width: 145px;
+    
 }
 
 .features,.hero-unit, footer{
@@ -150,26 +211,84 @@ footer img:hover {
 }
 
 .section-header {
-	text-align: center;
-	font-weight: bolder;
-	color: #252B34;
-	margin-top: 0px;
-	position: relative;
-	margin-bottom: 40px;
+    text-align: center;
+    font-weight: bolder;
+    /*color: #252B34;*/
+    color: #fff;
+    margin-top: 0px;
+    position: relative;
+    margin-bottom: 40px;
 }
 
 .section-header hr {
-	border-top: 1px solid #BEC0C3;
-	border-bottom: 2px solid #FFF;
-	width: 36%;
-	position: absolute;
+/*  border-top: 1px solid #BEC0C3;
+    border-bottom: 2px solid #FFF;*/
+    border-top: 1px solid rgba(255,255,255,.5);
+    border-bottom: 1px solid rgba(255,255,255,.5);
+    width: 36%;
+    position: absolute;
 }
 
 
 .section-header hr.right {
-	right: 0px;
-	top: 0px;
+    right: 0px;
+    top: 0px;
 }
+
+
+/* Example */
+.example {
+    background: #c4c4c4;
+    overflow-x: hidden;
+    color: #333;
+}
+
+.example .caption {
+    margin-top: .4em;
+    margin-bottom: .4em;
+    font-size: 16px;
+}
+
+.example pre {
+    border: 1px solid #333;
+    line-height: 16px;
+    padding: 5px;
+    background-color: #333;
+    color: #fff;
+    margin: 0;
+    font-size: 12px;
+}
+
+.example .exampleHeader {
+    font-size: 41px;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    text-align: center
+}
+
+.example .exampleContainer {
+    padding: 0;
+    margin: 20px;
+    box-sizing: content-box;
+    width: 100%;
+}
+
+.example .leftContainer {
+    float: left;
+    width: 36%;
+}
+
+.example .rightContainer {
+    float: left;
+    margin-left: 2%;
+    width: 58%;
+}
+
+.example .rightContainer pre {
+    padding-top: 10px;
+    padding-bottom: 11px
+}
+
 
 /*
 Animate.css - http://daneden.me/animate
@@ -389,5 +508,3 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     -o-transition: all .4s linear;
     transition: all .4s linear;
 }
-
-
