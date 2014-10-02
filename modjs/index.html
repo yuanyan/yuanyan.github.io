@@ -50,18 +50,18 @@
     <!-- Main hero unit for a primary marketing message or call to action -->
     <div class="row-fluid hero-unit">
         <div class="span12">
-            
+            <h2>Stopped developping on modjs and switched to <a style="color:rgb(239, 71, 22); text-decoration: underline" href="http://chajs.org"><img src="https://avatars0.githubusercontent.com/u/6767978?v=2&s=36">chajs.org</a></h2>
             <h1><img src="https://f.cloud.github.com/assets/677114/1474125/3f5b2460-4629-11e3-8a3d-6b4e0162e0cf.png"></h1>
             <p>JavaScript Workflow Tooling For Web Application</p>
 
             <!--<p><a class="btn btn-primary btn-large" href="#">Learn more &raquo;</a></p>-->
 
-            <p id="install"><b>Installing:</b> <u>npm install modjs -g</u>  <b>Version:</b> <a href="https://npmjs.org/package/modjs"><img src="https://badge.fury.io/js/modjs.png" alt="NPM version" style="max-width:100%;"></a> <b>Downloads:</b> <u id="installed">loading...</u>
+            <p id="install"><b>Installing:</b> <u>npm install modjs -g</u>  <b>Version:</b> <a href="https://npmjs.org/package/modjs"><img src="https://badge.fury.io/js/modjs.png" alt="NPM version" style="max-width:100%;"></a>
             </p>
 
             <p>
-                <iframe width="100px" scrolling="0" height="20px" frameborder="0" allowtransparency="true" src="http://mdo.github.com/github-buttons/github-btn.html?user=modulejs&amp;repo=modjs&amp;type=watch&amp;count=true" class="github-btn"></iframe>
-                <iframe width="100px" scrolling="0" height="20px" frameborder="0" allowtransparency="true" src="http://mdo.github.com/github-buttons/github-btn.html?user=modulejs&amp;repo=modjs&amp;type=fork&amp;count=true" class="github-btn"></iframe>
+                <iframe width="100px" scrolling="0" height="20px" frameborder="0" allowtransparency="true" src="http://mdo.github.com/github-buttons/github-btn.html?user=modjs&amp;repo=mod&amp;type=watch&amp;count=true" class="github-btn"></iframe>
+                <iframe width="100px" scrolling="0" height="20px" frameborder="0" allowtransparency="true" src="http://mdo.github.com/github-buttons/github-btn.html?user=modjs&amp;repo=mod&amp;type=fork&amp;count=true" class="github-btn"></iframe>
             </p>
             
             <p>
@@ -240,27 +240,15 @@
     <hr>
 
     <footer>
-        <p><a href="http://github.com/modulejs"> <img src="http://gravatar.com/avatar/cd822c0bacb048f5e2d66dce1fe78a73.png?s=50" width="25" height="25" alt="modulejs"></a></p>
+        <p><a href="http://github.com/modjs"> <img src="https://avatars2.githubusercontent.com/u/2940630?v=2&s=50" width="25" height="25" alt="modjs"></a></p>
     </footer>
 
 </div> <!-- /container -->
 
-<script src="http://pub.idqqimg.com/lib/jquery/1.9.0/jquery.min.js"></script>
+<script src="./vendor/jquery/jquery.js"></script>
 <script src="http://pub.idqqimg.com/lib/bootstrap/latest/js/bootstrap.min.js"></script>
 <script src="vendor/prism/prism.js"></script>
 <script>
-    var name = "modjs";
-    $.ajax({
-        dataType: "jsonp",
-        url: 'http://isaacs.iriscouch.com/downloads/_design/app/_view/pkg?group_level=3&start_key=["' + name + '"]&end_key=["' + name + '",{}]',
-        success:function(data){
-            var installed = 0;
-            $(data.rows).each(function(index, row){
-                installed += row.value;
-            })
-            $("#installed").html(installed);
-        }
-    });
     
     $(".features img").hover(
             function () {
