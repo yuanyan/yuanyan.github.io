@@ -9,10 +9,10 @@ pygments: true
 # Themes are encouraged to use these universal variables 
 # so be sure to set them if your theme uses them.
 #
-title : 元彥の笔记
+title : 元彦
 tagline: 
 author :
-  name : 元彥
+  name : 元彦
   email : yuanyan.cao@gmail.com
   github : yuanyan
   twitter : caoyuanyan

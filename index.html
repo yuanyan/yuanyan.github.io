@@ -1,31 +1,125 @@
----
-layout: page
-title:  main.js
-header:  Cease to struggle and you cease to live.
-tagline: Thomas Carlyle
----
-{% include JB/setup %}
+<!DOCTYPE html>
+<html>
+<head lang="zh-CN">
+    <meta charset="UTF-8">
+    <title>探索Web的未来，一路向前 - 元彦</title>
+    <meta name="keywords" content="Web, HTML5, WebQQ, Cha, Mod,">
+    <meta name="description" content="探索Web的未来，一路向前">
+    <meta name=viewport content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
 
-<h2> Posts </h2>
-<ol id="posts">
-  {% for post in site.posts %}
-    <li><a href="{{ BASE_PATH }}{{ post.url }}">{{ post.title }}</a></li>
-  {% endfor %}
-</ol>
+        html, body {
+            height: 100%;
+            font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+        }
 
-<h2> Projects  </h2>
-<ol id="pages">
-   <li><a href="http://madscript.com/modjs" target="_blank">http://madscript.com/modjs</a>     腾讯Web前端构建工具 Mod.js</li>
-   <li><a href="http://github.com/modulejs/ming" target="_blank">http://github.com/modulejs/ming/</a>     基于jQuery的Javascript工程方案 Ming</li>
-   <li><a href="https://github.com/modulejs/pragmatic-jquery" target="_blank">https://github.com/modulejs/pragmatic-jquery</a>     jQuery编程实践</li>
-   <li><a href="http://madscript.com/fanta/" target="_blank">http://madscript.com/fanta/</a>     函数式编程库Fanta</li>
-   <li><a href="http://madscript.com/pre/" target="_blank">http://madscript.com/pre/</a>     LESS编程库Pre</li>
-   <li><a href="https://github.com/yuanyan/kownyourchrome" target="_blank">https://github.com/yuanyan/kownyourchrome</a>    Know your chrome</li>
-   <li><a href="http://madscript.com/demo/" target="_blank">http://madscript.com/demo/</a>     DEMO集合</li>
-</ol>
+        html {
+            background: #000;
+        }
 
-<h2> Groups </h2>
-<ol id="group">
-    <li><a target="_blank" href="http://wp.qq.com/wpa/qunwpa?idkey=be8729234cd86828225c24089fd3164418cb7b1c9965dd5b6a6ce32d916df45a">TAB前端社区技术群（71287667）</a></li>
-    <li><a target="_blank" href="http://wp.qq.com/wpa/qunwpa?idkey=00af0a275052b60118b89380f0429dd8354ee8edf4eda87c4d1efc07bacadc8d">jQuery小组（289788813）</a></li>
-</ol>
+        main {
+            display: block;
+            min-height: 100%;
+            background: url(static/images/moon@2x.jpg);
+            background-position: 0 100%;;
+            background-size: 100%;
+            background-repeat: no-repeat;
+
+            -webkit-transition: all 1s ease;
+            -moz-transition: all 1s ease;
+            -o-transition: all 1s ease;
+            -ms-transition: all 1s ease;
+            transition: all 1s ease;
+        }
+
+        a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @font-face {
+            font-family: 'icomoon';
+            src:url('static/fonts/icomoon.eot?-lilua1');
+            src:url('static/fonts/icomoon.eot?#iefix-lilua1') format('embedded-opentype'),
+            url('static/fonts/icomoon.woff?-lilua1') format('woff'),
+            url('static/fonts/icomoon.ttf?-lilua1') format('truetype'),
+            url('static/fonts/icomoon.svg?-lilua1#icomoon') format('svg');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        [class^="icon-"], [class*=" icon-"] {
+            font-family: 'icomoon';
+            speak: none;
+            font-style: normal;
+            font-weight: normal;
+            font-variant: normal;
+            text-transform: none;
+
+            /* Better Font Rendering =========== */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .icon-weibo:before {
+            content: "\e602";
+        }
+        .icon-post:before {
+            content: "\e600";
+        }
+        .icon-twitter:before {
+            content: "\e601";
+        }
+        .icon-github:before {
+            content: "\e603";
+        }
+
+        .nav {
+            padding-top: 30px;
+            padding-left: 20px;
+            list-style: none;
+            font-size: 16px;
+            font-weight: 400;
+        }
+
+        .nav>li {
+            position: relative;
+            display: block;
+            padding: 2px;
+            margin: 2px;
+        }
+
+        .nav>li>i{
+            color: #fff;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+<main>
+    <ul class="nav">
+        <li><i class="icon-post"></i><a href="./posts.html" title="笔记">Post</a>
+        <li><i class="icon-github"></i><a href="https://github.com/yuanyan" title="Github">Github</a>
+        <li><i class="icon-weibo"></i><a href="http://weibo.com/caoyuanyan" title="微博">Weibo</a>
+        <li><i class="icon-twitter"></i><a href="https://twitter.com/caoyuanyan" title="Twitter">Twitter</a>
+    </ul>
+</main>
+
+</body>
+</html>
