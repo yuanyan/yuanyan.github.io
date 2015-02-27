@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title></title>
+</head>
+<body>
+<h1 tabindex>focus test</h1>
+<a href="#">return root</a>
+<form id="form">
+    <label for="text" tabindex="3">text</label>
+    <input id="text" type="text">  tabindex=0
+    <label for="password" tabindex="-1">passwork</label>
+    <input id="password" type="password" >tabindex=0
+</form>
+
+<pre id="logs"></pre>
+
+<script>
+    form.addEventListener("focus", function( event ) {
+        console.log(event)
+        event.target.style.outline = "1px solid pink";
+    }, true);
+    form.addEventListener("blur", function( event ) {
+        event.target.style.outline = "";
+    }, true);
+
+    var body = document.querySelector('body');
+    body.addEventListener('focus', function( event ) {
+        logs.innerHTML+='\nfocused';
+    }, true);
+
+    body.addEventListener('click', function( event ) {
+        logs.innerHTML+='\nclick';
+    }, true);
+
+    body.addEventListener('touchmove', function( event ) {
+        logs.innerHTML+='\ntouchmove';
+    }, true);
+</script>
+</body>
+</html>
