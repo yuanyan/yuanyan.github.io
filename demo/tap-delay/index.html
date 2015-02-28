@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=utf-8>
+    <meta name="viewport" content="width=device-width">
+    <style>a[href], button { touch-action: manipulation; }</style>
+    <title>Tap 300ms delay</title>
+    <style>
+    body {
+        padding: 2em 1em;
+    }
+    button {
+        font-size: 2em;
+    }
+    p {
+      font-size: 1.5em;
+    }
+    span {
+        color: red;
+    }
+    </style>
+
+</head>
+<body>
+  
+<h2>Chrome/Firefox Viewport meta ways</h2>
+<p>&lt;meta name="viewport" content="width=device-width"&gt;</p>
+<h2>W3C CSS ways</h2>
+<p>a[href], button { touch-action: manipulation; }</p>
+
+<button>Click</button>
+<p>Delay was <span>...</span> milliseconds.</p>
+<script>
+    var button = document.querySelector( "button" ),
+        span = document.querySelector( "span" ),
+        delay;
+
+    button.addEventListener( "touchend", function() {
+        delay = Date.now();
+    });
+
+    button.addEventListener( "click", function() {
+       span.innerHTML = ( delay && (Date.now() - delay) ) || 0;
+    });
+</script>
+
+</body>
+</html>
