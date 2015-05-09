@@ -83,46 +83,8 @@
             right: 0;
         }
 
-        @font-face {
-            font-family: 'icomoon';
-            src: url('static/fonts/icomoon.eot?-lilua1');
-            src: url('static/fonts/icomoon.eot?#iefix-lilua1') format('embedded-opentype'), url('static/fonts/icomoon.woff?-lilua1') format('woff'), url('static/fonts/icomoon.ttf?-lilua1') format('truetype'), url('static/fonts/icomoon.svg?-lilua1#icomoon') format('svg');
-            font-weight: normal;
-            font-style: normal;
-        }
-
-        [class^="icon-"],
-        [class*=" icon-"] {
-            font-family: 'icomoon';
-            speak: none;
-            font-style: normal;
-            font-weight: normal;
-            font-variant: normal;
-            text-transform: none;
-            /* Better Font Rendering =========== */
-
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-
-        .icon-weibo:before {
-            content: "\e602";
-        }
-
-        .icon-post:before {
-            content: "\e600";
-        }
-
-        .icon-twitter:before {
-            content: "\e601";
-        }
-
-        .icon-github:before {
-            content: "\e603";
+        h1, h2, h3 {
+            line-height: 2;
         }
 
         .cover {
@@ -133,16 +95,6 @@
 
         .center {
             text-align: center;
-        }
-
-        h1 {
-            font-size: 3em;
-            font-weight: bold;
-        }
-
-        h2 {
-            font-size: 2em;
-            font-weight: bold;
         }
 
         li ul,
@@ -163,14 +115,9 @@
         ol {
             list-style-type: decimal;
         }
-        /*.table-of-contents {
-          list-style: none; }
-
-        .table-of-contents ol {
-          list-style: none; }*/
 
         .table-of-contents > li {
-            font-weight: 600;
+            font-weight: 500;
         }
 
         .table-of-contents ol > li {
@@ -185,16 +132,30 @@
     </header>
     <main>
 
-
-
         <p class="center">
             <img class="cover" src="./cover.png">
         </p>
 
-        <p class="center">影响未来的技术栈</p>
+        <h1>遇见影响未来的技术栈</h1>
 
+        <p>通过阅读本书您将学习到:</p>
+        <ul>
+        <li>如何在已有Web应用中引入React.js与在已有Native应用中集成React Native</li>
+        <li>React.js与React Native的工作原理</li>
+        <li>React.js开发最佳实践</li>
+        <li>如何开发自定义React组件</li>
+        <li>如何测试React组件</li>
+        <li>...</li>
+        </ul>
         <h2>目录</h2>
         <ol class="table-of-contents">
+            <li>
+                前言
+                <ol>
+                    <li>React是什么，解决什么问题</li>
+                    <li>React Native是什么</li>
+                </ol>
+            </li>
             <li>React
                 <ol>
                     <li>React API</li>
@@ -242,8 +203,17 @@
             <li>React开发者工具</li>
         </ol>
 
-        <!-- <h2>关于作者</h2>
-    <p>当前就职于阿里巴巴</p> -->
+
+        <h2>Q&A</h2>
+        <h3>1. 本书是免费的吗？</h3>
+        <p>不是，但本书电子版的定价只要0.99元，不要问我为什么是0.99元。</p>
+
+        <h3>2. 什么时候能购买到本书？</h3>
+        <p>在充分的项目实践后，本书大致分3个阶段提供，第1阶段预计将于2015年12月完成，到时将开放购买，
+            第1阶段提供的内容会以大家更关注的React Native为主。</p>
+
+        <h2>关于作者</h2>
+        <p>元彦，生活在杭州，就职于阿里，全栈JavaScript布道者。</p>
     </main>
 
 </body>
