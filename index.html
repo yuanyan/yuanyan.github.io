@@ -1,153 +1,280 @@
 <!DOCTYPE html>
 <html>
+
 <head lang="zh-CN">
-    <meta charset="UTF-8">
-    <title>元彦 - Keep Walking</title>
-    <meta name="keywords" content="Web前端, JavaScript, HTML5, CSS3, 前端构建工具">
-    <meta name="description" content="工程师">
-    <meta name=viewport content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8">
+  <title>元彦 - Keep Walking</title>
+  <meta name="keywords" content="Web前端, JavaScript, HTML5, CSS3, 前端构建工具">
+  <meta name="description" content="工程师">
+  <meta name=viewport content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
 
-        html, body {
-            height: 100%;
-            font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-        }
+    html,
+    body {
+      height: 100%;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
 
-        html {
-            background: #000;
-        }
+    html {
+      background: #000;
+    }
 
-        main {
-            display: block;
-            min-height: 100%;
-            background: url(static/images/moon.jpg);
-            background-position: 0 100%;;
-            background-size: 100%;
-            background-repeat: no-repeat;
+    main {
+      display: block;
+      min-height: 100%;
+      background: url(static/images/moon.jpg);
+      background-position: 0 100%;
+      ;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      -webkit-transition: all 1s ease;
+      -moz-transition: all 1s ease;
+      -o-transition: all 1s ease;
+      -ms-transition: all 1s ease;
+      transition: all 1s ease;
+    }
 
-            -webkit-transition: all 1s ease;
-            -moz-transition: all 1s ease;
-            -o-transition: all 1s ease;
-            -ms-transition: all 1s ease;
-            transition: all 1s ease;
-        }
+    a {
+      color: #fff;
+      text-decoration: none;
+      display: inline-block;
+      vertical-align: middle;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+      box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      -moz-osx-font-smoothing: grayscale;
+      position: relative;
+      overflow: hidden;
+    }
 
-        a {
-            color: #fff;
-            text-decoration: none;
-            display: inline-block;
-            vertical-align: middle;
-            -webkit-transform: translateZ(0);
-            transform: translateZ(0);
-            box-shadow: 0 0 1px rgba(0, 0, 0, 0);
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-            -moz-osx-font-smoothing: grayscale;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        a:before {
-            content: "";
-            position: absolute;
-            z-index: -1;
-            left: 50%;
-            right: 50%;
-            bottom: 0;
-            background: #fff;
-            height: 1px;
-            -webkit-transition-property: left, right;
-            transition-property: left, right;
-            -webkit-transition-duration: 0.3s;
-            transition-duration: 0.3s;
-            -webkit-transition-timing-function: ease-out;
-            transition-timing-function: ease-out;
-        }
-        
-        a:hover:before{
-            left: 0;
-            right: 0;
-        }
+    a:before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      left: 50%;
+      right: 50%;
+      bottom: 0;
+      background: #fff;
+      height: 1px;
+      -webkit-transition-property: left, right;
+      transition-property: left, right;
+      -webkit-transition-duration: 0.3s;
+      transition-duration: 0.3s;
+      -webkit-transition-timing-function: ease-out;
+      transition-timing-function: ease-out;
+    }
 
-        @font-face {
-            font-family: 'icomoon';
-            src:url('static/fonts/icomoon.eot?-lilua1');
-            src:url('static/fonts/icomoon.eot?#iefix-lilua1') format('embedded-opentype'),
-            url('static/fonts/icomoon.woff?-lilua1') format('woff'),
-            url('static/fonts/icomoon.ttf?-lilua1') format('truetype'),
-            url('static/fonts/icomoon.svg?-lilua1#icomoon') format('svg');
-            font-weight: normal;
-            font-style: normal;
-        }
+    a:hover:before {
+      left: 0;
+      right: 0;
+    }
 
-        [class^="icon-"], [class*=" icon-"] {
-            font-family: 'icomoon';
-            speak: none;
-            font-style: normal;
-            font-weight: normal;
-            font-variant: normal;
-            text-transform: none;
+    @font-face {
+      font-family: 'icomoon';
+      src: url('static/fonts/icomoon.eot?-lilua1');
+      src: url('static/fonts/icomoon.eot?#iefix-lilua1') format('embedded-opentype'), url('static/fonts/icomoon.woff?-lilua1') format('woff'), url('static/fonts/icomoon.ttf?-lilua1') format('truetype'), url('static/fonts/icomoon.svg?-lilua1#icomoon') format('svg');
+      font-weight: normal;
+      font-style: normal;
+    }
 
-            /* Better Font Rendering =========== */
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+    [class^="icon-"],
+    [class*=" icon-"] {
+      font-family: 'icomoon';
+      speak: none;
+      font-style: normal;
+      font-weight: normal;
+      font-variant: normal;
+      text-transform: none;
+      /* Better Font Rendering =========== */
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
 
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
+    .icon-weibo:before {
+      content: "\e602";
+    }
 
-        .icon-weibo:before {
-            content: "\e602";
-        }
-        .icon-post:before {
-            content: "\e600";
-        }
-        .icon-twitter:before {
-            content: "\e601";
-        }
-        .icon-github:before {
-            content: "\e603";
-        }
+    .icon-post:before {
+      content: "\e600";
+    }
 
-        .nav {
-            padding-top: 30px;
-            padding-left: 20px;
-            list-style: none;
-            font-size: 16px;
-            font-weight: 400;
-        }
+    .icon-twitter:before {
+      content: "\e601";
+    }
 
-        .nav>li {
-            position: relative;
-            display: block;
-            padding: 2px;
-            margin: 2px;
-        }
+    .icon-github:before {
+      content: "\e603";
+    }
 
-        .nav>li>i{
-            color: #fff;
-            display: inline-block;
-            margin-right: 10px;
-        }
+    .nav {
+      padding-top: 30px;
+      padding-left: 20px;
+      list-style: none;
+      font-size: 16px;
+      font-weight: 400;
+    }
 
-    </style>
+    .nav>li {
+      position: relative;
+      display: block;
+      padding: 2px;
+      margin: 2px;
+    }
+
+    .nav>li>i {
+      color: #fff;
+      display: inline-block;
+      margin-right: 10px;
+    }
+
+    .ribbon {
+      /* The right and left classes determine the side we attach our banner to */
+      position: absolute;
+      /* Add a bit of padding to give some substance outside the "stitching" */
+      padding: 2px 0;
+      /* Set the base colour */
+      background-color: #f40;
+      /* Set a gradient: transparent black at the top to almost-transparent black at the bottom */
+      background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0)), to(rgba(0, 0, 0, 0.15)));
+      background-image: -webkit-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15));
+      background-image: -moz-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15));
+      background-image: -ms-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15));
+      background-image: -o-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15));
+      background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15));
+      /* Add a drop shadow */
+      -webkit-box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.5);
+      -moz-box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.5);
+      box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.5);
+      /* Set the font */
+      font: 700 13px "Helvetica Neue", Helvetica, Arial, sans-serif;
+      z-index: 9999;
+      pointer-events: auto;
+    }
+
+    .ribbon a,
+    .ribbon a:hover {
+      /* Set the text properties */
+      color: #fff;
+      font-size: 16px;
+      text-decoration: none;
+      text-shadow: 0 -1px rgba(0, 0, 0, 0.5);
+      text-align: center;
+      /* Set the geometry. If you fiddle with these you'll also need
+     to tweak the top and right values in .ribbon. */
+      width: 200px;
+      line-height: 20px;
+      /* Set the layout properties */
+      display: inline-block;
+      padding: 2px 0;
+      /* Add "stitching" effect */
+      border-width: 1px 0;
+      border-style: dotted;
+      border-color: #fff;
+      border-color: rgba(255, 255, 255, 0.7);
+    }
+
+    .ribbon-wrapper {
+      width: 150px;
+      height: 150px;
+      position: absolute;
+      overflow: hidden;
+      top: 0;
+      z-index: 9999;
+      pointer-events: none;
+    }
+
+    .ribbon-wrapper.fixed {
+      position: fixed;
+    }
+
+    .ribbon-wrapper.left {
+      left: 0;
+    }
+
+    .ribbon-wrapper.right {
+      right: 0;
+    }
+
+    .ribbon-wrapper.left-bottom {
+      position: fixed;
+      top: inherit;
+      bottom: 0;
+      left: 0;
+    }
+
+    .ribbon-wrapper.right-bottom {
+      position: fixed;
+      top: inherit;
+      bottom: 0;
+      right: 0;
+    }
+
+    .ribbon-wrapper.right .ribbon {
+      top: 42px;
+      right: -43px;
+      -webkit-transform: rotate(45deg);
+      -moz-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+      -o-transform: rotate(45deg);
+      transform: rotate(45deg);
+    }
+
+    .ribbon-wrapper.left .ribbon {
+      top: 42px;
+      left: -43px;
+      -webkit-transform: rotate(-45deg);
+      -moz-transform: rotate(-45deg);
+      -ms-transform: rotate(-45deg);
+      -o-transform: rotate(-45deg);
+      transform: rotate(-45deg);
+    }
+
+    .ribbon-wrapper.left-bottom .ribbon {
+      top: 80px;
+      left: -43px;
+      -webkit-transform: rotate(45deg);
+      -moz-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+      -o-transform: rotate(45deg);
+      transform: rotate(45deg);
+    }
+
+    .ribbon-wrapper.right-bottom .ribbon {
+      top: 80px;
+      right: -43px;
+      -webkit-transform: rotate(-45deg);
+      -moz-transform: rotate(-45deg);
+      -ms-transform: rotate(-45deg);
+      -o-transform: rotate(-45deg);
+      transform: rotate(-45deg);
+    }
+  </style>
 </head>
+
 <body>
-
-<main>
+  <main>
     <ul class="nav">
-        <li><i class="icon-post"></i><a href="./posts.html" title="笔记">Post</a>
-        <li><i class="icon-github"></i><a href="https://github.com/yuanyan" title="Github">Github</a>
-        <li><i class="icon-weibo"></i><a href="http://weibo.com/caoyuanyan" title="微博">Weibo</a>
-        <li><i class="icon-twitter"></i><a href="https://twitter.com/caoyuanyan" title="Twitter">Twitter</a>
+      <li><i class="icon-post"></i><a href="./posts.html" title="笔记">Post</a></li>
+      <li><i class="icon-github"></i><a href="https://github.com/yuanyan" title="Github">Github</a></li>
+      <li><i class="icon-weibo"></i><a href="http://weibo.com/caoyuanyan" title="微博">Weibo</a></li>
+      <li><i class="icon-twitter"></i><a href="https://twitter.com/caoyuanyan" title="Twitter">Twitter</a></li>
     </ul>
-</main>
-
+  </main>
+  <div class="ribbon-wrapper right">
+      <div class="ribbon">
+          <a href="./hiring/">We are hiring</a>
+      </div>
+  </div>
 </body>
+
 </html>
