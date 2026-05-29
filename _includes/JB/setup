@@ -16,7 +16,14 @@
     {% if site.JB.ASSET_PATH %}
       {% assign ASSET_PATH = site.JB.ASSET_PATH %}
     {% else %}
-      {% capture ASSET_PATH %}{{ BASE_PATH }}/assets/themes/{{ page.theme.name }}{% endcapture %}
+      {% if page.theme.name %}
+        {% assign theme_name = page.theme.name %}
+      {% elsif layout.theme.name %}
+        {% assign theme_name = layout.theme.name %}
+      {% else %}
+        {% assign theme_name = "twitter" %}
+      {% endif %}
+      {% capture ASSET_PATH %}{{ BASE_PATH }}/assets/themes/{{ theme_name }}{% endcapture %}
     {% endif %}  
   {% endif %}
 {% endcapture %}{% assign jbcache = nil %}

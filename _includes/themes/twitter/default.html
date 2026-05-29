@@ -15,7 +15,7 @@
     <!-- Le styles -->
     <link href="{{ ASSET_PATH }}/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="{{ ASSET_PATH }}/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
-    <link href="//madscript.com/static/css/style.css?v=2" rel="stylesheet" type="text/css" media="all">
+    <link href="{{ HOME_PATH }}static/css/style.css?v=2" rel="stylesheet" type="text/css" media="all">
 
     <!-- Le fav and touch icons -->
   <!-- Update these with your own images
@@ -57,23 +57,23 @@
 
       <footer>
           <!--<p class="pull-right"><a href="#"><i class="icon-hand-up icon-white"></i></a></p>-->
-          <p><a href="http://weibo.com/caoyuanyan"><img alt="yuanyan" class="img-circle" width="40" height="40" src="http://www.gravatar.com/avatar/8a27ebae306bac68b54c32832ded3e01?s=40"> </a></p>
+          <p><a href="https://weibo.com/caoyuanyan"><img alt="yuanyan" class="img-circle" width="40" height="40" src="https://secure.gravatar.com/avatar/8a27ebae306bac68b54c32832ded3e01?s=40"> </a></p>
       </footer>
 
     </div> <!-- /container -->
     
     <div id="thumbs" class="hide">
-      <a href="//madscript.com/static/bg/1.jpg"></a>      
-      <a href="//madscript.com/static/bg/2.jpg"></a>      
-      <a href="//madscript.com/static/bg/3.jpg"></a>           
-      <a href="//madscript.com/static/bg/4.jpg"></a>           
+      <a href="{{ HOME_PATH }}static/bg/1.jpg"></a>      
+      <a href="{{ HOME_PATH }}static/bg/2.jpg"></a>      
+      <a href="{{ HOME_PATH }}static/bg/3.jpg"></a>           
+      <a href="{{ HOME_PATH }}static/bg/4.jpg"></a>           
     </div>
 
-    <script src="//http://code.jquery.com/jquery-1.11.0.min.js"></script>
-    <script>window.jQuery || document.write('<script src="static/js/jquery.min.js"><\/script>')</script>
+    <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script>window.jQuery || document.write('<script src="{{ HOME_PATH }}static/js/jquery.min.js"><\/script>')</script>
     <script src="{{ ASSET_PATH }}/bootstrap/js/bootstrap.min.js"></script>
-    <script src="//ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
-    <script src="//madscript.com/static/js/main.js"></script>
+    <script src="https://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+    <script src="{{ HOME_PATH }}static/js/main.js"></script>
 
     {% include JB/analytics %}
   </body>
