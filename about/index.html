@@ -86,9 +86,36 @@
       display: grid;
       grid-template-columns: 8ch 1fr;
       gap: 14px;
+      align-items: center;
       padding: 12px 14px;
       border: 2px solid var(--line);
       background: #10100d;
+    }
+
+    .value {
+      display: inline-flex;
+      align-items: center;
+      min-width: 0;
+      gap: 10px;
+      line-height: 1.2;
+    }
+
+    .icon {
+      display: inline-flex;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .icon svg {
+      display: block;
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
     }
 
     .link:hover,
@@ -106,7 +133,9 @@
     }
 
     .link:hover .key,
-    .link:focus .key {
+    .link:hover .icon,
+    .link:focus .key,
+    .link:focus .icon {
       color: var(--bg);
     }
 
@@ -147,12 +176,12 @@
   <main>
     <p class="eyebrow">About</p>
     <h1>Yuanyan</h1>
-    <p class="summary">Engineer focused on front-end architecture, JavaScript, performance and practical tooling.</p>
+    <p class="summary">Engineer</p>
 
     <ul aria-label="Contact links">
-      <li><a class="link" href="mailto:yuanyan.cao@gmail.com"><span class="key">Email</span><span>yuanyan.cao@gmail.com</span></a></li>
-      <li><a class="link" href="https://twitter.com/caoyuanyan"><span class="key">Twitter</span><span>@caoyuanyan</span></a></li>
-      <li><a class="link" href="https://github.com/yuanyan"><span class="key">GitHub</span><span>github.com/yuanyan</span></a></li>
+      <li><a class="link" href="mailto:yuanyan.cao@gmail.com"><span class="key">Email</span><span class="value">yuanyan.cao@gmail.com</span></a></li>
+      <li><a class="link" href="https://x.com/caoyuanyan"><span class="key">X</span><span class="value"><span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M18.9 2h3.3l-7.2 8.2L23.5 22h-6.7l-5.2-6.8L5.6 22H2.3l7.7-8.8L1.8 2h6.8l4.7 6.2L18.9 2Zm-1.2 17.9h1.8L7.6 4H5.7l12 15.9Z"/></svg></span>@caoyuanyan</span></a></li>
+      <li><a class="link" href="https://github.com/yuanyan"><span class="key">GitHub</span><span class="value">github.com/yuanyan</span></a></li>
     </ul>
 
     <a class="home" href="../">Back home</a>

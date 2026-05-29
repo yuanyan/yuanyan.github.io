@@ -27,15 +27,23 @@ body {
 a {
     color: #8fd14f;
     text-decoration: none;
-    border-bottom: 2px solid currentColor;
+    border-bottom: 1px solid rgba(143, 209, 79, 0.55);
 }
 
-a:hover,
+a:hover {
+    color: #f2f0df;
+    background: transparent;
+    border-bottom-color: #f2f0df;
+    outline: 0;
+    text-decoration: none;
+}
+
 a:focus {
-    color: #0c0c0a;
-    background: #f2f0df;
-    outline: 2px solid #8fd14f;
-    outline-offset: 2px;
+    color: #f2f0df;
+    background: transparent;
+    border-bottom-color: #8fd14f;
+    outline: 1px solid rgba(143, 209, 79, 0.55);
+    outline-offset: 3px;
     text-decoration: none;
 }
 
@@ -61,15 +69,19 @@ body > .navbar {
 }
 
 .navbar .container {
+    display: flex;
+    align-items: center;
     width: auto;
     max-width: 940px;
+    min-height: 76px;
     padding: 0 16px;
 }
 
 body > .navbar .brand {
-    float: left;
+    flex: 0 0 auto;
+    float: none;
     margin-left: 0;
-    padding: 14px 0;
+    padding: 0;
     color: #f2f0df;
     font-weight: 700;
     letter-spacing: 0.12em;
@@ -80,20 +92,42 @@ body > .navbar .brand {
 
 body > .navbar .brand:hover,
 body > .navbar .brand:focus {
-    color: #0c0c0a;
-    background: #f2f0df;
+    color: #8fd14f;
+    background: transparent;
+    outline: 0;
     text-shadow: none;
+}
+
+.navbar .nav-collapse {
+    flex: 1 1 auto;
 }
 
 .navbar .nav {
-    margin: 0 0 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    float: none;
+    margin: 0 0 0 48px;
+}
+
+.navbar .nav > li {
+    float: none;
+    margin: 0;
+    line-height: 1;
+}
+
+.navbar .nav > li + li {
+    margin-top: 0;
 }
 
 .navbar .nav > li > a {
-    padding: 14px 10px;
+    display: block;
+    padding: 8px 0;
     color: #aaa58f;
+    line-height: 1.2;
     text-shadow: none;
-    border-bottom: 0;
+    background: transparent;
+    border-bottom: 2px solid transparent;
 }
 
 .navbar .nav > .active > a,
@@ -101,8 +135,10 @@ body > .navbar .brand:focus {
 .navbar .nav > .active > a:focus,
 .navbar .nav > li > a:hover,
 .navbar .nav > li > a:focus {
-    color: #0c0c0a;
-    background: #f2f0df;
+    color: #f2f0df;
+    background: transparent;
+    border-bottom-color: #8fd14f;
+    outline: 0;
 }
 
 .btn-navbar {
@@ -262,7 +298,27 @@ section {
 
 #posts li {
     padding: 8px 0;
-    border-bottom: 2px solid #2b2b24;
+    border-bottom: 1px solid #2b2b24;
+}
+
+#posts a {
+    color: #d8d2b8;
+    border-bottom-color: transparent;
+}
+
+#posts a:hover {
+    color: #f2f0df;
+    background: transparent;
+    border-bottom-color: #8fd14f;
+    outline: 0;
+}
+
+#posts a:focus {
+    color: #f2f0df;
+    background: transparent;
+    border-bottom-color: #8fd14f;
+    outline: 1px solid rgba(143, 209, 79, 0.45);
+    outline-offset: 3px;
 }
 
 .date,
@@ -378,19 +434,34 @@ section {
         margin-bottom: 16px;
     }
 
+    .navbar .container {
+        flex-wrap: wrap;
+        min-height: 64px;
+    }
+
     body > .navbar .brand {
-        float: left;
+        float: none;
         padding-left: 0;
         padding-right: 0;
+    }
+
+    .btn-navbar {
+        margin-left: auto;
+    }
+
+    .navbar .nav-collapse {
+        flex-basis: 100%;
     }
 
     .navbar .nav {
-        margin: 0;
+        display: block;
+        margin: 12px 0 0;
+        padding: 0 0 12px;
     }
 
     .navbar .nav > li > a {
-        padding-left: 0;
-        padding-right: 0;
+        display: inline-block;
+        padding: 8px 0;
     }
 
     .content {
