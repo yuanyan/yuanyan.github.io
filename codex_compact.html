@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Codex Server-Side Compact × Responses API · Interactive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:          #F5F1EB;
+    --bg-soft:     #EFEAE0;
+    --paper:       #FAF7F2;
+    --ink:         #1A1915;
+    --ink-soft:    #4A453C;
+    --ink-mute:    #7A7468;
+    --hair:        #D9D1C2;
+    --hair-soft:   #E7E0D1;
+    --accent:      #C96442;
+    --accent-deep: #A8492C;
+    --accent-soft: #F1D8C9;
+    --warm-yellow: #D6A14C;
+    --warm-green:  #5A7A4F;
+    --warm-plum:   #7A4D6B;
+    --warm-blue:   #4A6B8A;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--ink); }
+  body {
+    font-family: 'Inter', -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+    font-size: 14px; line-height: 1.6;
+    padding: 56px 40px 96px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+
+  /* ===== Header ===== */
+  .eyebrow {
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent); font-weight: 600; margin-bottom: 14px;
+  }
+  h1 {
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-weight: 500; font-size: 44px; line-height: 1.15;
+    letter-spacing: -0.01em; color: var(--ink); margin-bottom: 18px;
+  }
+  h1 em { font-style: italic; color: var(--accent); font-weight: 500; }
+  .lede {
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 17px; line-height: 1.55; color: var(--ink-soft);
+    max-width: 760px; margin-bottom: 12px;
+  }
+  .lede code { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--accent-deep); background: var(--accent-soft); padding: 1px 6px; border-radius: 4px; }
+  .meta-row {
+    display: flex; gap: 18px; font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--ink-mute); margin-bottom: 56px;
+    padding-bottom: 24px; border-bottom: 1px solid var(--hair);
+  }
+  .meta-row span b { color: var(--ink-soft); font-weight: 500; }
+
+  h2 {
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-weight: 500; font-size: 26px; color: var(--ink);
+    margin: 64px 0 6px; letter-spacing: -0.005em;
+  }
+  h2 .num {
+    display: inline-block; font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; color: var(--accent); margin-right: 12px;
+    vertical-align: middle; border: 1px solid var(--accent);
+    width: 26px; height: 26px; line-height: 24px;
+    text-align: center; border-radius: 50%; font-weight: 500;
+  }
+  .section-sub {
+    color: var(--ink-mute); margin-bottom: 24px; font-size: 14px;
+    max-width: 760px;
+  }
+  .section-sub code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--accent-deep); }
+
+  /* ===== Stage container ===== */
+  .stage {
+    background: var(--paper);
+    border: 1px solid var(--hair);
+    border-radius: 14px;
+    padding: 24px;
+    position: relative;
+  }
+  .stage-toolbar {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 18px; padding-bottom: 14px;
+    border-bottom: 1px dashed var(--hair);
+    flex-wrap: wrap;
+  }
+  .btn {
+    font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500;
+    padding: 6px 14px; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--hair); background: var(--paper);
+    color: var(--ink-soft); transition: all 0.15s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn.primary:hover { background: var(--accent-deep); border-color: var(--accent-deep); color: #fff; }
+  .btn.ghost { background: transparent; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .step-readout {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--ink-mute);
+    letter-spacing: 0.04em;
+  }
+  .step-readout b { color: var(--accent-deep); }
+
+  /* speed picker */
+  .speed-ctrl {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 6px 3px 10px; border-radius: 999px;
+    background: var(--bg-soft); border: 1px solid var(--hair);
+  }
+  .speed-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--ink-mute);
+    letter-spacing: 0.06em; margin-right: 4px;
+  }
+  .speed-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px; font-weight: 500;
+    padding: 3px 8px; border-radius: 999px;
+    border: none; background: transparent; cursor: pointer;
+    color: var(--ink-mute); transition: all 0.15s;
+  }
+  .speed-btn:hover { color: var(--accent); }
+  .speed-btn.on {
+    background: var(--paper); color: var(--accent-deep);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  }
+
+  /* ============================================
+     SECTION 1 — Pipeline Animation
+     ============================================ */
+  .pipe {
+    display: grid;
+    grid-template-columns: 110px 1fr 1fr 1fr 1fr 1fr;
+    gap: 0; position: relative;
+    min-height: 360px;
+  }
+  .pipe-col {
+    border-right: 1px dashed var(--hair-soft);
+    padding: 0 10px;
+    position: relative;
+  }
+  .pipe-col:last-child { border-right: none; }
+  .pipe-col-head {
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-mute);
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--hair);
+    margin-bottom: 18px;
+  }
+  .pipe-col-head b { display: block; color: var(--ink); font-size: 11px; font-family: 'Inter', sans-serif; font-weight: 600; margin-bottom: 3px; letter-spacing: 0; text-transform: none; }
+  .pipe-col-head.hi b { color: var(--accent-deep); }
+  .pipe-row-label {
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 12px; color: var(--ink-mute);
+    text-align: right; padding-right: 12px;
+    line-height: 1.4;
+  }
+  .node {
+    background: var(--bg-soft);
+    border: 1px solid var(--hair);
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin: 4px 2px;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    line-height: 1.4;
+    opacity: 0.28;
+    transition: all 0.45s cubic-bezier(.4,0,.2,1);
+    transform: translateY(4px) scale(0.98);
+  }
+  .node code { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--accent-deep); background: rgba(201,100,66,0.08); padding: 0 4px; border-radius: 3px; }
+  .node b { color: var(--ink); font-weight: 600; }
+  .node.active {
+    opacity: 1; transform: translateY(0) scale(1);
+    background: var(--paper);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft), 0 4px 14px -6px rgba(201,100,66,0.4);
+  }
+  .node.done { opacity: 0.78; transform: translateY(0) scale(1); }
+  .node.hot.active {
+    background: linear-gradient(135deg, #FFF8F2 0%, var(--accent-soft) 100%);
+    border-color: var(--accent-deep);
+  }
+  .node .pin {
+    display: inline-block;
+    width: 16px; height: 16px; line-height: 14px;
+    border-radius: 50%; text-align: center;
+    background: var(--accent); color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; font-weight: 600;
+    margin-right: 5px;
+  }
+  .node.hot .pin { background: var(--accent-deep); }
+  .node.cache .pin { background: var(--warm-green); }
+  .node.cache.active { border-color: var(--warm-green); box-shadow: 0 0 0 3px rgba(90,122,79,0.18); }
+  .node.write .pin { background: var(--warm-plum); }
+  .node.write.active { border-color: var(--warm-plum); box-shadow: 0 0 0 3px rgba(122,77,107,0.18); }
+
+  /* SSE packet flying overlay */
+  .packets-layer {
+    position: absolute; inset: 0; pointer-events: none;
+    overflow: hidden; border-radius: 14px;
+  }
+  .pkt {
+    position: absolute;
+    width: 28px; height: 14px;
+    border-radius: 3px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px; line-height: 14px; text-align: center;
+    font-weight: 600;
+    background: var(--accent); color: #fff;
+    opacity: 0; transition: all 0.6s cubic-bezier(.4,0,.2,1);
+    box-shadow: 0 2px 6px rgba(201,100,66,0.35);
+  }
+  .pkt.sse { background: var(--warm-plum); }
+  .pkt.show { opacity: 1; }
+  .stage-caption {
+    margin-top: 18px; padding-top: 14px;
+    border-top: 1px dashed var(--hair);
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 14px; line-height: 1.55;
+    color: var(--ink-soft); min-height: 44px;
+    transition: opacity 0.3s;
+  }
+  .stage-caption b { color: var(--accent-deep); font-weight: 600; }
+  .stage-caption code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--accent-deep); background: var(--accent-soft); padding: 1px 5px; border-radius: 3px; }
+
+  /* ============================================
+     SECTION 2 — Token Tape Animation
+     ============================================ */
+  .tape-block { margin-top: 10px; }
+  .tape-row {
+    display: grid;
+    grid-template-columns: 150px 1fr 90px;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+    transition: opacity 0.4s, transform 0.4s;
+    opacity: 0.25;
+    transform: translateX(-6px);
+  }
+  .tape-row.show { opacity: 1; transform: translateX(0); }
+  .tape-row.fade { opacity: 0.35; }
+  .tape-row-label {
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 13px; color: var(--ink-soft); line-height: 1.35;
+  }
+  .tape-row-label b { color: var(--ink); display: block; font-weight: 600; margin-top: 2px; font-size: 13.5px; }
+  .tape-row-label .tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; padding: 1px 6px;
+    border-radius: 3px; background: var(--bg-soft);
+    color: var(--ink-mute); letter-spacing: 0.04em;
+    margin-top: 4px;
+  }
+  .tape {
+    display: flex; height: 44px; border-radius: 8px; overflow: hidden;
+    border: 1px solid var(--hair);
+    background: var(--bg-soft);
+  }
+  .seg {
+    color: #fff; font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px; font-weight: 500;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 6px;
+    border-right: 1px solid rgba(255,255,255,0.18);
+    text-shadow: 0 1px 1px rgba(0,0,0,0.18);
+    transition: flex 0.6s cubic-bezier(.4,0,.2,1), opacity 0.4s, background 0.4s;
+    white-space: nowrap; overflow: hidden;
+  }
+  .seg:last-child { border-right: none; }
+  .seg-system  { background: var(--warm-blue); }
+  .seg-tools   { background: #6B7B8F; }
+  .seg-agents  { background: #5A6F87; }
+  .seg-hist    { background: #C9A48C; color: #5a3a26; text-shadow: none; }
+  .seg-pruned  { background: repeating-linear-gradient(45deg, #d6c9b3 0 6px, #c4b69e 6px 12px); color: #6b5e4a; text-shadow: none; }
+  .seg-compact { background: repeating-linear-gradient(45deg, #7A4D6B 0 6px, #623e57 6px 12px); }
+  .seg-user    { background: var(--accent); }
+  .seg-cached  { background: var(--warm-green); position: relative; }
+  .seg-write   { background: var(--warm-plum); }
+  .seg-cached::after {
+    content: '✓ KV HIT';
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    font-size: 9px; letter-spacing: 0.06em; opacity: 0.85;
+  }
+  .tape-tokens {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; font-weight: 600;
+    color: var(--ink); text-align: right;
+    transition: color 0.4s;
+  }
+  .tape-tokens.shrunk { color: var(--warm-green); }
+  .tape-tokens.grew { color: var(--accent-deep); }
+
+  /* legend */
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 16px;
+    margin-top: 18px; padding-top: 16px;
+    border-top: 1px dashed var(--hair);
+    font-size: 11.5px; color: var(--ink-soft);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i {
+    display: inline-block; width: 12px; height: 12px;
+    border-radius: 3px; border: 1px solid rgba(0,0,0,0.08);
+  }
+
+  /* ============================================
+     SECTION 3 — Compare Toggle
+     ============================================ */
+  .compare-toolbar {
+    display: flex; gap: 0; background: var(--bg-soft);
+    border-radius: 999px; padding: 4px;
+    width: fit-content; margin-bottom: 20px;
+    border: 1px solid var(--hair);
+  }
+  .seg-btn {
+    padding: 8px 22px; cursor: pointer; border-radius: 999px;
+    font-family: 'Inter', sans-serif; font-size: 12.5px; font-weight: 500;
+    color: var(--ink-mute); transition: all 0.2s;
+    border: none; background: transparent;
+  }
+  .seg-btn.on { background: var(--paper); color: var(--accent-deep); box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .compare-grid {
+    display: grid; grid-template-columns: 200px 1fr 1fr;
+    gap: 1px; background: var(--hair);
+    border: 1px solid var(--hair); border-radius: 10px; overflow: hidden;
+  }
+  .compare-grid > div { background: var(--paper); padding: 14px 16px; font-size: 13px; }
+  .cg-head {
+    font-family: 'Inter', sans-serif; font-weight: 600;
+    background: var(--bg-soft) !important; color: var(--ink);
+  }
+  .cg-head.local { color: var(--ink-soft); }
+  .cg-head.server { color: var(--accent-deep); }
+  .cg-row-label {
+    background: var(--bg-soft) !important;
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-weight: 500; color: var(--ink-soft);
+  }
+  .cg-cell { color: var(--ink-soft); line-height: 1.55; transition: background 0.3s; }
+  .cg-cell code { font-family: 'JetBrains Mono', monospace; font-size: 11.5px; color: var(--accent-deep); background: var(--accent-soft); padding: 1px 5px; border-radius: 3px; }
+  .cg-cell b { color: var(--ink); font-weight: 600; }
+  .cg-cell.spot { background: #FFF6EE; }
+  .cg-cell .verdict {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace; font-size: 9.5px;
+    padding: 1px 6px; border-radius: 3px; margin-right: 6px;
+    letter-spacing: 0.04em; font-weight: 600;
+    background: rgba(168,73,44,0.12); color: var(--accent-deep);
+  }
+  .cg-cell .verdict.good { background: rgba(90,122,79,0.16); color: var(--warm-green); }
+  .cg-cell .verdict.bad { background: rgba(122,116,104,0.16); color: var(--ink-mute); }
+
+  /* ============================================
+     SECTION 4 — Hypothesis Tiles
+     ============================================ */
+  .hyp-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 10px; margin-bottom: 18px;
+  }
+  .hyp-tile {
+    background: var(--paper);
+    border: 1px solid var(--hair);
+    border-left: 3px solid var(--hair);
+    border-radius: 8px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .hyp-tile:hover { transform: translateY(-2px); box-shadow: 0 8px 18px -10px rgba(0,0,0,0.15); }
+  .hyp-tile.strong { border-left-color: var(--warm-green); }
+  .hyp-tile.mid    { border-left-color: var(--warm-yellow); }
+  .hyp-tile.weak   { border-left-color: var(--ink-mute); background: #F2EEE7; }
+  .hyp-tile.active { box-shadow: 0 0 0 2px var(--accent), 0 8px 18px -10px rgba(201,100,66,0.3); transform: translateY(-2px); }
+  .hyp-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 999px;
+    background: rgba(90,122,79,0.14); color: var(--warm-green);
+    font-weight: 600;
+  }
+  .hyp-tile.mid .hyp-badge { background: rgba(214,161,76,0.18); color: #8a6520; }
+  .hyp-tile.weak .hyp-badge { background: rgba(122,116,104,0.18); color: var(--ink-soft); }
+  .hyp-code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px; color: var(--ink); font-weight: 600;
+    margin-top: 8px;
+  }
+  .hyp-tile.weak .hyp-code { color: var(--ink-soft); text-decoration: line-through; text-decoration-color: rgba(168,73,44,0.4); text-decoration-thickness: 1.5px; }
+  .hyp-name {
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 12.5px; color: var(--ink-soft);
+    margin-top: 4px; line-height: 1.35;
+  }
+  .hyp-detail {
+    background: var(--paper);
+    border: 1px solid var(--hair);
+    border-radius: 10px;
+    padding: 20px 24px;
+    min-height: 120px;
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 14.5px; line-height: 1.65;
+    color: var(--ink-soft);
+    transition: opacity 0.25s;
+  }
+  .hyp-detail b { color: var(--ink); font-weight: 600; }
+  .hyp-detail code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--accent-deep); background: var(--accent-soft); padding: 1px 5px; border-radius: 3px; }
+  .hyp-detail .dh {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 10px; padding-bottom: 10px;
+    border-bottom: 1px dashed var(--hair);
+  }
+  .hyp-detail .dh .t {
+    font-family: 'Inter', sans-serif; font-weight: 600;
+    color: var(--ink); font-size: 15px;
+  }
+  .callout {
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    padding: 16px 22px;
+    margin-top: 22px;
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-size: 14px; line-height: 1.6;
+    color: var(--ink);
+  }
+  .callout b { color: var(--accent-deep); }
+  .callout .label {
+    font-family: 'Inter', sans-serif; font-size: 10px;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--accent-deep); font-weight: 600;
+    margin-bottom: 6px; display: block;
+  }
+
+  footer {
+    margin-top: 64px; padding-top: 24px;
+    border-top: 1px solid var(--hair);
+    font-size: 11.5px; color: var(--ink-mute);
+    font-family: 'JetBrains Mono', monospace;
+    text-align: center;
+  }
+  footer a { color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--accent); }
+  footer a:hover { color: var(--accent-deep); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">Interactive Architecture Note · 2026·05</div>
+  <h1>Codex 服务端 <em>Compaction</em> × Responses API<br>端到端工作原理</h1>
+  <p class="lede">
+    点击下方每个阶段的 <b>Play</b> 按钮观察 token / 数据包 / KV 状态的逐步演化 ——
+    重点搞清 <code>context_management</code> 怎么在<b>单次 stream 内</b>完成压缩,
+    以及"旧前缀 KV"为什么依然命中。
+  </p>
+  <div class="meta-row">
+    <span><b>API</b> /v1/responses</span>
+    <span><b>threshold</b> 200K tokens</span>
+    <span><b>compact item</b> ≈ 2-8K opaque blob</span>
+    <span><b>ZDR</b> store=false</span>
+  </div>
+
+  <!-- ============================================
+       SECTION 1 — Pipeline animation
+       ============================================ -->
+  <h2><span class="num">1</span>请求泳道动画</h2>
+  <p class="section-sub">
+    单流编排:点 Play,看请求如何从终端走到推理引擎,在<b>同一条 SSE</b> 内触发 compact、prune、续推。
+  </p>
+
+  <div class="stage">
+    <div class="stage-toolbar">
+      <button class="btn primary" id="p1Play">▶ Play</button>
+      <button class="btn ghost" id="p1Step">⏭ Step</button>
+      <button class="btn ghost" id="p1Reset">↺ Reset</button>
+      <div class="speed-ctrl" data-target="p1">
+        <span class="speed-label">速度</span>
+        <button class="speed-btn" data-mult="0.5">0.5×</button>
+        <button class="speed-btn on" data-mult="1">1×</button>
+        <button class="speed-btn" data-mult="1.5">1.5×</button>
+        <button class="speed-btn" data-mult="2">2×</button>
+      </div>
+      <span class="step-readout">Step <b id="p1StepNum">0</b> / 7 · <span id="p1Phase">idle</span></span>
+    </div>
+
+    <div class="pipe" id="pipe">
+      <div></div>
+      <div class="pipe-col-head"><b>User</b>终端</div>
+      <div class="pipe-col-head"><b>Codex CLI</b>codex-rs / Session</div>
+      <div class="pipe-col-head"><b>OpenAI SDK</b>HTTP · SSE</div>
+      <div class="pipe-col-head hi"><b>/responses 网关</b>Responses API</div>
+      <div class="pipe-col-head"><b>Inference</b>GPT-5.5 (default)</div>
+      <div class="pipe-col-head"><b>Prefix Cache</b>KV store</div>
+
+      <!-- Row 1 -->
+      <div class="pipe-row-label">Turn N<br>start</div>
+      <div class="pipe-col"><div class="node" data-step="1"><span class="pin">1</span>输入 <code>codex "refactor"</code></div></div>
+      <div class="pipe-col"><div class="node" data-step="1"><span class="pin">2</span>组装 prompt:<br>history + AGENTS.md + tools</div></div>
+      <div class="pipe-col"><div class="node" data-step="1"><span class="pin">3</span><code>POST /v1/responses</code><br>含 <code>compact_threshold</code></div></div>
+      <div class="pipe-col"><div class="node" data-step="2"><span class="pin">4</span>真实 tokenizer 渲染,<br>统计 tokens</div></div>
+      <div class="pipe-col"></div>
+      <div class="pipe-col"><div class="node cache" data-step="2"><span class="pin">5</span>稳定前缀 KV<br><b>HIT</b></div></div>
+
+      <!-- Row 2 -->
+      <div class="pipe-row-label">阈值<br>check</div>
+      <div class="pipe-col"></div>
+      <div class="pipe-col"></div>
+      <div class="pipe-col"></div>
+      <div class="pipe-col"><div class="node hot" data-step="3"><span class="pin">6</span><b>tokens ≥ 200K?</b><br>→ 触发 compact pass</div></div>
+      <div class="pipe-col"></div>
+      <div class="pipe-col"></div>
+
+      <!-- Row 3 -->
+      <div class="pipe-row-label">Compact<br>pass</div>
+      <div class="pipe-col"></div>
+      <div class="pipe-col"></div>
+      <div class="pipe-col"></div>
+      <div class="pipe-col"><div class="node hot" data-step="4"><span class="pin">7</span>同流内编排:<br>暂停主推理 → 调内置 summarizer</div></div>
+      <div class="pipe-col"><div class="node hot" data-step="4"><span class="pin">8</span>summarizer 推理<br>output: <b>opaque blob</b></div></div>
+      <div class="pipe-col"><div class="node write" data-step="4"><span class="pin">9</span>新 blob 的 KV<br>写入 cache</div></div>
+
+      <!-- Row 4 -->
+      <div class="pipe-row-label">SSE<br>回吐</div>
+      <div class="pipe-col"></div>
+      <div class="pipe-col"><div class="node" data-step="6"><span class="pin">11</span>SDK 监听 SSE<br>写入 <code>~/.codex/sessions/</code></div></div>
+      <div class="pipe-col"><div class="node" data-step="5"><span class="pin">10</span><code>output_item.added</code><br>type=compaction</div></div>
+      <div class="pipe-col"><div class="node hot" data-step="5"><span class="pin">★</span><b>prune 服务端 ctx</b><br>同流续推 — 无需重发</div></div>
+      <div class="pipe-col"><div class="node" data-step="6"><span class="pin">★</span>续推 assistant<br>token → SSE</div></div>
+      <div class="pipe-col"></div>
+
+      <!-- Row 5 -->
+      <div class="pipe-row-label">Turn N+1</div>
+      <div class="pipe-col"><div class="node" data-step="7"><span class="pin">12</span>用户继续提问</div></div>
+      <div class="pipe-col"><div class="node" data-step="7"><span class="pin">13</span>请求 body 极小:<br>新 user msg + compaction item</div></div>
+      <div class="pipe-col"></div>
+      <div class="pipe-col"><div class="node" data-step="7"><span class="pin">14</span>解密 reasoning state<br>注入新 prompt</div></div>
+      <div class="pipe-col"><div class="node" data-step="7"><span class="pin">15</span>基于压缩状态续推</div></div>
+      <div class="pipe-col"><div class="node cache" data-step="7"><span class="pin">16</span>稳定前缀 + compaction<br><b>KV HIT</b></div></div>
+
+      <div class="packets-layer" id="packets"></div>
+    </div>
+
+    <div class="stage-caption" id="p1Cap">
+      点 <b>Play</b> 开始;或点 <b>Step</b> 一步步走。每步会高亮哪些进程在工作、SSE 飞了什么包。
+    </div>
+  </div>
+
+  <!-- ============================================
+       SECTION 2 — Token Tape
+       ============================================ -->
+  <h2><span class="num">2</span>Token 序列演化 — 为什么旧前缀仍然命中</h2>
+  <p class="section-sub">
+    OpenAI prefix cache 按 token 序列<b>从开头逐 token 哈希</b>。点 Play,看 4 个阶段下 token tape 怎么变。
+  </p>
+
+  <div class="stage">
+    <div class="stage-toolbar">
+      <button class="btn primary" id="t1Play">▶ Play sequence</button>
+      <button class="btn ghost" id="t1Step">⏭ Step</button>
+      <button class="btn ghost" id="t1Reset">↺ Reset</button>
+      <div class="speed-ctrl" data-target="t1">
+        <span class="speed-label">速度</span>
+        <button class="speed-btn" data-mult="0.5">0.5×</button>
+        <button class="speed-btn on" data-mult="1">1×</button>
+        <button class="speed-btn" data-mult="1.5">1.5×</button>
+        <button class="speed-btn" data-mult="2">2×</button>
+      </div>
+      <span class="step-readout">阶段 <b id="t1StepNum">0</b> / 4</span>
+    </div>
+
+    <div class="tape-block" id="tapeBlock">
+      <!-- Row 1: Turn N before compact -->
+      <div class="tape-row" data-stage="1">
+        <div class="tape-row-label">阶段 ①<b>Turn N · 触发前</b><span class="tag">渲染 ≥ 200K</span></div>
+        <div class="tape" data-row="1"></div>
+        <div class="tape-tokens" data-row="1">≈ 200K</div>
+      </div>
+      <!-- Row 2: Compact pass -->
+      <div class="tape-row" data-stage="2">
+        <div class="tape-row-label">阶段 ②<b>Compact pass</b><span class="tag">同流 prune</span></div>
+        <div class="tape" data-row="2"></div>
+        <div class="tape-tokens" data-row="2">→ ≈ 8K</div>
+      </div>
+      <!-- Row 3: Turn N+1 -->
+      <div class="tape-row" data-stage="3">
+        <div class="tape-row-label">阶段 ③<b>Turn N+1</b><span class="tag">HIT vs 写入</span></div>
+        <div class="tape" data-row="3"></div>
+        <div class="tape-tokens" data-row="3">≈ 9K</div>
+      </div>
+      <!-- Row 4: Turn N+2 -->
+      <div class="tape-row" data-stage="4">
+        <div class="tape-row-label">阶段 ④<b>Turn N+2</b><span class="tag">compaction 也成"旧前缀"</span></div>
+        <div class="tape" data-row="4"></div>
+        <div class="tape-tokens" data-row="4">≈ 9K</div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <span><i style="background:#4A6B8A"></i>稳定前缀 system/tools/AGENTS</span>
+      <span><i style="background:#C9A48C"></i>明文 history</span>
+      <span><i style="background:repeating-linear-gradient(45deg,#d6c9b3 0 5px,#c4b69e 5px 10px)"></i>已 prune</span>
+      <span><i style="background:repeating-linear-gradient(45deg,#7A4D6B 0 5px,#623e57 5px 10px)"></i>compaction blob</span>
+      <span><i style="background:#5A7A4F"></i>KV HIT</span>
+      <span><i style="background:#C96442"></i>新 user msg</span>
+    </div>
+
+    <div class="stage-caption" id="t1Cap">
+      关键:稳定前缀那一段在每轮 token 序列开头<b>逐 token 完全一致</b>,所以 KV 永远命中。
+    </div>
+  </div>
+
+  <!-- ============================================
+       SECTION 3 — Compare Matrix Toggle
+       ============================================ -->
+  <h2><span class="num">3</span>本地 inline · vs · 服务端 compaction</h2>
+  <p class="section-sub">用同一个维度切换两种实现的差异。点 tab 看分别表现;点"差异 spotlight"高亮关键对比。</p>
+
+  <div class="stage">
+    <div class="stage-toolbar">
+      <div class="compare-toolbar">
+        <button class="seg-btn on" data-mode="both">并排对比</button>
+        <button class="seg-btn" data-mode="diff">仅显示关键差异</button>
+      </div>
+    </div>
+
+    <div class="compare-grid" id="cmpGrid">
+      <div class="cg-head">维度</div>
+      <div class="cg-head local">本地 inline compact</div>
+      <div class="cg-head server">服务端 compaction</div>
+
+      <div class="cg-row-label">触发</div>
+      <div class="cg-cell" data-key="trigger">客户端 token 估算 / 手动 <code>/compact</code></div>
+      <div class="cg-cell spot" data-key="trigger"><span class="verdict good">精准</span>服务端真实 tokenizer + <code>compact_threshold</code></div>
+
+      <div class="cg-row-label">算力</div>
+      <div class="cg-cell" data-key="cost"><span class="verdict bad">+1 往返</span>额外发一次完整 <code>/responses</code> 让模型写摘要</div>
+      <div class="cg-cell spot" data-key="cost"><span class="verdict good">0 往返</span>同流内 compact + 续推一气呵成</div>
+
+      <div class="cg-row-label">压缩形态</div>
+      <div class="cg-cell" data-key="form">自然语言摘要 + 最近 ~20K user tokens</div>
+      <div class="cg-cell spot" data-key="form">加密 <b>opaque blob</b>(摘要 + reasoning state)</div>
+
+      <div class="cg-row-label">Reasoning 保真</div>
+      <div class="cg-cell" data-key="fidelity"><span class="verdict bad">丢失</span>自然语言压缩 → reasoning trace 丢失</div>
+      <div class="cg-cell spot" data-key="fidelity"><span class="verdict good">保留</span>训练对齐协议 → reasoning 模型友好</div>
+
+      <div class="cg-row-label">Prefix Cache</div>
+      <div class="cg-cell" data-key="cache"><span class="verdict bad">破坏</span>客户端重写 history → token 序列变了</div>
+      <div class="cg-cell spot" data-key="cache"><span class="verdict good">连续</span>稳定前缀不破 → 旧 KV 持续命中</div>
+
+      <div class="cg-row-label">ZDR / 合规</div>
+      <div class="cg-cell" data-key="zdr">需自行处理摘要落盘</div>
+      <div class="cg-cell" data-key="zdr">配合 <code>store=false</code> 即满足零数据保留</div>
+
+      <div class="cg-row-label">适用</div>
+      <div class="cg-cell" data-key="fit">OpenRouter / 自建 vLLM / 第三方 provider</div>
+      <div class="cg-cell" data-key="fit">官方 Responses API · 默认开启(2026-02-11+)</div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SECTION 4 — Hypothesis tiles
+       ============================================ -->
+  <h2><span class="num">4</span>为什么服务端体感更好 — 点击 tile 展开</h2>
+  <p class="section-sub">
+    社区反馈服务端 compact 后<b>任务连贯性 / 变量名保真 / 长程依赖</b>明显更好。
+    点 tile 看每个猜想被 Transformer 工作原理筛选后的结论 — 绿色=高置信,黄色=有保留,灰色删除线=不成立。
+  </p>
+
+  <div class="stage">
+    <div class="hyp-grid" id="hypGrid">
+      <div class="hyp-tile strong active" data-id="A">
+        <span class="hyp-badge">高置信</span>
+        <div class="hyp-code">A</div>
+        <div class="hyp-name">训练对齐的内部 token 编码协议</div>
+      </div>
+      <div class="hyp-tile strong" data-id="B">
+        <span class="hyp-badge">高置信</span>
+        <div class="hyp-code">B</div>
+        <div class="hyp-name">压缩端 / 解压端联合训练</div>
+      </div>
+      <div class="hyp-tile strong" data-id="C">
+        <span class="hyp-badge">高置信</span>
+        <div class="hyp-code">C</div>
+        <div class="hyp-name">item 级智能保留</div>
+      </div>
+      <div class="hyp-tile mid" data-id="D">
+        <span class="hyp-badge">中等</span>
+        <div class="hyp-code">D</div>
+        <div class="hyp-name">编码效率高但仍有损</div>
+      </div>
+      <div class="hyp-tile weak" data-id="E">
+        <span class="hyp-badge">不成立</span>
+        <div class="hyp-code">E</div>
+        <div class="hyp-name">序列化 KV / hidden state</div>
+      </div>
+      <div class="hyp-tile weak" data-id="F">
+        <span class="hyp-badge">不成立</span>
+        <div class="hyp-code">F</div>
+        <div class="hyp-name">多 pass 串联 pipeline</div>
+      </div>
+      <div class="hyp-tile weak" data-id="G">
+        <span class="hyp-badge">混淆维度</span>
+        <div class="hyp-code">G</div>
+        <div class="hyp-name">KV cache 连续 = 质量更好</div>
+      </div>
+      <div class="hyp-tile" data-id="X" style="border-left-color: var(--accent); background: linear-gradient(135deg, #FFF6EE 0%, var(--paper) 100%);">
+        <span class="hyp-badge" style="background: var(--accent-soft); color: var(--accent-deep);">结论</span>
+        <div class="hyp-code" style="color: var(--accent-deep);">★</div>
+        <div class="hyp-name">质量优势 = 权重 + 协议</div>
+      </div>
+    </div>
+
+    <div class="hyp-detail" id="hypDetail"></div>
+
+    <div class="callout">
+      <span class="label">反直觉推论</span>
+      若高置信猜想成立,服务端 compact 的<b>质量优势完全来自模型权重</b>(co-trained autoencoder),
+      与"传 KV"、"加密"、"多 pass"无关。OpenAI 理论上可以让 compaction 明文 —
+      选择加密更像<b>商业考虑</b>(防止竞品仿造内部 token 协议、防对抗注入、防训练数据特征泄露),而非技术必需。
+    </div>
+  </div>
+
+  <footer>
+    Sources ·
+    <a href="https://developers.openai.com/api/docs/guides/compaction">developers.openai.com/api/docs/guides/compaction</a> ·
+    <a href="https://github.com/openai/codex">github.com/openai/codex</a> · codex-rs/core/src/compact.rs
+  </footer>
+</div>
+
+<script>
+// ============================================================
+// SECTION 1 — Pipeline Animation
+// ============================================================
+(function(){
+  const TOTAL = 7;
+  const P1_BASE = 2500; // default 2.5s per step (slower)
+  let step = 0;
+  let playing = false;
+  let timer = null;
+  let speedMult = 1;
+
+  const nodes = document.querySelectorAll('#pipe .node');
+  const phaseEl = document.getElementById('p1Phase');
+  const stepNumEl = document.getElementById('p1StepNum');
+  const capEl = document.getElementById('p1Cap');
+  const playBtn = document.getElementById('p1Play');
+  const stepBtn = document.getElementById('p1Step');
+  const resetBtn = document.getElementById('p1Reset');
+  const pktLayer = document.getElementById('packets');
+
+  const captions = [
+    `点 <b>Play</b> 开始;或点 <b>Step</b> 一步步走。每步会高亮哪些进程在工作、SSE 飞了什么包。`,
+    `<b>Step 1 · 请求出发。</b>Codex CLI 把 history + AGENTS.md + tools schema 打包,通过 SDK 发起 <code>POST /v1/responses</code>,body 中带 <code>context_management:[{type:'compaction', compact_threshold:200000}]</code> 与 <code>store=false</code>。`,
+    `<b>Step 2 · 网关计数。</b>/responses 用真实 tokenizer 渲染整个 prompt 统计 token,并查 prefix cache:稳定前缀(system + tools + AGENTS.md)永远逐 token 一致 → 直接 <b>KV HIT</b>,跳过这一段 prefill。`,
+    `<b>Step 3 · 阈值判定。</b>渲染 tokens ≥ 200K → 触发服务端 compact pass。<b>关键</b>:这是同一条 SSE 流内的编排,客户端不感知、不重发。`,
+    `<b>Step 4 · 同流压缩。</b>网关暂停主推理,调内置 summarizer 对待压缩 history 做一次推理,产出 <b>opaque blob</b>(语义摘要 + 加密 reasoning state),其 KV 立即写入 cache 供未来命中。`,
+    `<b>Step 5 · 增量回吐 + 服务端 prune。</b>SSE 立即 emit <code>output_item.added · type=compaction</code>;服务端把 compaction 之前的明文 items <b>从自己的 context 里丢弃</b>,同流继续推理。`,
+    `<b>Step 6 · 续推 assistant。</b>主推理基于「稳定前缀 + compaction blob + user_N」继续生成,token 持续 SSE 回吐。SDK 把 compaction item 落到本地 <code>~/.codex/sessions/</code> rollout。`,
+    `<b>Step 7 · 下一轮 KV 大命中。</b>Turn N+1 请求 body 极小:稳定前缀 + compaction item + 新 user msg。前两段都被 cache 命中,推理几乎瞬时启动。`
+  ];
+
+  // SSE packet animations: list of (atStep, fromColIdx, toColIdx, label, cls)
+  const packets = [
+    {at:1, from:1, to:3, label:'POST', cls:''},
+    {at:5, from:3, to:1, label:'SSE', cls:'sse'},
+    {at:5, from:3, to:1, label:'item', cls:'sse'},
+    {at:6, from:3, to:1, label:'tok', cls:'sse'},
+    {at:6, from:3, to:1, label:'tok', cls:'sse'},
+    {at:7, from:1, to:3, label:'POST', cls:''},
+  ];
+
+  function setStep(n){
+    step = n;
+    stepNumEl.textContent = n;
+    const phases = ['idle','REQUEST','TOKENIZE','THRESHOLD','COMPACT','SSE EMIT','STREAM','TURN N+1'];
+    phaseEl.textContent = phases[n];
+    capEl.innerHTML = captions[n] || captions[0];
+
+    nodes.forEach(node => {
+      const s = parseInt(node.dataset.step);
+      node.classList.remove('active','done');
+      if (s < n) node.classList.add('done');
+      else if (s === n) node.classList.add('active');
+    });
+
+    // fire packets for this step
+    packets.filter(p => p.at === n).forEach((p, i) => firePacket(p, i*180));
+  }
+
+  function firePacket(p, delay){
+    const cols = document.querySelectorAll('#pipe > .pipe-col-head');
+    const fromX = cols[p.from].getBoundingClientRect().left + cols[p.from].offsetWidth/2;
+    const toX = cols[p.to].getBoundingClientRect().left + cols[p.to].offsetWidth/2;
+    const pipeRect = document.getElementById('pipe').getBoundingClientRect();
+    const sx = fromX - pipeRect.left - 14;
+    const tx = toX - pipeRect.left - 14;
+    // determine y row — put packets near top of arrow row
+    const y = 220;
+
+    const el = document.createElement('div');
+    el.className = 'pkt ' + (p.cls||'');
+    el.textContent = p.label;
+    el.style.left = sx + 'px';
+    el.style.top = y + 'px';
+    pktLayer.appendChild(el);
+
+    setTimeout(() => {
+      el.classList.add('show');
+      el.style.left = tx + 'px';
+    }, 20 + delay);
+    setTimeout(() => {
+      el.style.opacity = '0';
+      setTimeout(() => el.remove(), 600);
+    }, 900 + delay);
+  }
+
+  function play(){
+    if (playing) {
+      playing = false; clearInterval(timer); playBtn.textContent = '▶ Play'; return;
+    }
+    playing = true; playBtn.textContent = '⏸ Pause';
+    if (step >= TOTAL) setStep(0);
+    timer = setInterval(() => {
+      if (step >= TOTAL) {
+        playing = false; clearInterval(timer); playBtn.textContent = '▶ Play'; return;
+      }
+      setStep(step + 1);
+    }, P1_BASE / speedMult);
+  }
+
+  playBtn.addEventListener('click', play);
+  stepBtn.addEventListener('click', () => {
+    if (playing) { playing=false; clearInterval(timer); playBtn.textContent='▶ Play'; }
+    setStep(step >= TOTAL ? 0 : step + 1);
+  });
+  resetBtn.addEventListener('click', () => {
+    if (playing) { playing=false; clearInterval(timer); playBtn.textContent='▶ Play'; }
+    setStep(0);
+  });
+
+  // Speed control for §1
+  document.querySelectorAll('.speed-ctrl[data-target="p1"] .speed-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.speed-ctrl[data-target="p1"] .speed-btn').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+      speedMult = parseFloat(btn.dataset.mult);
+      if (playing) { clearInterval(timer); play(); }
+    });
+  });
+
+  setStep(0);
+})();
+
+// ============================================================
+// SECTION 2 — Token Tape Animation
+// ============================================================
+(function(){
+  const T2_BASE = 3000; // default 3s per stage (slower)
+  let stage = 0;
+  let playing = false;
+  let timer = null;
+  let speedMult = 1;
+
+  const stageNumEl = document.getElementById('t1StepNum');
+  const capEl = document.getElementById('t1Cap');
+  const playBtn = document.getElementById('t1Play');
+  const stepBtn = document.getElementById('t1Step');
+  const resetBtn = document.getElementById('t1Reset');
+  const rows = document.querySelectorAll('#tapeBlock .tape-row');
+
+  // Define each stage's segments per row
+  const tapeStages = {
+    1: { // before compact: long plaintext history
+      row1: [
+        {cls:'seg-system', flex:0.5, label:'system'},
+        {cls:'seg-tools',  flex:0.5, label:'tools'},
+        {cls:'seg-agents', flex:0.5, label:'AGENTS.md'},
+        {cls:'seg-hist',   flex:5.5, label:'明文 history · turn1 → turn40'},
+        {cls:'seg-user',   flex:0.6, label:'user_N'},
+      ],
+      row1Tokens: '≈ 200K', row1TokensCls: 'grew',
+    },
+    2: { // compact pass: history pruned, compaction blob inserted
+      row2: [
+        {cls:'seg-system', flex:0.5, label:'system'},
+        {cls:'seg-tools',  flex:0.5, label:'tools'},
+        {cls:'seg-agents', flex:0.5, label:'AGENTS.md'},
+        {cls:'seg-pruned', flex:5.5, label:'━━ history 被 prune ━━'},
+        {cls:'seg-compact',flex:0.8, label:'compaction'},
+        {cls:'seg-user',   flex:0.6, label:'user_N'},
+      ],
+      row2Tokens: '→ ≈ 8K', row2TokensCls: 'shrunk',
+    },
+    3: { // Turn N+1: stable prefix cached, compaction is fresh cache entry
+      row3: [
+        {cls:'seg-cached', flex:1.5, label:'system + tools + AGENTS.md'},
+        {cls:'seg-write',  flex:0.8, label:'compaction blob · 写入 cache'},
+        {cls:'seg-user',   flex:0.6, label:'user_N+1'},
+      ],
+      row3Tokens: '≈ 9K', row3TokensCls: 'shrunk',
+    },
+    4: { // Turn N+2: everything is cached
+      row4: [
+        {cls:'seg-cached', flex:2.3, label:'system + tools + AGENTS + compaction · 全部 HIT'},
+        {cls:'seg-user',   flex:0.6, label:'user_N+2'},
+      ],
+      row4Tokens: '≈ 9K', row4TokensCls: 'shrunk',
+    }
+  };
+
+  const captions = {
+    0: `关键:稳定前缀那一段在每轮 token 序列开头<b>逐 token 完全一致</b>,所以 KV 永远命中。`,
+    1: `<b>阶段 ①</b> · Turn N 的渲染量到达 200K。整段明文 history 还在,网关算出超过阈值。`,
+    2: `<b>阶段 ②</b> · 同流内 prune:明文 history 从服务端 context 移除,替换成 <b>compaction blob</b>。token 序列<b>从开头到稳定前缀那一段没有任何变化</b> — prefix cache 不被破坏。`,
+    3: `<b>阶段 ③</b> · Turn N+1:稳定前缀 KV <b>HIT</b>(逐 token 一致);compaction blob 是首次出现,做一次小 prefill,然后<b>写入新 cache entry</b>。`,
+    4: `<b>阶段 ④</b> · Turn N+2:连 compaction blob 也成了「旧前缀」,整段 KV 一并命中。<b>prefix cache 在 compaction 之后没有被冲掉,只是多了一段新可复用前缀。</b>`
+  };
+
+  function buildSeg(s){
+    const el = document.createElement('div');
+    el.className = 'seg ' + s.cls;
+    el.style.flex = s.flex;
+    el.textContent = s.label;
+    return el;
+  }
+
+  function renderStage(n){
+    stage = n;
+    stageNumEl.textContent = n;
+    capEl.innerHTML = captions[n];
+
+    rows.forEach(r => {
+      const idx = parseInt(r.dataset.stage);
+      r.classList.toggle('show', idx <= n);
+      r.classList.toggle('fade', idx < n);
+    });
+
+    // populate each row when its stage becomes active
+    for (let i = 1; i <= 4; i++) {
+      const tapeEl = document.querySelector('#tapeBlock .tape[data-row="'+i+'"]');
+      const tokEl  = document.querySelector('#tapeBlock .tape-tokens[data-row="'+i+'"]');
+      if (i <= n) {
+        if (tapeEl && tapeEl.children.length === 0) {
+          const cfg = tapeStages[i];
+          cfg['row'+i].forEach(s => tapeEl.appendChild(buildSeg(s)));
+          tokEl.textContent = cfg['row'+i+'Tokens'];
+          tokEl.classList.add(cfg['row'+i+'TokensCls']);
+        }
+      } else {
+        if (tapeEl) tapeEl.innerHTML = '';
+        if (tokEl) { tokEl.textContent = ''; tokEl.classList.remove('shrunk','grew'); }
+      }
+    }
+  }
+
+  function play(){
+    if (playing) {
+      playing = false; clearInterval(timer); playBtn.textContent = '▶ Play sequence'; return;
+    }
+    playing = true; playBtn.textContent = '⏸ Pause';
+    if (stage >= 4) renderStage(0);
+    timer = setInterval(() => {
+      if (stage >= 4) {
+        playing = false; clearInterval(timer); playBtn.textContent = '▶ Play sequence'; return;
+      }
+      renderStage(stage + 1);
+    }, T2_BASE / speedMult);
+  }
+
+  playBtn.addEventListener('click', play);
+  stepBtn.addEventListener('click', () => {
+    if (playing) { playing=false; clearInterval(timer); playBtn.textContent='▶ Play sequence'; }
+    renderStage(stage >= 4 ? 0 : stage + 1);
+  });
+  resetBtn.addEventListener('click', () => {
+    if (playing) { playing=false; clearInterval(timer); playBtn.textContent='▶ Play sequence'; }
+    renderStage(0);
+  });
+
+  // Speed control for §2
+  document.querySelectorAll('.speed-ctrl[data-target="t1"] .speed-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.speed-ctrl[data-target="t1"] .speed-btn').forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+      speedMult = parseFloat(btn.dataset.mult);
+      if (playing) { clearInterval(timer); play(); }
+    });
+  });
+
+  renderStage(0);
+})();
+
+// ============================================================
+// SECTION 3 — Compare Toggle
+// ============================================================
+(function(){
+  const buttons = document.querySelectorAll('.compare-toolbar .seg-btn');
+  const cells = document.querySelectorAll('#cmpGrid .cg-cell');
+  const spotKeys = ['trigger','cost','form','fidelity','cache']; // diff highlights
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('on'));
+      btn.classList.add('on');
+      const mode = btn.dataset.mode;
+      cells.forEach(c => {
+        if (mode === 'diff') {
+          if (spotKeys.includes(c.dataset.key)) {
+            c.style.opacity = '1';
+          } else {
+            c.style.opacity = '0.3';
+          }
+        } else {
+          c.style.opacity = '1';
+        }
+      });
+    });
+  });
+})();
+
+// ============================================================
+// SECTION 4 — Hypothesis Tile Detail
+// ============================================================
+(function(){
+  const tiles = document.querySelectorAll('#hypGrid .hyp-tile');
+  const detail = document.getElementById('hypDetail');
+
+  const details = {
+    A: {
+      tag:'高置信',
+      title:'A · 训练对齐的内部 token 编码协议',
+      body:`加密 blob 装的是<b>一段 token 序列</b>(很可能含 OpenAI 专门设计的 sentinel token 与紧凑 schema),而不是 KV / hidden state。模型在训练阶段见过这套协议,attention 读回时<b>信息利用率远高于读一段第三方写的自然语言摘要</b>。加密本身更像反混淆 / 防对抗注入,而非承载 KV 的技术必需。`
+    },
+    B: {
+      tag:'高置信',
+      title:'B · 压缩端与解压端联合训练(autoencoder-style)',
+      body:`GPT-5.5(以及前代 GPT-5.1-Codex-Max)在训练阶段就用自己的 compact 输出再续推 — 压缩端和解压端是<b>同一组权重</b>。训练目标包含「compact 后续推任务质量」,所以模型主动把<b>对续推有用的信息</b>保留下来,而不是像本地 compact 那样追求「摘要可读性」。客户端永远无法复刻 — 因为客户端改不了模型权重。`
+    },
+    C: {
+      tag:'高置信',
+      title:'C · 真实 tokenizer + item 级智能保留',
+      body:`服务端能拿到精确 token 数与每个 item 边界,可以做<b>按 item 粒度的智能取舍</b> — 哪些 tool_call/result 被后续引用、哪些 file read 已被覆盖、哪些 retry 可去重保留最后一次。文档原话「compacted window can also include retained items」也佐证了<b>分类压缩(原文保留 + reasoning state 压缩 + 直接丢弃)</b>而非「一坨摘要」。`
+    },
+    D: {
+      tag:'中等置信',
+      title:'D · 编码效率优势,但仍是有损压缩',
+      body:`加密 blob 比自然语言摘要保留更多 reasoning 相关信息 — 但<b>不是无损</b>。200K → 2K 是 100× 压缩,信息论上不可能无损;合理表述是「用更适合模型读回的 token 编码方式记录关键 reasoning 结论」,而不是「完整复刻 reasoning 过程」。`
+    },
+    E: {
+      tag:'不成立',
+      title:'E · 加密 blob 直接序列化 KV / hidden state ✗',
+      body:`从 Transformer 工作原理看<b>不可行</b>:<br>① KV 体积太大(200K 上下文对应几百 MB 级 KV),SSE 来回传与「省 token」目标自相矛盾;<br>② KV 与 (model_version, weights, exact_token_seq) <b>强耦合</b>,跨 GPU / 滚动版本不兼容;<br>③ 公开技术里 KV offload 都是<b>单进程内</b>(vLLM、Together 等),没有跨请求 round-trip 复用 KV 的产品化先例。<br>更经济的等价做法就是把 reasoning 压回 token 让模型自己重读(即猜想 A)。`
+    },
+    F: {
+      tag:'不成立',
+      title:'F · 多 model pass 串联的 compact pipeline ✗',
+      body:`compact 延迟 30s+ 的现象<b>不需要</b>用「3–5 个独立模型 pass 串联」来解释 — 200K context 的<b>单次 prefill 本来就慢</b>,加上网络/排队/审计写入即可。现代 LLM 完全能在单次 forward 里产出结构化压缩输出,串行多 pass 在高频操作上不经济。`
+    },
+    G: {
+      tag:'混淆维度',
+      title:'G · KV cache 连续 = 质量更好 ✗',
+      body:`KV cache HIT 的好处是<b>省 prefill 算力 + 降延迟</b>,它<b>不改变输出 logits</b> — 给同样 token 序列,KV 是 cache 拿的还是现场算的,数学上输出完全一致。这条只能解释<b>成本优势</b>,不能解释<b>质量优势</b>;之前若用它解释「体感更好」属于维度混淆。`
+    },
+    X: {
+      tag:'结论',
+      title:'★ 质量优势 = 模型权重 × 训练协议',
+      body:`汇总 A + B + C,服务端 compact 的体感优势归因清晰:<br>① 模型在训练时就见过自己的压缩输出(权重对齐);<br>② 服务端能拿到完整 item 边界和精确 token 数(信息更全);<br>③ 输出的是<b>训练对齐的 token 协议</b>而非自然语言摘要(读回效率高)。<br>这三点客户端 inline compact 都无法复制 — 这才是体感差距的根因。`
+    }
+  };
+
+  function show(id){
+    tiles.forEach(t => t.classList.toggle('active', t.dataset.id === id));
+    const d = details[id];
+    detail.style.opacity = '0';
+    setTimeout(() => {
+      detail.innerHTML = '<div class="dh"><span class="hyp-badge">'+d.tag+'</span><span class="t">'+d.title+'</span></div><div>'+d.body+'</div>';
+      detail.style.opacity = '1';
+    }, 150);
+  }
+
+  tiles.forEach(t => t.addEventListener('click', () => show(t.dataset.id)));
+  show('A');
+})();
+</script>
+</body>
+</html>
