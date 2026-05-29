@@ -7,73 +7,50 @@
     <meta name="author" content="{{ site.author.name }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+      <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
-    <!-- Le styles -->
     <link href="{{ ASSET_PATH }}/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="{{ ASSET_PATH }}/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
-    <link href="{{ HOME_PATH }}static/css/style.css?v=2" rel="stylesheet" type="text/css" media="all">
-
-    <!-- Le fav and touch icons -->
-  <!-- Update these with your own images
-    <link rel="shortcut icon" href="images/favicon.ico">
-    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
-  -->
+    <link href="{{ HOME_PATH }}static/css/style.css?v=3" rel="stylesheet" type="text/css" media="all">
   </head>
 
   <body>
-
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
-        <button type="button"class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
-        </button>
+          </button>
 
-        <a class="brand" href="{{ HOME_PATH }}">{{ site.title }}</a>
-        <div class="nav-collapse collapse">
-          <ul class="nav">
-            {% assign pages_list = site.pages %}
-            {% assign group = 'navigation' %}
-            {% include JB/pages_list %}
-          </ul>
-        </div>
+          <a class="brand" href="{{ HOME_PATH }}">{{ site.title }}</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              {% assign pages_list = site.pages %}
+              {% assign group = 'navigation' %}
+              {% include JB/pages_list %}
+            </ul>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="container">
-
       <div class="content">
         {{ content }}
       </div>
 
-      <footer>
-          <!--<p class="pull-right"><a href="#"><i class="icon-hand-up icon-white"></i></a></p>-->
-          <p><a href="https://github.com/yuanyan"><img alt="yuanyan" class="img-circle" width="40" height="40" src="https://secure.gravatar.com/avatar/8a27ebae306bac68b54c32832ded3e01?s=40"> </a></p>
+      <footer class="site-footer">
+        <p><span>&copy; {{ site.time | date: "%Y" }} {{ site.author.name }}</span><a href="https://github.com/yuanyan">GitHub</a><a href="{{ HOME_PATH }}atom.xml">RSS</a></p>
       </footer>
-
-    </div> <!-- /container -->
-    
-    <div id="thumbs" class="hide">
-      <a href="{{ HOME_PATH }}static/bg/1.jpg"></a>      
-      <a href="{{ HOME_PATH }}static/bg/2.jpg"></a>      
-      <a href="{{ HOME_PATH }}static/bg/3.jpg"></a>           
-      <a href="{{ HOME_PATH }}static/bg/4.jpg"></a>           
     </div>
 
     <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script>window.jQuery || document.write('<script src="{{ HOME_PATH }}static/js/jquery.min.js"><\/script>')</script>
     <script src="{{ ASSET_PATH }}/bootstrap/js/bootstrap.min.js"></script>
-    <script src="https://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
-    <script src="{{ HOME_PATH }}static/js/main.js"></script>
 
     {% include JB/analytics %}
   </body>

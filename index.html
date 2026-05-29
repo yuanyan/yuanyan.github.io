@@ -1,274 +1,169 @@
 <!DOCTYPE html>
-<html>
-
-<head lang="zh-CN">
+<html lang="zh-CN">
+<head>
   <meta charset="UTF-8">
   <title>元彦 - Keep Walking</title>
   <meta name="keywords" content="Web前端, JavaScript, HTML5, CSS3, 前端构建工具">
   <meta name="description" content="工程师">
-  <meta name=viewport content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    :root {
+      --bg: #0c0c0a;
+      --panel: #151511;
+      --ink: #f2f0df;
+      --muted: #aaa58f;
+      --line: #d8d2b8;
+      --accent: #8fd14f;
+      --shadow: #2b2b24;
+    }
+
     * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
 
-    html,
-    body {
-      height: 100%;
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    html {
+      min-height: 100%;
+      background: var(--bg);
     }
 
-    html {
-      background: #000;
+    body {
+      min-height: 100%;
+      color: var(--ink);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 16px;
+      line-height: 1.65;
+      background:
+        linear-gradient(90deg, rgba(216, 210, 184, 0.06) 1px, transparent 1px),
+        linear-gradient(rgba(216, 210, 184, 0.06) 1px, transparent 1px),
+        var(--bg);
+      background-size: 16px 16px;
     }
 
     main {
-      display: block;
-      min-height: 100%;
-      background: url(static/images/moon.jpg);
-      background-position: 0 100%;
-      ;
-      background-size: 100%;
-      background-repeat: no-repeat;
-      -webkit-transition: all 1s ease;
-      -moz-transition: all 1s ease;
-      -o-transition: all 1s ease;
-      -ms-transition: all 1s ease;
-      transition: all 1s ease;
+      display: grid;
+      min-height: 100vh;
+      place-items: center;
+      padding: 32px 20px;
     }
 
-    a {
-      color: #fff;
-      text-decoration: none;
-      display: inline-block;
-      vertical-align: middle;
-      -webkit-transform: translateZ(0);
-      transform: translateZ(0);
-      box-shadow: 0 0 1px rgba(0, 0, 0, 0);
-      -webkit-backface-visibility: hidden;
-      backface-visibility: hidden;
-      -moz-osx-font-smoothing: grayscale;
-      position: relative;
-      overflow: hidden;
+    .card {
+      width: min(100%, 680px);
+      padding: 32px;
+      background: var(--panel);
+      border: 2px solid var(--line);
+      box-shadow: 8px 8px 0 var(--shadow);
     }
 
-    a:before {
-      content: "";
-      position: absolute;
-      z-index: -1;
-      left: 50%;
-      right: 50%;
-      bottom: 0;
-      background: #fff;
-      height: 1px;
-      -webkit-transition-property: left, right;
-      transition-property: left, right;
-      -webkit-transition-duration: 0.3s;
-      transition-duration: 0.3s;
-      -webkit-transition-timing-function: ease-out;
-      transition-timing-function: ease-out;
+    .eyebrow {
+      margin-bottom: 12px;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
     }
 
-    a:hover:before {
-      left: 0;
-      right: 0;
+    h1 {
+      color: var(--ink);
+      font-size: clamp(36px, 8vw, 72px);
+      line-height: 1;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
 
-    @font-face {
-      font-family: 'icomoon';
-      src: url('static/fonts/icomoon.eot?-lilua1');
-      src: url('static/fonts/icomoon.eot?#iefix-lilua1') format('embedded-opentype'), url('static/fonts/icomoon.woff?-lilua1') format('woff'), url('static/fonts/icomoon.ttf?-lilua1') format('truetype'), url('static/fonts/icomoon.svg?-lilua1#icomoon') format('svg');
-      font-weight: normal;
-      font-style: normal;
-    }
-
-    [class^="icon-"],
-    [class*=" icon-"] {
-      font-family: 'icomoon';
-      speak: none;
-      font-style: normal;
-      font-weight: normal;
-      font-variant: normal;
-      text-transform: none;
-      /* Better Font Rendering =========== */
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-    }
-
-    .icon-weibo:before {
-      content: "\e602";
-    }
-
-    .icon-post:before {
-      content: "\e600";
-    }
-
-    .icon-twitter:before {
-      content: "\e601";
-    }
-
-    .icon-github:before {
-      content: "\e603";
+    .subtitle {
+      max-width: 36rem;
+      margin-top: 18px;
+      color: var(--muted);
     }
 
     .nav {
-      padding-top: 30px;
-      padding-left: 20px;
+      display: grid;
+      gap: 12px;
+      margin-top: 36px;
       list-style: none;
-      font-size: 16px;
-      font-weight: 400;
     }
 
-    .nav>li {
-      position: relative;
-      display: block;
-      padding: 2px;
-      margin: 2px;
-    }
-
-    .nav>li>i {
-      color: #fff;
-      display: inline-block;
-      margin-right: 10px;
-    }
-
-    .ribbon {
-      /* The right and left classes determine the side we attach our banner to */
-      position: absolute;
-      /* Add a bit of padding to give some substance outside the "stitching" */
-      padding: 2px 0;
-      /* Set the base colour */
-      background-color: #f40;
-      /* Set a gradient: transparent black at the top to almost-transparent black at the bottom */
-      background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, 0)), to(rgba(0, 0, 0, 0.15)));
-      background-image: -webkit-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15));
-      background-image: -moz-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15));
-      background-image: -ms-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15));
-      background-image: -o-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15));
-      background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15));
-      /* Add a drop shadow */
-      -webkit-box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.5);
-      -moz-box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.5);
-      box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.5);
-      /* Set the font */
-      font: 700 13px "Helvetica Neue", Helvetica, Arial, sans-serif;
-      z-index: 9999;
-      pointer-events: auto;
-    }
-
-    .ribbon a,
-    .ribbon a:hover {
-      /* Set the text properties */
-      color: #fff;
-      font-size: 16px;
+    .nav a {
+      display: grid;
+      grid-template-columns: 4ch 1fr auto;
+      gap: 12px;
+      align-items: center;
+      min-height: 48px;
+      padding: 10px 14px;
+      color: var(--ink);
       text-decoration: none;
-      text-shadow: 0 -1px rgba(0, 0, 0, 0.5);
-      text-align: center;
-      /* Set the geometry. If you fiddle with these you'll also need
-     to tweak the top and right values in .ribbon. */
-      width: 200px;
-      line-height: 20px;
-      /* Set the layout properties */
-      display: inline-block;
-      padding: 2px 0;
-      /* Add "stitching" effect */
-      border-width: 1px 0;
-      border-style: dotted;
-      border-color: #fff;
-      border-color: rgba(255, 255, 255, 0.7);
+      border: 2px solid var(--line);
+      background: #10100d;
     }
 
-    .ribbon-wrapper {
-      width: 150px;
-      height: 150px;
-      position: absolute;
-      overflow: hidden;
-      top: 0;
-      z-index: 9999;
-      pointer-events: none;
+    .nav a:hover,
+    .nav a:focus {
+      color: var(--bg);
+      background: var(--ink);
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
     }
 
-    .ribbon-wrapper.fixed {
-      position: fixed;
+    .index {
+      color: var(--accent);
+      font-weight: 700;
     }
 
-    .ribbon-wrapper.left {
-      left: 0;
+    .label {
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
 
-    .ribbon-wrapper.right {
-      right: 0;
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
     }
 
-    .ribbon-wrapper.left-bottom {
-      position: fixed;
-      top: inherit;
-      bottom: 0;
-      left: 0;
+    .nav a:hover .index,
+    .nav a:hover .hint,
+    .nav a:focus .index,
+    .nav a:focus .hint {
+      color: var(--bg);
     }
 
-    .ribbon-wrapper.right-bottom {
-      position: fixed;
-      top: inherit;
-      bottom: 0;
-      right: 0;
-    }
+    @media (max-width: 560px) {
+      body {
+        font-size: 15px;
+      }
 
-    .ribbon-wrapper.right .ribbon {
-      top: 42px;
-      right: -43px;
-      -webkit-transform: rotate(45deg);
-      -moz-transform: rotate(45deg);
-      -ms-transform: rotate(45deg);
-      -o-transform: rotate(45deg);
-      transform: rotate(45deg);
-    }
+      .card {
+        padding: 24px 18px;
+        box-shadow: 5px 5px 0 var(--shadow);
+      }
 
-    .ribbon-wrapper.left .ribbon {
-      top: 42px;
-      left: -43px;
-      -webkit-transform: rotate(-45deg);
-      -moz-transform: rotate(-45deg);
-      -ms-transform: rotate(-45deg);
-      -o-transform: rotate(-45deg);
-      transform: rotate(-45deg);
-    }
+      .nav a {
+        grid-template-columns: 4ch 1fr;
+      }
 
-    .ribbon-wrapper.left-bottom .ribbon {
-      top: 80px;
-      left: -43px;
-      -webkit-transform: rotate(45deg);
-      -moz-transform: rotate(45deg);
-      -ms-transform: rotate(45deg);
-      -o-transform: rotate(45deg);
-      transform: rotate(45deg);
-    }
-
-    .ribbon-wrapper.right-bottom .ribbon {
-      top: 80px;
-      right: -43px;
-      -webkit-transform: rotate(-45deg);
-      -moz-transform: rotate(-45deg);
-      -ms-transform: rotate(-45deg);
-      -o-transform: rotate(-45deg);
-      transform: rotate(-45deg);
+      .hint {
+        grid-column: 2;
+      }
     }
   </style>
 </head>
-
 <body>
   <main>
-    <ul class="nav">
-      <li><i class="icon-post"></i><a href="./posts.html" title="笔记">Post</a></li>
-      <li><i class="icon-github"></i><a href="https://github.com/yuanyan" title="Github">Github</a></li>
-      <li><i class="icon-twitter"></i><a href="https://twitter.com/caoyuanyan" title="Twitter">Twitter</a></li>
-    </ul>
+    <section class="card" aria-labelledby="site-title">
+      <p class="eyebrow">Front-end Engineer</p>
+      <h1 id="site-title">Yuanyan</h1>
+      <p class="subtitle">Keep walking. Notes on web engineering, performance, JavaScript and tools.</p>
+
+      <ul class="nav" aria-label="Primary navigation">
+        <li><a href="./posts.html" title="笔记"><span class="index">01</span><span class="label">Posts</span><span class="hint">read notes</span></a></li>
+        <li><a href="./about/" title="关于"><span class="index">02</span><span class="label">About</span><span class="hint">contact</span></a></li>
+        <li><a href="https://github.com/yuanyan" title="GitHub"><span class="index">03</span><span class="label">GitHub</span><span class="hint">code</span></a></li>
+        <li><a href="https://twitter.com/caoyuanyan" title="Twitter"><span class="index">04</span><span class="label">Twitter</span><span class="hint">updates</span></a></li>
+      </ul>
+    </section>
   </main>
 </body>
-
 </html>
