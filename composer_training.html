@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Composer 2.5 · Training Anatomy</title>
+<style>
+  :root{
+    --bg:#000;
+    --bg-2:#0a0a0a;
+    --panel:#111;
+    --border:#1f1f1f;
+    --border-2:#2a2a2a;
+    --text:#fafafa;
+    --muted:#888;
+    --muted-2:#666;
+    --accent:#fff;
+    --blue:#0070f3;
+    --cyan:#00d4ff;
+    --violet:#7928ca;
+    --pink:#ff0080;
+    --green:#0ea5e9;
+    --ok:#0cce6b;
+    --warn:#f5a623;
+    --red:#ee0000;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Inter","SF Pro Display","PingFang SC",sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5}
+  a{color:inherit;text-decoration:none}
+
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+    background-size:48px 48px;
+    mask-image:radial-gradient(ellipse at center,black 30%,transparent 80%);
+  }
+
+  .wrap{max-width:1200px;margin:0 auto;padding:48px 24px 120px;position:relative;z-index:1}
+
+  /* ===== Top nav ===== */
+  .topnav{
+    position:sticky;top:0;z-index:50;
+    margin:-48px -24px 0;padding:14px 24px;
+    background:rgba(0,0,0,.7);backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--border);
+    display:flex;align-items:center;gap:6px;overflow-x:auto;
+    font-family:"SF Mono",ui-monospace,monospace;font-size:11px;
+  }
+  .topnav .brand{color:var(--text);font-weight:600;margin-right:auto;letter-spacing:.5px}
+  .topnav a{padding:6px 10px;color:var(--muted);border-radius:6px;white-space:nowrap;transition:all .15s ease}
+  .topnav a:hover{color:var(--text);background:#1a1a1a}
+
+  /* ===== Language switcher (fixed corner) ===== */
+  .lang-switch{
+    position:fixed;top:10px;right:14px;z-index:1000;
+    font-family:"SF Mono",ui-monospace,monospace;
+  }
+  .lang-btn{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:6px 10px;background:rgba(10,10,10,.9);backdrop-filter:blur(8px);
+    border:1px solid var(--border-2);
+    border-radius:6px;color:var(--text);font-size:11px;cursor:pointer;
+    font-family:inherit;
+    transition:all .15s ease;white-space:nowrap;
+  }
+  .lang-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+  .lang-btn svg{width:12px;height:12px;opacity:.7}
+  .lang-menu{
+    position:absolute;top:calc(100% + 6px);right:0;
+    background:#0a0a0a;border:1px solid var(--border-2);border-radius:8px;
+    min-width:150px;padding:4px;
+    box-shadow:0 8px 32px rgba(0,0,0,.6);
+    opacity:0;pointer-events:none;transform:translateY(-4px);
+    transition:all .15s ease;z-index:1001;
+  }
+  .lang-menu.open{opacity:1;pointer-events:auto;transform:translateY(0)}
+  .lang-item{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:8px 10px;border-radius:5px;color:var(--muted);
+    font-family:inherit;font-size:11px;
+    cursor:pointer;transition:all .12s ease;user-select:none;
+  }
+  .lang-item:hover{background:#1a1a1a;color:var(--text)}
+  .lang-item.active{background:rgba(0,212,255,.08);color:var(--cyan)}
+  .lang-item .flag{font-size:14px}
+  .lang-item .check{color:var(--cyan);opacity:0}
+  .lang-item.active .check{opacity:1}
+
+  /* ===== Header ===== */
+  header{padding:64px 0 64px;border-bottom:1px solid var(--border)}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;padding:4px 10px;border:1px solid var(--border-2);border-radius:999px;font-size:11px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:20px}
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok);animation:pulse 1.5s infinite}
+  h1{font-size:64px;font-weight:700;letter-spacing:-0.04em;line-height:1.02;margin-bottom:12px}
+  h1 .grad{background:linear-gradient(90deg,#fff 0%,#666 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--muted);font-size:17px;max-width:600px;margin-top:18px}
+
+  /* hero stats strip */
+  .hero-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;margin-top:48px;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--border)}
+  .hero-stats .cell{background:var(--bg);padding:20px}
+  .hero-stats .k{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+  .hero-stats .v{font-size:22px;font-weight:600;margin-top:6px;letter-spacing:-.02em}
+  .hero-stats .v .u{font-size:12px;color:var(--muted);font-weight:400;margin-left:2px}
+
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+  /* ===== Section base ===== */
+  section{margin-top:96px;scroll-margin-top:72px}
+  .section-head{display:flex;align-items:baseline;gap:16px;margin-bottom:24px;flex-wrap:wrap}
+  .section-head .idx{font-size:12px;color:var(--muted-2);font-family:"SF Mono",ui-monospace,monospace;letter-spacing:1px}
+  .section-head h2{font-size:32px;font-weight:600;letter-spacing:-0.025em}
+  .section-head .meta{margin-left:auto;font-size:12px;color:var(--muted);font-family:"SF Mono",ui-monospace,monospace}
+
+  .card{background:var(--bg-2);border:1px solid var(--border);border-radius:16px;padding:32px}
+
+  /* ============ MASTER PIPELINE ============ */
+  .pipeline{
+    display:grid;grid-template-columns:repeat(5,1fr);gap:12px;
+    background:linear-gradient(180deg,#0a0a0a 0%,#000 100%);
+    border:1px solid var(--border);border-radius:16px;padding:32px;
+  }
+  .ppl-step{
+    position:relative;padding:20px;background:#0d0d0d;border:1px solid var(--border-2);border-radius:12px;
+    cursor:pointer;transition:all .2s ease;
+  }
+  .ppl-step:hover{transform:translateY(-2px);border-color:var(--cyan)}
+  .ppl-step::after{
+    content:"→";position:absolute;right:-16px;top:50%;transform:translateY(-50%);
+    color:var(--muted-2);font-size:18px;z-index:2;
+  }
+  .ppl-step:last-child::after{display:none}
+  .ppl-step .n{font-family:"SF Mono",ui-monospace,monospace;font-size:10px;color:var(--cyan);letter-spacing:1px}
+  .ppl-step .t{font-size:14px;font-weight:600;margin-top:6px}
+  .ppl-step .d{font-size:11px;color:var(--muted);margin-top:4px;font-family:"SF Mono",ui-monospace,monospace}
+  .ppl-step .bar{height:3px;background:var(--border);border-radius:2px;margin-top:12px;overflow:hidden}
+  .ppl-step .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--violet),var(--cyan));width:0;transition:width .6s ease}
+  .ppl-step.s0 .bar i{width:10%}
+  .ppl-step.s1 .bar i{width:80%}
+  .ppl-step.s2 .bar i{width:90%}
+  .ppl-step.s3 .bar i{width:60%}
+  .ppl-step.s4 .bar i{width:40%}
+
+  /* ============ §A. BASE MODEL ============ */
+  .base-card{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .base-viz{
+    background:linear-gradient(180deg,#0a0a0a,#000);
+    border:1px solid var(--border);border-radius:12px;padding:32px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    min-height:280px;position:relative;overflow:hidden;
+  }
+  .base-disk{
+    width:180px;height:180px;border-radius:50%;
+    background:conic-gradient(from 0deg,var(--violet) 0% 100%,var(--blue) 100% 100%);
+    position:relative;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 0 60px rgba(121,40,202,.3);
+    transition:background 1s ease;
+  }
+  .base-disk::before{
+    content:"";position:absolute;inset:18px;background:#000;border-radius:50%;
+  }
+  .base-disk .center{position:relative;z-index:2;text-align:center}
+  .base-disk .center .n{font-size:28px;font-weight:700;letter-spacing:-.02em}
+  .base-disk .center .l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+  .base-legend{display:flex;gap:18px;margin-top:24px;font-size:11px;color:var(--muted);font-family:"SF Mono",ui-monospace,monospace}
+  .base-legend .li{display:flex;align-items:center;gap:6px}
+  .base-legend .sq{width:10px;height:10px;border-radius:2px}
+
+  .base-toggle{display:flex;gap:8px;margin-top:18px}
+  .base-toggle button{flex:1;padding:8px 12px;background:#0a0a0a;border:1px solid var(--border-2);border-radius:6px;color:var(--muted);font-size:11px;cursor:pointer;font-family:"SF Mono",ui-monospace,monospace;transition:all .15s ease}
+  .base-toggle button.on{background:#fff;color:#000;border-color:#fff}
+
+  .base-info{display:flex;flex-direction:column;gap:12px;justify-content:center}
+  .info-row{padding:14px 16px;background:#0a0a0a;border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:space-between}
+  .info-row .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .info-row .v{font-size:14px;font-family:"SF Mono",ui-monospace,monospace;color:var(--text)}
+  .info-row .v.cyan{color:var(--cyan)}
+  .info-row .v.violet{color:#c084fc}
+
+  /* ============ §B. MID-TRAINING ============ */
+  .mid-card{padding:32px}
+  .mid-flow{display:grid;grid-template-columns:1fr 60px 1fr 60px 1fr;gap:0;align-items:center}
+  .mid-source{
+    padding:20px;background:#0a0a0a;border:1px solid var(--border-2);border-radius:10px;text-align:center;
+  }
+  .mid-source .ic{font-size:24px;display:block;margin-bottom:8px}
+  .mid-source .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .mid-source .v{font-size:18px;font-weight:600;margin-top:4px}
+  .mid-source.code{border-top:2px solid var(--cyan)}
+  .mid-source.web{border-top:2px solid var(--warn)}
+  .mid-arrow{text-align:center;color:var(--muted-2);font-size:20px}
+  .mid-output{
+    padding:20px;background:linear-gradient(135deg,rgba(121,40,202,.1),rgba(0,212,255,.1));
+    border:1px solid rgba(0,212,255,.3);border-radius:10px;text-align:center;
+  }
+  .mid-output .l{font-size:11px;color:var(--cyan);text-transform:uppercase;letter-spacing:1px}
+  .mid-output .v{font-size:16px;font-weight:600;margin-top:6px}
+
+  .mid-note{margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .mid-note .item{padding:14px 18px;background:#0a0a0a;border-left:2px solid var(--violet);border-radius:8px;font-size:13px;color:var(--muted)}
+  .mid-note .item b{color:var(--text);font-weight:600}
+
+  /* token chart */
+  .mid-bars{margin-top:24px;padding:20px;background:#050505;border:1px solid var(--border);border-radius:10px}
+  .mid-bars .row{display:flex;align-items:center;gap:14px;padding:6px 0;font-family:"SF Mono",ui-monospace,monospace;font-size:11px;color:var(--muted)}
+  .mid-bars .row .lbl{width:70px}
+  .mid-bars .row .bar{flex:1;height:10px;background:#1a1a1a;border-radius:2px;overflow:hidden;position:relative}
+  .mid-bars .row .bar i{display:block;height:100%;border-radius:2px;animation:barGrow 1.2s ease forwards;transform-origin:left}
+  @keyframes barGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  .mid-bars .row .val{width:60px;text-align:right;color:var(--text)}
+
+  /* ============ §C. ROLLOUT (existing) - same as before ============ */
+  /* keep timeline / fanout / packet styles below */
+
+  .timeline-card{
+    background:var(--bg-2);border:1px solid var(--border);border-radius:16px;
+    padding:32px;overflow:hidden;
+  }
+  .tl-controls{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:8px 14px;background:var(--text);color:#000;
+    border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;
+    transition:transform .15s ease;
+  }
+  .btn:hover{transform:translateY(-1px)}
+  .btn.ghost{background:transparent;color:var(--text);border:1px solid var(--border-2)}
+  .btn.ghost:hover{border-color:var(--text)}
+  .tl-clock{margin-left:auto;font-family:"SF Mono",ui-monospace,monospace;font-size:13px;color:var(--muted)}
+  .tl-clock .num{color:var(--cyan)}
+
+  .tl-track{position:relative;height:6px;background:var(--border);border-radius:3px;margin-bottom:32px}
+  .tl-progress{position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,var(--violet),var(--blue),var(--cyan));border-radius:3px;width:0;transition:width .3s ease}
+
+  .tl-stage-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+  .tl-stage{
+    padding:14px 12px;background:#0a0a0a;border:1px solid var(--border);border-radius:10px;
+    transition:all .3s ease;position:relative;overflow:hidden;
+  }
+  .tl-stage.active{
+    border-color:var(--cyan);
+    background:linear-gradient(180deg,rgba(0,212,255,.08),transparent);
+    box-shadow:0 0 0 1px var(--cyan),0 8px 32px rgba(0,212,255,.15);
+  }
+  .tl-stage.done{border-color:var(--ok);opacity:.6}
+  .tl-stage .step{font-family:"SF Mono",ui-monospace,monospace;font-size:10px;color:var(--muted-2)}
+  .tl-stage .name{font-size:13px;font-weight:500;margin-top:6px}
+  .tl-stage .sub-meta{font-size:10px;color:var(--muted);margin-top:4px;font-family:"SF Mono",ui-monospace,monospace}
+  .tl-stage.active .step{color:var(--cyan)}
+
+  .loop-detail{margin-top:32px;padding:24px;background:#050505;border:1px solid var(--border);border-radius:12px;min-height:160px}
+  .loop-row{display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px dashed var(--border);font-family:"SF Mono",ui-monospace,monospace;font-size:12px;opacity:0;transform:translateY(8px);transition:all .4s ease}
+  .loop-row.show{opacity:1;transform:translateY(0)}
+  .loop-row:last-child{border-bottom:none}
+  .loop-tag{padding:2px 8px;border-radius:4px;font-size:10px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;min-width:80px;text-align:center}
+  .loop-tag.think{background:rgba(121,40,202,.15);color:#c084fc;border:1px solid rgba(121,40,202,.3)}
+  .loop-tag.tool{background:rgba(0,112,243,.15);color:#60a5fa;border:1px solid rgba(0,112,243,.3)}
+  .loop-tag.obs{background:rgba(12,206,107,.15);color:#4ade80;border:1px solid rgba(12,206,107,.3)}
+  .loop-tag.sum{background:rgba(245,166,35,.15);color:#fbbf24;border:1px solid rgba(245,166,35,.3)}
+  .loop-row .text{color:var(--text)}
+  .loop-row .extra{color:var(--muted-2);margin-left:auto}
+
+  /* ===== fanout ===== */
+  .fanout-card{background:var(--bg-2);border:1px solid var(--border);border-radius:16px;padding:40px;position:relative;overflow:hidden}
+  .fanout{display:grid;grid-template-columns:200px 1fr 160px;gap:32px;align-items:center}
+  .fanout-prompt{padding:20px;background:linear-gradient(135deg,#1a1a1a,#0a0a0a);border:1px solid var(--border-2);border-radius:12px;text-align:center}
+  .fanout-prompt .ic{font-size:24px;margin-bottom:8px;display:block}
+  .fanout-prompt .lbl{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+  .fanout-prompt .val{font-size:14px;margin-top:4px;font-weight:500}
+  .fanout-svg{width:100%;height:280px}
+  .fanout-stats{display:flex;flex-direction:column;gap:8px}
+  .stat{padding:12px 14px;background:#0a0a0a;border:1px solid var(--border);border-radius:8px}
+  .stat .k{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .stat .v{font-size:20px;font-weight:600;margin-top:2px;font-family:"SF Mono",ui-monospace,monospace}
+  .stat .v.good{color:var(--ok)}
+  .stat .v.bad{color:var(--red)}
+  .stat .v.mid{color:var(--warn)}
+
+  /* ===== factory ===== */
+  .factory-card{background:var(--bg-2);border:1px solid var(--border);border-radius:16px;padding:40px;overflow:hidden}
+  .factory-grid{display:grid;grid-template-columns:1fr 80px 1fr;gap:20px;align-items:stretch}
+  .building{background:linear-gradient(180deg,#0a0a0a,#000);border:1px solid var(--border-2);border-radius:12px;padding:24px;min-height:280px;position:relative}
+  .building.train{border-top:2px solid var(--violet)}
+  .building.roll{border-top:2px solid var(--cyan)}
+  .building h4{font-size:14px;font-weight:600;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+  .building .tag{font-size:10px;color:var(--muted);font-family:"SF Mono",ui-monospace,monospace;text-transform:uppercase;letter-spacing:.5px;margin-bottom:16px}
+  .building .ver{display:inline-block;padding:2px 6px;background:#1a1a1a;border-radius:4px;font-family:"SF Mono",ui-monospace,monospace;font-size:11px;color:var(--cyan)}
+  .building .ver.violet{color:#c084fc}
+  .gpus{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;margin-top:14px}
+  .gpu{aspect-ratio:1;background:#1a1a1a;border-radius:2px;transition:all .2s ease}
+  .gpu.on{background:var(--cyan);box-shadow:0 0 4px var(--cyan)}
+  .gpu.on.v{background:var(--violet);box-shadow:0 0 4px var(--violet)}
+  .exchange{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;position:relative}
+  .pipe{width:6px;flex:1;background:linear-gradient(180deg,rgba(192,132,252,.3),rgba(0,212,255,.3));border-radius:3px;position:relative;overflow:hidden}
+  .pipe::before{content:"";position:absolute;top:-20%;left:0;right:0;height:20%;background:linear-gradient(180deg,transparent,#fff,transparent);animation:pipeflow 2s linear infinite}
+  @keyframes pipeflow{to{top:120%}}
+  .pipe.up::before{animation:pipeflow-up 2s linear infinite}
+  @keyframes pipeflow-up{from{top:120%}to{top:-20%}}
+  .pipe-lbl{font-size:9px;color:var(--muted);writing-mode:vertical-rl;text-orientation:mixed;font-family:"SF Mono",ui-monospace,monospace}
+  .building .running{margin-top:14px;font-size:11px;color:var(--muted);font-family:"SF Mono",ui-monospace,monospace}
+  .building .running .row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed var(--border)}
+  .building .running .row:last-child{border:none}
+  .building .running .row .live{color:var(--ok)}
+
+  /* ===== MoE expert grid ===== */
+  .moe-card{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .moe-viz{padding:28px;background:#050505;border:1px solid var(--border);border-radius:12px}
+  .moe-title{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;font-family:"SF Mono",ui-monospace,monospace;display:flex;justify-content:space-between}
+  .moe-grid{display:grid;grid-template-columns:repeat(24,1fr);gap:2px}
+  .moe-cell{aspect-ratio:1;background:#1a1a1a;border-radius:1px;transition:all .3s ease}
+  .moe-cell.infer{background:var(--cyan);box-shadow:0 0 4px var(--cyan)}
+  .moe-cell.train{background:var(--violet);box-shadow:0 0 4px var(--violet)}
+  .moe-cell.match{background:#fff;box-shadow:0 0 6px #fff}
+  .moe-cell.miss{background:var(--red);box-shadow:0 0 8px var(--red);animation:missFlash .8s ease infinite}
+  @keyframes missFlash{50%{box-shadow:0 0 16px var(--red)}}
+
+  .moe-legend{display:flex;gap:14px;margin-top:18px;flex-wrap:wrap;font-size:10px;color:var(--muted);font-family:"SF Mono",ui-monospace,monospace}
+  .moe-legend .li{display:flex;align-items:center;gap:6px}
+  .moe-legend .sq{width:10px;height:10px;border-radius:2px}
+
+  .moe-controls{display:flex;gap:8px;margin-top:18px}
+  .moe-controls button{padding:8px 12px;background:#0a0a0a;border:1px solid var(--border-2);border-radius:6px;color:var(--muted);font-size:11px;cursor:pointer;font-family:"SF Mono",ui-monospace,monospace;transition:all .15s ease}
+  .moe-controls button.on{background:#fff;color:#000;border-color:#fff}
+
+  .moe-explain{display:flex;flex-direction:column;gap:14px;justify-content:center}
+  .moe-step{padding:18px;background:#0a0a0a;border:1px solid var(--border);border-radius:10px;position:relative}
+  .moe-step .badge{position:absolute;top:-8px;left:14px;padding:2px 8px;background:#000;border:1px solid var(--border-2);border-radius:4px;font-family:"SF Mono",ui-monospace,monospace;font-size:10px;color:var(--muted)}
+  .moe-step .t{font-size:14px;font-weight:600;margin-bottom:6px}
+  .moe-step .d{font-size:12px;color:var(--muted);line-height:1.6}
+  .moe-step.bad{border-color:rgba(238,0,0,.3)}
+  .moe-step.bad .t{color:#fca5a5}
+  .moe-step.fix{border-color:rgba(12,206,107,.3)}
+  .moe-step.fix .t{color:#4ade80}
+
+  /* ===== global cluster map ===== */
+  .global-card{background:var(--bg-2);border:1px solid var(--border);border-radius:16px;padding:32px}
+  .global-map{position:relative;background:#050505;border:1px solid var(--border);border-radius:12px;padding:24px;min-height:340px;overflow:hidden}
+  .world-svg{width:100%;height:300px}
+  .city-dot{cursor:pointer}
+  .city-dot circle{transition:r .3s ease,fill-opacity .3s ease}
+
+  .global-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:18px}
+  .global-meta .m{padding:12px;background:#0a0a0a;border:1px solid var(--border);border-radius:8px;text-align:center}
+  .global-meta .m .k{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .global-meta .m .v{font-size:14px;font-weight:600;margin-top:4px;font-family:"SF Mono",ui-monospace,monospace}
+  .global-meta .m .v.cyan{color:var(--cyan)}
+
+  /* ===== sync chart ===== */
+  .sync-card{margin-top:20px;background:#050505;border:1px solid var(--border);border-radius:12px;padding:24px}
+  .sync-chart{display:flex;align-items:flex-end;gap:6px;height:120px;margin-top:14px;padding:12px 0;border-bottom:1px solid var(--border)}
+  .sync-bar{flex:1;background:linear-gradient(180deg,var(--cyan),var(--violet));border-radius:2px 2px 0 0;position:relative;animation:syncBar 1s ease forwards;transform-origin:bottom;transform:scaleY(0)}
+  @keyframes syncBar{to{transform:scaleY(1)}}
+  .sync-axis{display:flex;justify-content:space-between;margin-top:8px;font-family:"SF Mono",ui-monospace,monospace;font-size:10px;color:var(--muted-2)}
+
+  /* ===== realtime RL flow ===== */
+  .rt-card{background:var(--bg-2);border:1px solid var(--border);border-radius:16px;padding:32px}
+  .rt-flow{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;align-items:center}
+  .rt-node{padding:18px 14px;background:#0a0a0a;border:1px solid var(--border-2);border-radius:10px;text-align:center;position:relative}
+  .rt-node .ic{font-size:22px;display:block;margin-bottom:8px}
+  .rt-node .l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+  .rt-node .v{font-size:13px;font-weight:500;margin-top:4px}
+  .rt-arrow{text-align:center;color:var(--cyan);font-size:20px;position:relative}
+  .rt-arrow::after{content:"";position:absolute;left:50%;top:50%;width:6px;height:6px;background:var(--cyan);border-radius:50%;box-shadow:0 0 8px var(--cyan);animation:rtPing 2s ease infinite}
+  @keyframes rtPing{0%{transform:translate(-100%,-50%);opacity:0}50%{opacity:1}100%{transform:translate(100%,-50%);opacity:0}}
+
+  .rt-meta{margin-top:24px;display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-family:"SF Mono",ui-monospace,monospace;padding-top:16px;border-top:1px solid var(--border)}
+  .rt-meta .item{display:flex;gap:8px;align-items:center}
+  .rt-meta .item .dot{width:6px;height:6px;border-radius:50%;background:var(--ok);box-shadow:0 0 6px var(--ok)}
+
+  /* ===== packet tabs ===== */
+  .packet-card{background:var(--bg-2);border:1px solid var(--border);border-radius:16px;padding:0;overflow:hidden}
+  .packet-tabs{display:flex;border-bottom:1px solid var(--border);background:#050505}
+  .packet-tab{flex:1;padding:14px 20px;font-size:12px;color:var(--muted);cursor:pointer;border-right:1px solid var(--border);transition:all .2s ease;text-align:center;font-family:"SF Mono",ui-monospace,monospace;letter-spacing:.5px}
+  .packet-tab:last-child{border-right:none}
+  .packet-tab.active{color:var(--text);background:var(--bg-2);box-shadow:inset 0 -2px 0 var(--cyan)}
+  .packet-tab:hover:not(.active){color:var(--text);background:#0a0a0a}
+  .packet-body{padding:32px;font-family:"SF Mono",ui-monospace,monospace;font-size:13px;line-height:1.7;min-height:280px}
+  .packet-body .k{color:var(--cyan)}
+  .packet-body .s{color:var(--ok)}
+  .packet-body .n{color:var(--warn)}
+  .packet-body .c{color:var(--muted-2)}
+  .packet-body .hl{background:rgba(0,212,255,.08);padding:2px 6px;border-radius:3px;border-left:2px solid var(--cyan);display:inline-block;margin:1px 0}
+  .packet-body .b{color:var(--violet)}
+
+  /* ===== takeaways ===== */
+  .take-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .take{padding:24px;background:var(--bg-2);border:1px solid var(--border);border-radius:12px;position:relative;overflow:hidden;transition:all .2s ease}
+  .take:hover{border-color:var(--cyan);transform:translateY(-2px)}
+  .take .num{font-family:"SF Mono",ui-monospace,monospace;font-size:11px;color:var(--cyan);letter-spacing:1px}
+  .take .t{font-size:16px;font-weight:600;margin-top:8px;letter-spacing:-.01em}
+  .take .d{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6}
+
+  footer{margin-top:96px;padding:24px 0;border-top:1px solid var(--border);font-size:12px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;font-family:"SF Mono",ui-monospace,monospace;flex-wrap:wrap;gap:8px}
+
+  @media (max-width:880px){
+    h1{font-size:40px}
+    .hero-stats,.take-grid,.global-meta{grid-template-columns:repeat(2,1fr)}
+    .base-card,.moe-card{grid-template-columns:1fr}
+    .pipeline,.tl-stage-grid,.rt-flow{grid-template-columns:repeat(2,1fr)}
+    .fanout,.factory-grid,.mid-flow{grid-template-columns:1fr}
+    .ppl-step::after{display:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- ===== Top Nav ===== -->
+  <nav class="topnav">
+    <span class="brand">composer-2.5/</span>
+    <a href="#pipeline" data-i18n="nav.pipeline">pipeline</a>
+    <a href="#base" data-i18n="nav.base">base</a>
+    <a href="#midtrain" data-i18n="nav.midtrain">mid-train</a>
+    <a href="#rollout" data-i18n="nav.rollout">rollout</a>
+    <a href="#fanout" data-i18n="nav.fanout">fan-out</a>
+    <a href="#async" data-i18n="nav.async">async</a>
+    <a href="#moe" data-i18n="nav.moe">moe</a>
+    <a href="#global" data-i18n="nav.global">global</a>
+    <a href="#realtime" data-i18n="nav.realtime">realtime</a>
+    <a href="#payload" data-i18n="nav.payload">payload</a>
+    <a href="#takeaway" data-i18n="nav.takeaway">takeaways</a>
+  </nav>
+
+  <!-- ===== Language switcher (fixed top-right) ===== -->
+  <div class="lang-switch">
+    <button class="lang-btn" id="langBtn" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span id="langLabel">EN</span>
+      <span style="opacity:.5;font-size:9px;margin-left:2px">▾</span>
+    </button>
+    <div class="lang-menu" id="langMenu">
+      <div class="lang-item" data-lang="en"><span><span class="flag">🇺🇸</span> English</span><span class="check">✓</span></div>
+      <div class="lang-item" data-lang="zh"><span><span class="flag">🇨🇳</span> 中文</span><span class="check">✓</span></div>
+      <div class="lang-item" data-lang="ja"><span><span class="flag">🇯🇵</span> 日本語</span><span class="check">✓</span></div>
+      <div class="lang-item" data-lang="ko"><span><span class="flag">🇰🇷</span> 한국어</span><span class="check">✓</span></div>
+    </div>
+  </div>
+
+  <!-- ===== HEADER ===== -->
+  <header>
+    <div class="eyebrow"><span class="dot"></span><span data-i18n="header.eyebrow">Cursor · Composer 2.5</span></div>
+    <h1>
+      <span class="grad" data-i18n="header.title1">Training</span><br/>
+      <span class="grad" data-i18n="header.title2">anatomy.</span>
+    </h1>
+    <p class="sub" data-i18n="header.sub">从 Kimi 2.5 基座到 Real-time RL —— 一个 1T MoE 模型如何在几万张 GPU 上被锐化成专属于 Cursor 的编程 Agent。</p>
+
+    <div class="hero-stats">
+      <div class="cell"><div class="k" data-i18n="header.stat.base">Base</div><div class="v">Kimi 2.5</div></div>
+      <div class="cell"><div class="k" data-i18n="header.stat.params">Params</div><div class="v">1T<span class="u"> moe</span></div></div>
+      <div class="cell"><div class="k" data-i18n="header.stat.active">Active</div><div class="v">30B</div></div>
+      <div class="cell"><div class="k" data-i18n="header.stat.cost">Cost vs Opus</div><div class="v">−10×</div></div>
+      <div class="cell"><div class="k" data-i18n="header.stat.clusters">Clusters</div><div class="v">4<span class="u" data-i18n="header.stat.global"> global</span></div></div>
+    </div>
+  </header>
+
+  <!-- ===== §0. MASTER PIPELINE ===== -->
+  <section id="pipeline">
+    <div class="section-head">
+      <span class="idx">00 / <span data-i18n="s0.idx">OVERVIEW</span></span>
+      <h2 data-i18n="s0.h">The five-stage pipeline.</h2>
+      <span class="meta">base → mid → rl → distributed → realtime</span>
+    </div>
+    <div class="pipeline">
+      <a class="ppl-step s0" href="#base">
+        <div class="n">00 · <span data-i18n="s0.p0.n">BASE</span></div>
+        <div class="t">Kimi 2.5</div>
+        <div class="d" data-i18n="s0.p0.d">open weights · MoE</div>
+        <div class="bar"><i></i></div>
+      </a>
+      <a class="ppl-step s1" href="#midtrain">
+        <div class="n">01 · <span data-i18n="s0.p1.n">MID-TRAIN</span></div>
+        <div class="t" data-i18n="s0.p1.t">Continual PT</div>
+        <div class="d" data-i18n="s0.p1.d">code + web tokens</div>
+        <div class="bar"><i></i></div>
+      </a>
+      <a class="ppl-step s2" href="#rollout">
+        <div class="n">02 · RL</div>
+        <div class="t" data-i18n="s0.p2.t">Large-scale RL</div>
+        <div class="d" data-i18n="s0.p2.d">rollouts in harness</div>
+        <div class="bar"><i></i></div>
+      </a>
+      <a class="ppl-step s3" href="#global">
+        <div class="n">03 · <span data-i18n="s0.p3.n">DISTRIBUTED</span></div>
+        <div class="t" data-i18n="s0.p3.t">4 clusters, 1TB sync</div>
+        <div class="d">delta · FP4 · 30s swap</div>
+        <div class="bar"><i></i></div>
+      </a>
+      <a class="ppl-step s4" href="#realtime">
+        <div class="n">04 · <span data-i18n="s0.p4.n">REALTIME</span></div>
+        <div class="t" data-i18n="s0.p4.t">Online RL</div>
+        <div class="d" data-i18n="s0.p4.d">user signals · h-level</div>
+        <div class="bar"><i></i></div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ===== §A. BASE MODEL ===== -->
+  <section id="base">
+    <div class="section-head">
+      <span class="idx">01 / BASE</span>
+      <h2 data-i18n="s1.h">Model is a finite disk.</h2>
+      <span class="meta" id="diskMeta">general purpose · spread thin</span>
+    </div>
+
+    <div class="base-card">
+      <div class="base-viz">
+        <div class="base-disk" id="baseDisk"></div>
+        <div class="base-legend" id="baseLegend"></div>
+        <div class="base-toggle">
+          <button data-mode="general" class="on" data-i18n="s1.btn1">General (Kimi 2.5)</button>
+          <button data-mode="cursor" data-i18n="s1.btn2">Composer 2.5 specialized</button>
+        </div>
+      </div>
+      <div class="base-info">
+        <div class="info-row"><span class="k" data-i18n="s1.row1">Total params</span><span class="v cyan">1,000,000,000,000</span></div>
+        <div class="info-row"><span class="k" data-i18n="s1.row2">Active / token</span><span class="v cyan">30,000,000,000</span></div>
+        <div class="info-row"><span class="k" data-i18n="s1.row3">Architecture</span><span class="v violet">MoE · 384 experts · top-8</span></div>
+        <div class="info-row"><span class="k" data-i18n="s1.row4">Why not from scratch</span><span class="v" data-i18n="s1.row4v">time-to-user</span></div>
+        <div class="info-row"><span class="k" data-i18n="s1.row5">Strategy</span><span class="v" data-i18n="s1.row5v">specialize, don't generalize</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== §B. MID-TRAINING ===== -->
+  <section id="midtrain">
+    <div class="section-head">
+      <span class="idx">02 / MID-TRAINING</span>
+      <h2 data-i18n="s2.h">Widen the distribution.</h2>
+      <span class="meta" data-i18n="s2.meta">~pre-train scale · code-heavy</span>
+    </div>
+
+    <div class="card mid-card">
+      <div class="mid-flow">
+        <div class="mid-source code">
+          <span class="ic">⌨</span>
+          <div class="l" data-i18n="s2.srcA">Source A</div>
+          <div class="v" data-i18n="s2.srcAv">Code Tokens</div>
+        </div>
+        <div class="mid-arrow">+</div>
+        <div class="mid-source web">
+          <span class="ic">🌐</span>
+          <div class="l" data-i18n="s2.srcB">Source B</div>
+          <div class="v" data-i18n="s2.srcBv">Web Data</div>
+        </div>
+        <div class="mid-arrow">→</div>
+        <div class="mid-output">
+          <div class="l" data-i18n="s2.out">Checkpoint</div>
+          <div class="v" data-i18n="s2.outv">Wider Code Distribution</div>
+        </div>
+      </div>
+
+      <div class="mid-bars">
+        <div class="row"><span class="lbl" data-i18n="s2.bar.code">code</span><span class="bar"><i style="width:88%;background:linear-gradient(90deg,var(--cyan),var(--blue))"></i></span><span class="val">88%</span></div>
+        <div class="row"><span class="lbl" data-i18n="s2.bar.web">web</span><span class="bar"><i style="width:10%;background:var(--warn)"></i></span><span class="val">10%</span></div>
+        <div class="row"><span class="lbl" data-i18n="s2.bar.misc">misc</span><span class="bar"><i style="width:2%;background:var(--muted)"></i></span><span class="val">2%</span></div>
+      </div>
+
+      <div class="mid-note">
+        <div class="item"><b data-i18n="s2.learn">Learns:</b> <span data-i18n="s2.learnv">codebases, code patterns, world knowledge</span></div>
+        <div class="item"><b data-i18n="s2.notlearn">Does NOT learn:</b> <span data-i18n="s2.notlearnv">what is correct code → that's RL's job</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== §C. SINGLE ROLLOUT ===== -->
+  <section id="rollout">
+    <div class="section-head">
+      <span class="idx">03 / ROLLOUT</span>
+      <h2 data-i18n="s3.h">One rollout, step by step.</h2>
+      <span class="meta" id="phaseLabel">— READY —</span>
+    </div>
+
+    <div class="timeline-card">
+      <div class="tl-controls">
+        <button class="btn" id="btnPlay">▶ <span data-i18n="s3.play">Play</span></button>
+        <button class="btn ghost" id="btnReset">↺ <span data-i18n="s3.reset">Reset</span></button>
+        <div class="tl-clock"><span data-i18n="s3.elapsed">elapsed</span> <span class="num" id="clk">00:00</span></div>
+      </div>
+
+      <div class="tl-track"><div class="tl-progress" id="tlProg"></div></div>
+
+      <div class="tl-stage-grid" id="stageGrid">
+        <div class="tl-stage" data-i="0"><div class="step">01</div><div class="name" data-i18n="s3.st1">Spin VM</div><div class="sub-meta" data-i18n="s3.st1s">clone env</div></div>
+        <div class="tl-stage" data-i="1"><div class="step">02</div><div class="name" data-i18n="s3.st2">Prompt</div><div class="sub-meta" data-i18n="s3.st2s">task in</div></div>
+        <div class="tl-stage" data-i="2"><div class="step">03</div><div class="name" data-i18n="s3.st3">Agent Loop</div><div class="sub-meta" data-i18n="s3.st3s">N turns</div></div>
+        <div class="tl-stage" data-i="3"><div class="step">04</div><div class="name" data-i18n="s3.st4">Summarize</div><div class="sub-meta" data-i18n="s3.st4s">if 200K</div></div>
+        <div class="tl-stage" data-i="4"><div class="step">05</div><div class="name" data-i18n="s3.st5">Reward</div><div class="sub-meta" data-i18n="s3.st5s">judge</div></div>
+        <div class="tl-stage" data-i="5"><div class="step">06</div><div class="name" data-i18n="s3.st6">Ship Back</div><div class="sub-meta">→ trainer</div></div>
+      </div>
+
+      <div class="loop-detail" id="loopDetail">
+        <div style="color:var(--muted-2);font-size:12px;font-family:'SF Mono',ui-monospace,monospace" data-i18n="s3.hint">// click Play to simulate one rollout</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== §D. FAN-OUT ===== -->
+  <section id="fanout">
+    <div class="section-head">
+      <span class="idx">04 / SAMPLING</span>
+      <h2 data-i18n="s4.h">One prompt, N parallel rollouts.</h2>
+      <span class="meta">GRPO · 16–128 / prompt</span>
+    </div>
+
+    <div class="fanout-card">
+      <div class="fanout">
+        <div class="fanout-prompt">
+          <span class="ic">📨</span>
+          <div class="lbl">PROMPT</div>
+          <div class="val">fix bug in user.py</div>
+        </div>
+
+        <svg class="fanout-svg" viewBox="0 0 400 280" preserveAspectRatio="none">
+          <g id="rollLines"></g>
+          <g id="rollEnds"></g>
+        </svg>
+
+        <div class="fanout-stats">
+          <div class="stat"><div class="k" data-i18n="s4.best">Best</div><div class="v good">0.92</div></div>
+          <div class="stat"><div class="k" data-i18n="s4.avg">Avg</div><div class="v mid">0.51</div></div>
+          <div class="stat"><div class="k" data-i18n="s4.worst">Worst</div><div class="v bad">0.05</div></div>
+          <div class="stat"><div class="k">→ <span data-i18n="s4.adv">Advantage</span></div><div class="v">Δ 0.87</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== §E. ASYNC FACTORY ===== -->
+  <section id="async">
+    <div class="section-head">
+      <span class="idx">05 / ASYNC</span>
+      <h2 data-i18n="s5.h">Trainer &amp; Rollout never stop.</h2>
+      <span class="meta" data-i18n="s5.meta">staleness ≈ 3 versions</span>
+    </div>
+
+    <div class="factory-card">
+      <div class="factory-grid">
+        <div class="building train">
+          <h4><span data-i18n="s5.trainer">Trainer</span> <span class="ver violet" id="trainV">v103</span></h4>
+          <div class="tag" data-i18n="s5.trainerTag">central · RDMA · ~10K GPU</div>
+          <div class="gpus" id="trainGpus"></div>
+          <div class="running">
+            <div class="row"><span data-i18n="s5.step">step</span><span class="live" id="trainStep">#412</span></div>
+            <div class="row"><span data-i18n="s5.using">using rollout from</span><span class="live" id="trainUsing">v100</span></div>
+            <div class="row"><span data-i18n="s5.tput">throughput</span><span class="live">42 step/h</span></div>
+          </div>
+        </div>
+
+        <div class="exchange">
+          <div class="pipe-lbl">weights ↓</div>
+          <div class="pipe"></div>
+          <div class="pipe-lbl">rollouts ↑</div>
+          <div class="pipe up"></div>
+        </div>
+
+        <div class="building roll">
+          <h4><span data-i18n="s5.rollout">Rollout</span> <span class="ver" id="rollV">v103</span></h4>
+          <div class="tag" data-i18n="s5.rolloutTag">global · 4 clusters · ~100K VM</div>
+          <div class="gpus" id="rollGpus"></div>
+          <div class="running">
+            <div class="row"><span data-i18n="s5.active">active rollouts</span><span class="live" id="rollActive">12,480</span></div>
+            <div class="row"><span data-i18n="s5.done">completed / min</span><span class="live" id="rollDone">1,247</span></div>
+            <div class="row"><span data-i18n="s5.avg">avg duration</span><span class="live">7m 42s</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== §F. MoE NIGHTMARE ===== -->
+  <section id="moe">
+    <div class="section-head">
+      <span class="idx">06 / MoE PRECISION</span>
+      <h2 data-i18n="s6.h">The expert routing nightmare.</h2>
+      <span class="meta">384 experts · top-8 / token</span>
+    </div>
+
+    <div class="moe-card">
+      <div class="moe-viz">
+        <div class="moe-title"><span data-i18n="s6.grid">EXPERT GRID · 384 cells</span><span id="moeState">PROBLEM</span></div>
+        <div class="moe-grid" id="moeGrid"></div>
+        <div class="moe-legend">
+          <div class="li"><span class="sq" style="background:var(--cyan)"></span> <span data-i18n="s6.leg1">inference picked</span></div>
+          <div class="li"><span class="sq" style="background:var(--violet)"></span> <span data-i18n="s6.leg2">trainer picked</span></div>
+          <div class="li"><span class="sq" style="background:#fff"></span> <span data-i18n="s6.leg3">matched</span></div>
+          <div class="li"><span class="sq" style="background:var(--red)"></span> <span data-i18n="s6.leg4">mismatch ⚠</span></div>
+        </div>
+        <div class="moe-controls">
+          <button data-moe="problem" class="on" data-i18n="s6.btn1">Without Router Replay</button>
+          <button data-moe="fix" data-i18n="s6.btn2">With Router Replay ✓</button>
+        </div>
+      </div>
+
+      <div class="moe-explain">
+        <div class="moe-step bad">
+          <span class="badge" data-i18n="s6.badgeP">PROBLEM</span>
+          <div class="t" data-i18n="s6.p1t">Float drift → wrong expert</div>
+          <div class="d" data-i18n="s6.p1d"><code>a+b+c ≠ c+b+a</code> in fp. 5th decimal drift → router picks expert 7 instead of 9. Trainer updates an expert that inference never used. Signal destroyed.</div>
+        </div>
+        <div class="moe-step fix">
+          <span class="badge" data-i18n="s6.badgeF1">FIX · ROUTER REPLAY</span>
+          <div class="t" data-i18n="s6.p2t">Inference ships expert IDs as ints</div>
+          <div class="d" data-i18n="s6.p2d">For each token: <code>{layer, [exp_ids]}</code>. Trainer reuses them verbatim — no recomputation, no mismatch.</div>
+        </div>
+        <div class="moe-step fix">
+          <span class="badge" data-i18n="s6.badgeF2">FIX · KERNEL MATCH</span>
+          <div class="t" data-i18n="s6.p3t">Match quant / op-order</div>
+          <div class="d" data-i18n="s6.p3d">Accept ~few % perf loss → kill 90% of numeric drift. Production trains in FP4.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== §G. GLOBAL CLUSTER ===== -->
+  <section id="global">
+    <div class="section-head">
+      <span class="idx">07 / DISTRIBUTED</span>
+      <h2 data-i18n="s7.h">4 clusters, 1TB weights, cross-continent.</h2>
+      <span class="meta" data-i18n="s7.meta">delta compress 20× · swap 30s</span>
+    </div>
+
+    <div class="global-card">
+      <div class="global-map">
+        <svg class="world-svg" viewBox="0 0 800 300" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <radialGradient id="cityGrad"><stop offset="0%" stop-color="#00d4ff" stop-opacity="1"/><stop offset="100%" stop-color="#00d4ff" stop-opacity="0"/></radialGradient>
+            <radialGradient id="trainGrad"><stop offset="0%" stop-color="#c084fc" stop-opacity="1"/><stop offset="100%" stop-color="#c084fc" stop-opacity="0"/></radialGradient>
+          </defs>
+          <g fill="#0f0f0f" stroke="#222" stroke-width="0.5">
+            <path d="M120,80 Q160,60 200,90 L240,110 Q280,100 290,140 L260,180 L180,170 L130,130 Z"/>
+            <path d="M380,90 L460,80 L520,100 L560,140 L530,180 L470,190 L420,170 L390,130 Z"/>
+            <path d="M540,160 L610,150 L660,170 L680,210 L640,240 L580,230 L550,200 Z"/>
+            <path d="M250,200 L310,210 L320,260 L280,280 L240,260 Z"/>
+            <path d="M680,200 L720,210 L720,250 L690,250 Z"/>
+          </g>
+          <g stroke="#222" stroke-width="1" fill="none" stroke-dasharray="3 4">
+            <line x1="200" y1="120" x2="420" y2="130"/>
+            <line x1="420" y1="130" x2="620" y2="180"/>
+            <line x1="420" y1="130" x2="700" y2="225"/>
+            <line x1="200" y1="120" x2="620" y2="180" opacity=".4"/>
+          </g>
+          <g id="cityMarkers">
+            <g class="city-dot" transform="translate(420,130)">
+              <circle r="20" fill="url(#trainGrad)"/>
+              <circle r="5" fill="#c084fc"/>
+              <text x="12" y="-10" fill="#c084fc" font-size="10" font-family="SF Mono,monospace">TRAINER · v103</text>
+              <text x="12" y="2" fill="#666" font-size="9" font-family="SF Mono,monospace">us-east · 10K GPU</text>
+            </g>
+            <g class="city-dot" transform="translate(200,120)">
+              <circle r="14" fill="url(#cityGrad)"/>
+              <circle r="4" fill="#00d4ff"/>
+              <text x="12" y="-6" fill="#00d4ff" font-size="9" font-family="SF Mono,monospace">ROLLOUT · sf</text>
+            </g>
+            <g class="city-dot" transform="translate(620,180)">
+              <circle r="14" fill="url(#cityGrad)"/>
+              <circle r="4" fill="#00d4ff"/>
+              <text x="12" y="-6" fill="#00d4ff" font-size="9" font-family="SF Mono,monospace">ROLLOUT · fra</text>
+            </g>
+            <g class="city-dot" transform="translate(700,225)">
+              <circle r="14" fill="url(#cityGrad)"/>
+              <circle r="4" fill="#00d4ff"/>
+              <text x="-10" y="20" fill="#00d4ff" font-size="9" font-family="SF Mono,monospace">ROLLOUT · sg</text>
+            </g>
+          </g>
+        </svg>
+      </div>
+
+      <div class="global-meta">
+        <div class="m"><div class="k" data-i18n="s7.m1">step interval</div><div class="v cyan">5–15 min</div></div>
+        <div class="m"><div class="k" data-i18n="s7.m2">delta ratio</div><div class="v cyan">1 / 20</div></div>
+        <div class="m"><div class="k" data-i18n="s7.m3">transfer</div><div class="v cyan">&lt; 1 min</div></div>
+        <div class="m"><div class="k" data-i18n="s7.m4">swap pause</div><div class="v cyan">~30 sec</div></div>
+      </div>
+
+      <div class="sync-card">
+        <div class="moe-title"><span data-i18n="s7.delta">WEIGHT DELTA SIZE · per step (after compression)</span><span style="color:var(--ok)" data-i18n="s7.bit">bit-equivalent ✓</span></div>
+        <div class="sync-chart" id="syncChart"></div>
+        <div class="sync-axis">
+          <span>step 1</span><span>10</span><span>50</span><span>100</span><span>200</span><span data-i18n="s7.late">step 400 (late)</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== §H. REALTIME RL ===== -->
+  <section id="realtime">
+    <div class="section-head">
+      <span class="idx">08 / REALTIME RL</span>
+      <h2 data-i18n="s8.h">User signals close the loop.</h2>
+      <span class="meta" data-i18n="s8.meta">new build every few hours</span>
+    </div>
+
+    <div class="rt-card">
+      <div class="rt-flow">
+        <div class="rt-node">
+          <span class="ic">👤</span>
+          <div class="l" data-i18n="s8.user">User</div>
+          <div class="v" data-i18n="s8.userv">accepts / rejects</div>
+        </div>
+        <div class="rt-arrow">→</div>
+        <div class="rt-node">
+          <span class="ic">📡</span>
+          <div class="l" data-i18n="s8.signal">Signal</div>
+          <div class="v" data-i18n="s8.signalv">thumbs · edits · keeps</div>
+        </div>
+        <div class="rt-arrow">→</div>
+        <div class="rt-node">
+          <span class="ic">🧠</span>
+          <div class="l" data-i18n="s8.online">Online RL</div>
+          <div class="v" data-i18n="s8.onlinev">incremental update</div>
+        </div>
+      </div>
+      <div class="rt-flow" style="margin-top:8px">
+        <div class="rt-node">
+          <span class="ic">📦</span>
+          <div class="l" data-i18n="s8.build">Build</div>
+          <div class="v">v104 · v105 · v106</div>
+        </div>
+        <div class="rt-arrow">→</div>
+        <div class="rt-node">
+          <span class="ic">🚀</span>
+          <div class="l" data-i18n="s8.ship">Ship</div>
+          <div class="v" data-i18n="s8.shipv">every few hours</div>
+        </div>
+        <div class="rt-arrow">→</div>
+        <div class="rt-node">
+          <span class="ic">👤</span>
+          <div class="l" data-i18n="s8.user2">User</div>
+          <div class="v" data-i18n="s8.user2v">loop continues</div>
+        </div>
+      </div>
+
+      <div class="rt-meta">
+        <div class="item"><span class="dot"></span><span data-i18n="s8.note1">requires offline RL to clear "good enough" threshold first</span></div>
+        <div class="item"><span class="dot"></span><span data-i18n="s8.note2">simulation RL still runs in parallel (16–128× per prompt)</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== §I. PAYLOAD ===== -->
+  <section id="payload">
+    <div class="section-head">
+      <span class="idx">09 / PAYLOAD</span>
+      <h2 data-i18n="s9.h">What gets shipped back.</h2>
+      <span class="meta">JSON · ~MB / rollout</span>
+    </div>
+
+    <div class="packet-card">
+      <div class="packet-tabs">
+        <div class="packet-tab active" data-tab="0">trajectory</div>
+        <div class="packet-tab" data-tab="1">log_probs</div>
+        <div class="packet-tab" data-tab="2">router_choices</div>
+        <div class="packet-tab" data-tab="3">reward</div>
+        <div class="packet-tab" data-tab="4">meta</div>
+      </div>
+      <div class="packet-body" id="packetBody"></div>
+    </div>
+  </section>
+
+  <!-- ===== §J. TAKEAWAYS ===== -->
+  <section id="takeaway">
+    <div class="section-head">
+      <span class="idx">10 / TAKEAWAYS</span>
+      <h2 data-i18n="s10.h">What it all means.</h2>
+      <span class="meta" data-i18n="s10.meta">six things to remember</span>
+    </div>
+
+    <div class="take-grid">
+      <div class="take">
+        <div class="num">▸ 01</div>
+        <div class="t" data-i18n="s10.t1">Specialize, don't generalize.</div>
+        <div class="d" data-i18n="s10.d1">Model is a finite disk. Give every bit to your one job.</div>
+      </div>
+      <div class="take">
+        <div class="num">▸ 02</div>
+        <div class="t" data-i18n="s10.t2">Your product is the RL env.</div>
+        <div class="d" data-i18n="s10.d2">No toy gyms. Clone production, run 100K VMs on demand.</div>
+      </div>
+      <div class="take">
+        <div class="num">▸ 03</div>
+        <div class="t" data-i18n="s10.t3">Async or die.</div>
+        <div class="d" data-i18n="s10.d3">Sync = half the GPUs idle. Accept staleness, gain throughput.</div>
+      </div>
+      <div class="take">
+        <div class="num">▸ 04</div>
+        <div class="t" data-i18n="s10.t4">Numerics is everything.</div>
+        <div class="d" data-i18n="s10.d4">Router Replay + kernel match. Without it MoE-RL diverges.</div>
+      </div>
+      <div class="take">
+        <div class="num">▸ 05</div>
+        <div class="t" data-i18n="s10.t5">Split train ≠ infer.</div>
+        <div class="d" data-i18n="s10.d5">Train central, infer global &amp; cheap. 1TB sync via delta.</div>
+      </div>
+      <div class="take">
+        <div class="num">▸ 06</div>
+        <div class="t" data-i18n="s10.t6">Software 3.0 = writing rewards.</div>
+        <div class="d" data-i18n="s10.d6">1.0 wrote code · 2.0 fed data · 3.0 designs eval rules.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div data-i18n="footer.1">composer 2.5 / training anatomy</div>
+    <div data-i18n="footer.2">kimi 2.5 → mid-train → rl → realtime · ⚙</div>
+  </footer>
+
+</div>
+
+<script>
+/* ============ A. Base disk toggle ============ */
+const baseDisk=document.getElementById('baseDisk');
+const baseLegend=document.getElementById('baseLegend');
+const diskMeta=document.getElementById('diskMeta');
+const baseToggleBtns=document.querySelectorAll('.base-toggle button');
+
+const baseModes={
+  general:{
+    grad:'conic-gradient(from 0deg,#7928ca 0% 20%,#0070f3 20% 38%,#0cce6b 38% 52%,#f5a623 52% 68%,#ee0000 68% 82%,#00d4ff 82% 100%)',
+    legend:[
+      {c:'#7928ca',l:'code 20%'},
+      {c:'#0070f3',l:'math 18%'},
+      {c:'#0cce6b',l:'science 14%'},
+      {c:'#f5a623',l:'web 16%'},
+      {c:'#ee0000',l:'poetry 14%'},
+      {c:'#00d4ff',l:'other 18%'},
+    ],
+    meta:'general purpose · spread thin'
+  },
+  cursor:{
+    grad:'conic-gradient(from 0deg,#7928ca 0% 78%,#00d4ff 78% 95%,#222 95% 100%)',
+    legend:[
+      {c:'#7928ca',l:'cursor swe 78%'},
+      {c:'#00d4ff',l:'world knowl. 17%'},
+      {c:'#222',l:'reserve 5%'},
+    ],
+    meta:'composer 2.5 · capacity concentrated'
+  }
+};
+function setBase(mode){
+  const m=baseModes[mode];
+  baseDisk.style.background=m.grad;
+  baseLegend.innerHTML=m.legend.map(x=>`<div class="li"><span class="sq" style="background:${x.c}"></span> ${x.l}</div>`).join('');
+  diskMeta.textContent=m.meta;
+  baseToggleBtns.forEach(b=>b.classList.toggle('on',b.dataset.mode===mode));
+}
+baseToggleBtns.forEach(b=>b.addEventListener('click',()=>setBase(b.dataset.mode)));
+setBase('general');
+
+/* ============ B. Rollout timeline ============ */
+const stages = [
+  { name:"Spin VM",     dur:1200, label:"VM POOL · 100K READY" },
+  { name:"Prompt",      dur:600,  label:"PROMPT INJECTED"      },
+  { name:"Agent Loop",  dur:5200, label:"AGENT TURNS RUNNING"  },
+  { name:"Summarize",   dur:800,  label:"SELF-SUMMARIZATION"   },
+  { name:"Reward",      dur:1000, label:"REWARD COMPUTED"      },
+  { name:"Ship Back",   dur:600,  label:"PACKAGE → TRAINER"    },
+];
+const totalDur = stages.reduce((a,s)=>a+s.dur,0);
+
+const loopRows = [
+  { t:"think", txt:"analyze user.py auth flow", x:"+128 tok" },
+  { t:"tool",  txt:"read_file('user.py')",      x:"320 LOC"  },
+  { t:"obs",   txt:"file loaded",                x:"ok"       },
+  { t:"think", txt:"locate bug at line 87",      x:"+64 tok"  },
+  { t:"tool",  txt:"edit(line=87, ...)",         x:"patch"    },
+  { t:"obs",   txt:"applied",                    x:"ok"       },
+  { t:"tool",  txt:"run_tests()",                x:"24 tests" },
+  { t:"obs",   txt:"23 pass · 1 fail",           x:"-"        },
+  { t:"think", txt:"fix edge case",              x:"+48 tok"  },
+  { t:"tool",  txt:"edit + run_tests",           x:"retry"    },
+  { t:"obs",   txt:"24 / 24 pass",               x:"green"    },
+  { t:"sum",   txt:"context 180K → 8K summary",  x:"compress" },
+];
+
+const tlProg = document.getElementById('tlProg');
+const clk = document.getElementById('clk');
+const phaseLabel = document.getElementById('phaseLabel');
+const stageEls = [...document.querySelectorAll('.tl-stage')];
+const loopDetail = document.getElementById('loopDetail');
+const btnPlay = document.getElementById('btnPlay');
+const btnReset = document.getElementById('btnReset');
+
+let raf=null, t0=0, playing=false;
+function fmt(ms){const s=Math.floor(ms/1000),m=Math.floor(s/60);return String(m).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+function reset(){
+  cancelAnimationFrame(raf);playing=false;
+  tlProg.style.width='0%';clk.textContent='00:00';
+  phaseLabel.textContent='— READY —';
+  stageEls.forEach(e=>e.classList.remove('active','done'));
+  loopDetail.innerHTML='<div style="color:var(--muted-2);font-size:12px;font-family:\'SF Mono\',ui-monospace,monospace">// click Play to simulate one rollout</div>';
+  btnPlay.textContent='▶ Play';
+}
+function play(){
+  if(playing)return;playing=true;btnPlay.textContent='⏸ Running...';
+  t0=performance.now();loopDetail.innerHTML='';
+  let lastStage=-1, loopIdx=0, lastLoopTime=0;
+  function tick(now){
+    const elapsed=now-t0;
+    clk.textContent=fmt(elapsed);
+    tlProg.style.width=Math.min(100,elapsed/totalDur*100)+'%';
+    let acc=0,cur=-1;
+    for(let i=0;i<stages.length;i++){acc+=stages[i].dur;if(elapsed<=acc){cur=i;break}}
+    if(cur===-1)cur=stages.length-1;
+    if(cur!==lastStage){
+      stageEls.forEach((e,i)=>{e.classList.remove('active','done');if(i<cur)e.classList.add('done');if(i===cur)e.classList.add('active')});
+      phaseLabel.textContent='⚡ '+stages[cur].label;
+      lastStage=cur;
+    }
+    if(cur===2 && now-lastLoopTime>500 && loopIdx<loopRows.length-1){
+      addLoopRow(loopRows[loopIdx]);loopIdx++;lastLoopTime=now;
+    }
+    if(cur===3 && loopIdx<loopRows.length){
+      addLoopRow(loopRows[loopRows.length-1]);loopIdx=loopRows.length;
+    }
+    if(elapsed<totalDur){raf=requestAnimationFrame(tick)}
+    else{
+      stageEls.forEach(e=>{e.classList.remove('active');e.classList.add('done')});
+      phaseLabel.textContent='✓ DELIVERED';
+      btnPlay.textContent='▶ Replay';playing=false;
+    }
+  }
+  raf=requestAnimationFrame(tick);
+}
+function addLoopRow(r){
+  const div=document.createElement('div');div.className='loop-row';
+  const tagTxt={think:'think',tool:'tool',obs:'observe',sum:'compact'}[r.t];
+  div.innerHTML='<span class="loop-tag '+r.t+'">'+tagTxt+'</span><span class="text">'+r.txt+'</span><span class="extra">'+r.x+'</span>';
+  loopDetail.appendChild(div);
+  requestAnimationFrame(()=>div.classList.add('show'));
+  loopDetail.scrollTop=loopDetail.scrollHeight;
+}
+btnPlay.addEventListener('click',()=>{if(btnPlay.textContent.includes('Replay'))reset();setTimeout(play,50)});
+btnReset.addEventListener('click',reset);
+
+/* ============ C. Fan-out SVG ============ */
+const linesG=document.getElementById('rollLines');
+const endsG=document.getElementById('rollEnds');
+const N=8;
+const rewards=[0.92,0.41,0.88,0.71,0.05,0.65,0.83,0.22];
+for(let i=0;i<N;i++){
+  const y=20+i*(240/(N-1));
+  const reward=rewards[i];
+  const p=document.createElementNS('http://www.w3.org/2000/svg','path');
+  p.setAttribute('d',`M 0 140 C 100 140, 150 ${y}, 400 ${y}`);
+  p.setAttribute('stroke', reward>0.7?'rgba(12,206,107,0.6)':reward>0.4?'rgba(245,166,35,0.5)':'rgba(238,0,0,0.4)');
+  p.setAttribute('fill','none');p.setAttribute('stroke-width','1.5');p.setAttribute('stroke-dasharray','4 4');
+  p.style.animation=`dash 2s linear ${i*0.15}s infinite`;
+  linesG.appendChild(p);
+  const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+  c.setAttribute('cx',390);c.setAttribute('cy',y);c.setAttribute('r',5);
+  c.setAttribute('fill', reward>0.7?'#0cce6b':reward>0.4?'#f5a623':'#ee0000');
+  endsG.appendChild(c);
+  const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+  t.setAttribute('x',378);t.setAttribute('y',y+3);t.setAttribute('text-anchor','end');
+  t.setAttribute('fill','#666');t.setAttribute('font-size','10');t.setAttribute('font-family','SF Mono,monospace');
+  t.textContent='r='+reward.toFixed(2);
+  endsG.appendChild(t);
+}
+const styleE=document.createElement('style');
+styleE.textContent='@keyframes dash{to{stroke-dashoffset:-32}}';
+document.head.appendChild(styleE);
+
+/* ============ D. Factory async ============ */
+const trainGpus=document.getElementById('trainGpus');
+const rollGpus=document.getElementById('rollGpus');
+for(let i=0;i<64;i++){
+  const a=document.createElement('div');a.className='gpu';trainGpus.appendChild(a);
+  const b=document.createElement('div');b.className='gpu';rollGpus.appendChild(b);
+}
+function flicker(){
+  [...trainGpus.children].forEach(g=>{g.classList.toggle('on',Math.random()>0.25);g.classList.toggle('v',true)});
+  [...rollGpus.children].forEach(g=>{g.classList.toggle('on',Math.random()>0.3)});
+}
+flicker();setInterval(flicker,1500);
+let trainVer=103,rollVer=103,usingVer=100,step=412,active=12480,doneRate=1247;
+const trainV=document.getElementById('trainV'),rollV=document.getElementById('rollV'),trainUsing=document.getElementById('trainUsing'),trainStep=document.getElementById('trainStep'),rollActive=document.getElementById('rollActive'),rollDone=document.getElementById('rollDone');
+setInterval(()=>{
+  trainVer++;rollVer++;step++;usingVer=trainVer-3;
+  active=12000+Math.floor(Math.random()*1500);doneRate=1100+Math.floor(Math.random()*300);
+  trainV.textContent='v'+trainVer;rollV.textContent='v'+rollVer;trainUsing.textContent='v'+usingVer;
+  trainStep.textContent='#'+step;rollActive.textContent=active.toLocaleString();rollDone.textContent=doneRate.toLocaleString();
+},2500);
+
+/* ============ E. MoE grid ============ */
+const moeGrid=document.getElementById('moeGrid');
+const moeState=document.getElementById('moeState');
+const moeBtns=document.querySelectorAll('.moe-controls button');
+for(let i=0;i<384;i++){
+  const c=document.createElement('div');c.className='moe-cell';c.dataset.i=i;moeGrid.appendChild(c);
+}
+function renderMoE(mode){
+  const cells=[...moeGrid.children];
+  cells.forEach(c=>c.className='moe-cell');
+  // pick 8 inference experts
+  const inferSet=new Set();
+  while(inferSet.size<8)inferSet.add(Math.floor(Math.random()*384));
+  // trainer: if 'problem', drift on 3 of them; if 'fix', exactly same
+  const inferArr=[...inferSet];
+  const trainerArr= mode==='fix' ? inferArr.slice() : inferArr.map((e,i)=>{
+    return i<3 ? (e+Math.floor(Math.random()*30)+5)%384 : e;
+  });
+  // mark
+  inferArr.forEach(e=>cells[e].classList.add('infer'));
+  trainerArr.forEach(e=>{
+    const cell=cells[e];
+    if(cell.classList.contains('infer')){cell.classList.remove('infer');cell.classList.add('match')}
+    else{cell.classList.add(mode==='fix'?'match':'miss')}
+  });
+  // any infer remaining without match? In problem mode the drifted-away inference experts stay 'infer'
+  if(mode==='problem'){
+    // mark trainer cells that aren't in infer as miss (already done above)
+  }
+  moeState.textContent= mode==='fix' ? 'ALIGNED ✓' : 'MISMATCH ⚠';
+  moeState.style.color= mode==='fix' ? 'var(--ok)' : 'var(--red)';
+  moeBtns.forEach(b=>b.classList.toggle('on',b.dataset.moe===mode));
+}
+moeBtns.forEach(b=>b.addEventListener('click',()=>renderMoE(b.dataset.moe)));
+renderMoE('problem');
+setInterval(()=>{
+  const cur=document.querySelector('.moe-controls button.on').dataset.moe;
+  renderMoE(cur);
+},2500);
+
+/* ============ F. Sync chart ============ */
+const syncChart=document.getElementById('syncChart');
+const deltaSizes=[100,95,82,68,55,42,32,25,20,16,13,10,8,7,6,5.5,5,4.8,4.5,4.3]; // shrinking deltas
+deltaSizes.forEach((h,i)=>{
+  const b=document.createElement('div');
+  b.className='sync-bar';
+  b.style.height=h+'%';
+  b.style.animationDelay=(i*0.05)+'s';
+  syncChart.appendChild(b);
+});
+
+/* ============ G. Packet tabs ============ */
+const packets=[
+`<span class="c">// step-by-step interaction record</span>
+{
+  <span class="k">"prompt"</span>: <span class="s">"fix auth bug in user.py"</span>,
+  <span class="k">"trajectory"</span>: [
+    { <span class="k">"role"</span>:<span class="s">"assistant"</span>, <span class="k">"thought"</span>:<span class="s">"analyze flow..."</span>,
+      <span class="k">"tool"</span>:<span class="s">"read_file('user.py')"</span> },
+    { <span class="k">"role"</span>:<span class="s">"tool"</span>, <span class="k">"output"</span>:<span class="s">"&lt;320 LOC&gt;"</span> },
+    { <span class="k">"role"</span>:<span class="s">"assistant"</span>, <span class="k">"tool"</span>:<span class="s">"edit(line=87)"</span> },
+    { <span class="k">"role"</span>:<span class="s">"tool"</span>, <span class="k">"output"</span>:<span class="s">"applied"</span> },
+    { <span class="k">"role"</span>:<span class="s">"assistant"</span>, <span class="k">"tool"</span>:<span class="s">"run_tests()"</span> },
+    { <span class="k">"role"</span>:<span class="s">"tool"</span>, <span class="k">"output"</span>:<span class="s">"24/24 pass ✓"</span> },
+    <span class="c">// ... 44 more turns</span>
+  ]
+}`,
+
+`<span class="c">// per-token probability under generating model</span>
+{
+  <span class="k">"log_probs"</span>: [
+    <span class="n">-0.012</span>, <span class="n">-0.103</span>, <span class="n">-0.001</span>, <span class="n">-0.245</span>,
+    <span class="n">-0.067</span>, <span class="n">-0.018</span>, <span class="n">-0.412</span>, <span class="n">-0.009</span>,
+    <span class="c">// ... ~50,000 entries</span>
+  ],
+  <span class="c">// trainer will RECOMPUTE these against current weights</span>
+  <span class="c">// any drift → policy gradient noise</span>
+  <span class="hl">⚠ must match within tolerance, else training diverges</span>
+}`,
+
+`<span class="c">// MoE expert routing — the critical fingerprint</span>
+{
+  <span class="k">"router_choices"</span>: [
+    { <span class="k">"layer"</span>:<span class="n">0</span>, <span class="k">"experts"</span>:[<span class="n">7,23,89,142,201,267,310,355</span>] },
+    { <span class="k">"layer"</span>:<span class="n">1</span>, <span class="k">"experts"</span>:[<span class="n">12,45,98,156,210,278,322,361</span>] },
+    <span class="c">// ... × 60 layers × 50K tokens</span>
+  ],
+  <span class="c">// Router Replay: trainer reuses these instead of</span>
+  <span class="c">// recomputing — avoids "expert 7 vs expert 9" mismatch</span>
+  <span class="hl">★ THIS is what makes RL on MoE possible</span>
+}`,
+
+`<span class="c">// composite reward signal</span>
+{
+  <span class="k">"final_reward"</span>: <span class="n">0.87</span>,
+  <span class="k">"breakdown"</span>: {
+    <span class="k">"tests_pass"</span>:    <span class="n">1.00</span>,  <span class="c">// 24/24 ✓ verifiable</span>
+    <span class="k">"compile_clean"</span>: <span class="n">1.00</span>,  <span class="c">// ✓ verifiable</span>
+    <span class="k">"lint_clean"</span>:    <span class="n">0.92</span>,  <span class="c">// ✓ verifiable</span>
+    <span class="k">"style_judge"</span>:   <span class="n">0.71</span>,  <span class="c">// LLM-as-judge</span>
+    <span class="k">"solves_problem"</span>:<span class="n">0.85</span>   <span class="c">// LLM-as-judge</span>
+  },
+  <span class="k">"intermediate"</span>: [<span class="n">0.1,0.3,0.5,0.7,0.87</span>]
+}`,
+
+`<span class="c">// versioning + sandbox metadata</span>
+{
+  <span class="k">"weight_version"</span>: <span class="s">"v100"</span>,    <span class="c">// trainer is now at v103</span>
+  <span class="k">"staleness"</span>:      <span class="n">3</span>,         <span class="c">// versions behind</span>
+  <span class="k">"vm_id"</span>:          <span class="s">"sbx-eu-a7f"</span>,
+  <span class="k">"duration_ms"</span>:    <span class="n">462000</span>,    <span class="c">// 7m 42s</span>
+  <span class="k">"turns"</span>:          <span class="n">48</span>,
+  <span class="k">"context_used"</span>:   <span class="n">183420</span>,    <span class="c">// of 200K window</span>
+  <span class="k">"summarized"</span>:    <span class="b">true</span>,        <span class="c">// self-compressed once</span>
+  <span class="k">"cluster"</span>:        <span class="s">"frankfurt-2"</span>
+}`,
+];
+
+const packetBody=document.getElementById('packetBody');
+const tabs=[...document.querySelectorAll('.packet-tab')];
+function showTab(i){
+  tabs.forEach(t=>t.classList.toggle('active', +t.dataset.tab===i));
+  packetBody.innerHTML='<pre style="margin:0;font-family:inherit;white-space:pre-wrap;color:#ccc">'+packets[i]+'</pre>';
+}
+tabs.forEach(t=>t.addEventListener('click',()=>showTab(+t.dataset.tab)));
+showTab(0);
+
+/* ============ i18n ============ */
+const i18n = {
+  en: {
+    "nav.pipeline":"pipeline","nav.base":"base","nav.midtrain":"mid-train","nav.rollout":"rollout","nav.fanout":"fan-out","nav.async":"async","nav.moe":"moe","nav.global":"global","nav.realtime":"realtime","nav.payload":"payload","nav.takeaway":"takeaways",
+    "header.eyebrow":"Cursor · Composer 2.5","header.title1":"Training","header.title2":"anatomy.","header.sub":"From the Kimi 2.5 base to Real-time RL — how a 1T MoE model is sharpened on tens of thousands of GPUs into Cursor's dedicated coding Agent.","header.stat.base":"Base","header.stat.params":"Params","header.stat.active":"Active","header.stat.cost":"Cost vs Opus","header.stat.clusters":"Clusters","header.stat.global":" global",
+    "s0.idx":"OVERVIEW","s0.h":"The five-stage pipeline.","s0.p0.n":"BASE","s0.p0.d":"open weights · MoE","s0.p1.n":"MID-TRAIN","s0.p1.t":"Continual PT","s0.p1.d":"code + web tokens","s0.p2.t":"Large-scale RL","s0.p2.d":"rollouts in harness","s0.p3.n":"DISTRIBUTED","s0.p3.t":"4 clusters, 1TB sync","s0.p4.n":"REALTIME","s0.p4.t":"Online RL","s0.p4.d":"user signals · h-level",
+    "s1.h":"Model is a finite disk.","s1.btn1":"General (Kimi 2.5)","s1.btn2":"Composer 2.5 specialized","s1.row1":"Total params","s1.row2":"Active / token","s1.row3":"Architecture","s1.row4":"Why not from scratch","s1.row4v":"time-to-user","s1.row5":"Strategy","s1.row5v":"specialize, don't generalize",
+    "s2.h":"Widen the distribution.","s2.meta":"~pre-train scale · code-heavy","s2.srcA":"Source A","s2.srcAv":"Code Tokens","s2.srcB":"Source B","s2.srcBv":"Web Data","s2.out":"Checkpoint","s2.outv":"Wider Code Distribution","s2.bar.code":"code","s2.bar.web":"web","s2.bar.misc":"misc","s2.learn":"Learns:","s2.learnv":"codebases, code patterns, world knowledge","s2.notlearn":"Does NOT learn:","s2.notlearnv":"what is correct code → that's RL's job",
+    "s3.h":"One rollout, step by step.","s3.play":"Play","s3.reset":"Reset","s3.elapsed":"elapsed","s3.st1":"Spin VM","s3.st1s":"clone env","s3.st2":"Prompt","s3.st2s":"task in","s3.st3":"Agent Loop","s3.st3s":"N turns","s3.st4":"Summarize","s3.st4s":"if 200K","s3.st5":"Reward","s3.st5s":"judge","s3.st6":"Ship Back","s3.hint":"// click Play to simulate one rollout",
+    "s4.h":"One prompt, N parallel rollouts.","s4.best":"Best","s4.avg":"Avg","s4.worst":"Worst","s4.adv":"Advantage",
+    "s5.h":"Trainer & Rollout never stop.","s5.meta":"staleness ≈ 3 versions","s5.trainer":"Trainer","s5.trainerTag":"central · RDMA · ~10K GPU","s5.step":"step","s5.using":"using rollout from","s5.tput":"throughput","s5.rollout":"Rollout","s5.rolloutTag":"global · 4 clusters · ~100K VM","s5.active":"active rollouts","s5.done":"completed / min","s5.avg":"avg duration",
+    "s6.h":"The expert routing nightmare.","s6.grid":"EXPERT GRID · 384 cells","s6.leg1":"inference picked","s6.leg2":"trainer picked","s6.leg3":"matched","s6.leg4":"mismatch ⚠","s6.btn1":"Without Router Replay","s6.btn2":"With Router Replay ✓","s6.badgeP":"PROBLEM","s6.p1t":"Float drift → wrong expert","s6.p1d":"<code>a+b+c ≠ c+b+a</code> in fp. 5th decimal drift → router picks expert 7 instead of 9. Trainer updates an expert that inference never used. Signal destroyed.","s6.badgeF1":"FIX · ROUTER REPLAY","s6.p2t":"Inference ships expert IDs as ints","s6.p2d":"For each token: <code>{layer, [exp_ids]}</code>. Trainer reuses them verbatim — no recomputation, no mismatch.","s6.badgeF2":"FIX · KERNEL MATCH","s6.p3t":"Match quant / op-order","s6.p3d":"Accept ~few % perf loss → kill 90% of numeric drift. Production trains in FP4.",
+    "s7.h":"4 clusters, 1TB weights, cross-continent.","s7.meta":"delta compress 20× · swap 30s","s7.m1":"step interval","s7.m2":"delta ratio","s7.m3":"transfer","s7.m4":"swap pause","s7.delta":"WEIGHT DELTA SIZE · per step (after compression)","s7.bit":"bit-equivalent ✓","s7.late":"step 400 (late)",
+    "s8.h":"User signals close the loop.","s8.meta":"new build every few hours","s8.user":"User","s8.userv":"accepts / rejects","s8.signal":"Signal","s8.signalv":"thumbs · edits · keeps","s8.online":"Online RL","s8.onlinev":"incremental update","s8.build":"Build","s8.ship":"Ship","s8.shipv":"every few hours","s8.user2":"User","s8.user2v":"loop continues","s8.note1":"requires offline RL to clear \"good enough\" threshold first","s8.note2":"simulation RL still runs in parallel (16–128× per prompt)",
+    "s9.h":"What gets shipped back.",
+    "s10.h":"What it all means.","s10.meta":"six things to remember","s10.t1":"Specialize, don't generalize.","s10.d1":"Model is a finite disk. Give every bit to your one job.","s10.t2":"Your product is the RL env.","s10.d2":"No toy gyms. Clone production, run 100K VMs on demand.","s10.t3":"Async or die.","s10.d3":"Sync = half the GPUs idle. Accept staleness, gain throughput.","s10.t4":"Numerics is everything.","s10.d4":"Router Replay + kernel match. Without it MoE-RL diverges.","s10.t5":"Split train ≠ infer.","s10.d5":"Train central, infer global & cheap. 1TB sync via delta.","s10.t6":"Software 3.0 = writing rewards.","s10.d6":"1.0 wrote code · 2.0 fed data · 3.0 designs eval rules.",
+    "footer.1":"composer 2.5 / training anatomy","footer.2":"kimi 2.5 → mid-train → rl → realtime · ⚙"
+  },
+  zh: {
+    "nav.pipeline":"流水线","nav.base":"基座","nav.midtrain":"中训","nav.rollout":"采样","nav.fanout":"扇出","nav.async":"异步","nav.moe":"MoE","nav.global":"全球","nav.realtime":"实时","nav.payload":"数据包","nav.takeaway":"要点",
+    "header.eyebrow":"Cursor · Composer 2.5","header.title1":"训练","header.title2":"解剖。","header.sub":"从 Kimi 2.5 基座到 Real-time RL —— 一个 1T MoE 模型如何在几万张 GPU 上被锐化成专属于 Cursor 的编程 Agent。","header.stat.base":"基座","header.stat.params":"参数","header.stat.active":"激活","header.stat.cost":"成本 vs Opus","header.stat.clusters":"集群","header.stat.global":" 全球",
+    "s0.idx":"总览","s0.h":"五阶段流水线。","s0.p0.n":"基座","s0.p0.d":"开放权重 · MoE","s0.p1.n":"中训","s0.p1.t":"继续预训练","s0.p1.d":"代码 + 网页 token","s0.p2.t":"大规模 RL","s0.p2.d":"在 harness 中采样","s0.p3.n":"分布式","s0.p3.t":"4 集群,1TB 同步","s0.p4.n":"实时","s0.p4.t":"在线 RL","s0.p4.d":"用户信号 · 小时级",
+    "s1.h":"模型是一块有限的磁盘。","s1.btn1":"通用 (Kimi 2.5)","s1.btn2":"Composer 2.5 专精","s1.row1":"总参数","s1.row2":"每 token 激活","s1.row3":"架构","s1.row4":"为何不从零训","s1.row4v":"产品上线时间","s1.row5":"策略","s1.row5v":"专精,不要通用",
+    "s2.h":"拓宽分布。","s2.meta":"~预训练量级 · 代码为主","s2.srcA":"来源 A","s2.srcAv":"代码 Token","s2.srcB":"来源 B","s2.srcBv":"网页数据","s2.out":"产出","s2.outv":"更宽的代码分布","s2.bar.code":"代码","s2.bar.web":"网页","s2.bar.misc":"其他","s2.learn":"学到:","s2.learnv":"代码库、代码模式、世界知识","s2.notlearn":"不会学到:","s2.notlearnv":"什么是正确代码 → 那是 RL 的工作",
+    "s3.h":"一次 Rollout,逐步拆解。","s3.play":"播放","s3.reset":"重置","s3.elapsed":"已用时","s3.st1":"启动 VM","s3.st1s":"克隆环境","s3.st2":"下发 Prompt","s3.st2s":"任务进入","s3.st3":"Agent 循环","s3.st3s":"N 轮","s3.st4":"自总结","s3.st4s":"若超 200K","s3.st5":"奖励","s3.st5s":"评判","s3.st6":"回传","s3.hint":"// 点击 Play 模拟一次 rollout",
+    "s4.h":"一个 Prompt,N 路并行 Rollout。","s4.best":"最高","s4.avg":"均值","s4.worst":"最低","s4.adv":"优势 Advantage",
+    "s5.h":"Trainer 与 Rollout 永不停机。","s5.meta":"陈旧度 ≈ 3 版本","s5.trainer":"训练器","s5.trainerTag":"中心 · RDMA · ~10K GPU","s5.step":"step","s5.using":"使用的 rollout 版本","s5.tput":"吞吐","s5.rollout":"采样器","s5.rolloutTag":"全球 · 4 集群 · ~100K VM","s5.active":"活跃 rollout","s5.done":"完成 / 分钟","s5.avg":"平均时长",
+    "s6.h":"专家路由的噩梦。","s6.grid":"专家网格 · 384 单元","s6.leg1":"推理侧选中","s6.leg2":"训练侧选中","s6.leg3":"一致","s6.leg4":"不一致 ⚠","s6.btn1":"无 Router Replay","s6.btn2":"启用 Router Replay ✓","s6.badgeP":"问题","s6.p1t":"浮点漂移 → 选错专家","s6.p1d":"浮点下 <code>a+b+c ≠ c+b+a</code>。第 5 位小数漂移 → 路由选了专家 7 而不是 9。训练器更新了推理从未用过的专家,信号被毁。","s6.badgeF1":"修复 · ROUTER REPLAY","s6.p2t":"推理把专家 ID 当整数回传","s6.p2d":"每个 token: <code>{layer, [exp_ids]}</code>。训练器直接复用,不重算、不会失配。","s6.badgeF2":"修复 · KERNEL MATCH","s6.p3t":"对齐量化 / 算子顺序","s6.p3d":"接受少量性能损失 → 消除 90% 数值漂移。生产以 FP4 训练。",
+    "s7.h":"4 个集群,1TB 权重,跨大洲同步。","s7.meta":"差分压缩 20× · 切换 30 秒","s7.m1":"step 间隔","s7.m2":"差分比例","s7.m3":"传输","s7.m4":"切换暂停","s7.delta":"权重差分大小 · 每 step (压缩后)","s7.bit":"位级等价 ✓","s7.late":"step 400 (后期)",
+    "s8.h":"用户信号闭环。","s8.meta":"每几小时一个新 build","s8.user":"用户","s8.userv":"接受 / 拒绝","s8.signal":"信号","s8.signalv":"点赞 · 编辑 · 保留","s8.online":"在线 RL","s8.onlinev":"增量更新","s8.build":"构建","s8.ship":"发布","s8.shipv":"每几小时一次","s8.user2":"用户","s8.user2v":"循环继续","s8.note1":"需先离线 RL 跨过\"足够好\"门槛","s8.note2":"模拟 RL 仍并行运行 (每 prompt 16-128 路)",
+    "s9.h":"回传的数据包。",
+    "s10.h":"这一切意味着什么。","s10.meta":"六条要点","s10.t1":"专精,不要通用。","s10.d1":"模型是一块有限磁盘,把每一比特都给你的那一件事。","s10.t2":"你的产品就是 RL 环境。","s10.d2":"没有玩具 gym。克隆生产环境,按需起 10 万 VM。","s10.t3":"异步,或者死。","s10.d3":"同步 = 一半 GPU 闲置。接受陈旧度,换取吞吐。","s10.t4":"数值即一切。","s10.d4":"Router Replay + 算子对齐。否则 MoE-RL 会发散。","s10.t5":"训推必须分离。","s10.d5":"训练集中,推理全球便宜。1TB 同步靠差分。","s10.t6":"软件 3.0 = 写奖励。","s10.d6":"1.0 写代码 · 2.0 喂数据 · 3.0 设计评估规则。",
+    "footer.1":"composer 2.5 / 训练解剖","footer.2":"kimi 2.5 → 中训 → rl → 实时 · ⚙"
+  },
+  ja: {
+    "nav.pipeline":"パイプライン","nav.base":"ベース","nav.midtrain":"中間学習","nav.rollout":"ロールアウト","nav.fanout":"ファンアウト","nav.async":"非同期","nav.moe":"MoE","nav.global":"グローバル","nav.realtime":"リアルタイム","nav.payload":"ペイロード","nav.takeaway":"要点",
+    "header.eyebrow":"Cursor · Composer 2.5","header.title1":"訓練","header.title2":"の解剖。","header.sub":"Kimi 2.5 ベースから Real-time RL まで — 1T MoE モデルが数万 GPU 上で Cursor 専用コーディング Agent に磨かれる過程。","header.stat.base":"ベース","header.stat.params":"パラメータ","header.stat.active":"アクティブ","header.stat.cost":"Opus 比コスト","header.stat.clusters":"クラスタ","header.stat.global":" 全世界",
+    "s0.idx":"概要","s0.h":"5 段階パイプライン。","s0.p0.n":"ベース","s0.p0.d":"オープン重み · MoE","s0.p1.n":"中間学習","s0.p1.t":"継続事前学習","s0.p1.d":"コード + Web トークン","s0.p2.t":"大規模 RL","s0.p2.d":"ハーネス内ロールアウト","s0.p3.n":"分散","s0.p3.t":"4 クラスタ, 1TB 同期","s0.p4.n":"リアルタイム","s0.p4.t":"オンライン RL","s0.p4.d":"ユーザ信号 · 時間単位",
+    "s1.h":"モデルは有限のディスク。","s1.btn1":"汎用 (Kimi 2.5)","s1.btn2":"Composer 2.5 特化","s1.row1":"総パラメータ","s1.row2":"トークンあたり活性","s1.row3":"アーキテクチャ","s1.row4":"なぜスクラッチでないか","s1.row4v":"市場投入速度","s1.row5":"戦略","s1.row5v":"汎化ではなく特化",
+    "s2.h":"分布を広げる。","s2.meta":"~事前学習規模 · コード中心","s2.srcA":"ソース A","s2.srcAv":"コードトークン","s2.srcB":"ソース B","s2.srcBv":"Web データ","s2.out":"チェックポイント","s2.outv":"より広いコード分布","s2.bar.code":"コード","s2.bar.web":"Web","s2.bar.misc":"その他","s2.learn":"学ぶ:","s2.learnv":"コードベース、コードパターン、世界知識","s2.notlearn":"学ばない:","s2.notlearnv":"何が正しいコードか → それは RL の仕事",
+    "s3.h":"1 回のロールアウト、ステップごと。","s3.play":"再生","s3.reset":"リセット","s3.elapsed":"経過","s3.st1":"VM 起動","s3.st1s":"環境複製","s3.st2":"プロンプト","s3.st2s":"タスク投入","s3.st3":"Agent ループ","s3.st3s":"N ターン","s3.st4":"要約","s3.st4s":"200K 超過時","s3.st5":"報酬","s3.st5s":"判定","s3.st6":"返送","s3.hint":"// 再生をクリックして 1 回のロールアウトを実行",
+    "s4.h":"1 プロンプト、N 並列ロールアウト。","s4.best":"最高","s4.avg":"平均","s4.worst":"最低","s4.adv":"アドバンテージ",
+    "s5.h":"Trainer と Rollout は止まらない。","s5.meta":"古さ ≈ 3 バージョン","s5.trainer":"Trainer","s5.trainerTag":"中央 · RDMA · ~10K GPU","s5.step":"step","s5.using":"使用中の rollout","s5.tput":"スループット","s5.rollout":"Rollout","s5.rolloutTag":"全世界 · 4 クラスタ · ~100K VM","s5.active":"アクティブ rollout","s5.done":"完了 / 分","s5.avg":"平均時間",
+    "s6.h":"エキスパートルーティングの悪夢。","s6.grid":"エキスパートグリッド · 384 セル","s6.leg1":"推論側が選択","s6.leg2":"訓練側が選択","s6.leg3":"一致","s6.leg4":"不一致 ⚠","s6.btn1":"Router Replay なし","s6.btn2":"Router Replay あり ✓","s6.badgeP":"問題","s6.p1t":"浮動小数ドリフト → 誤エキスパート","s6.p1d":"浮動小数で <code>a+b+c ≠ c+b+a</code>。小数第 5 位のずれで Router が 9 ではなく 7 を選択。Trainer は推論で未使用のエキスパートを更新。信号崩壊。","s6.badgeF1":"対策 · ROUTER REPLAY","s6.p2t":"推論がエキスパート ID を整数で送信","s6.p2d":"トークンごとに <code>{layer, [exp_ids]}</code>。Trainer はそのまま再利用、再計算なし、不一致なし。","s6.badgeF2":"対策 · KERNEL MATCH","s6.p3t":"量子化/演算順を揃える","s6.p3d":"数 % の性能損失を受容 → 数値ドリフト 90% を消去。本番は FP4 で訓練。",
+    "s7.h":"4 クラスタ、1TB 重み、大陸越え。","s7.meta":"差分圧縮 20× · 切替 30 秒","s7.m1":"step 間隔","s7.m2":"差分比率","s7.m3":"転送","s7.m4":"切替停止","s7.delta":"重み差分サイズ · step あたり (圧縮後)","s7.bit":"ビット等価 ✓","s7.late":"step 400 (後期)",
+    "s8.h":"ユーザ信号でループを閉じる。","s8.meta":"数時間ごとに新ビルド","s8.user":"ユーザ","s8.userv":"受け入れ / 拒否","s8.signal":"信号","s8.signalv":"👍 · 編集 · 採用","s8.online":"オンライン RL","s8.onlinev":"インクリメンタル更新","s8.build":"ビルド","s8.ship":"リリース","s8.shipv":"数時間ごと","s8.user2":"ユーザ","s8.user2v":"ループ継続","s8.note1":"先にオフライン RL で「十分に良い」閾値超えが必要","s8.note2":"シミュレーション RL も並行実行 (プロンプトあたり 16-128 並列)",
+    "s9.h":"返送されるもの。",
+    "s10.h":"すべての意味。","s10.meta":"6 つの要点","s10.t1":"汎化ではなく特化せよ。","s10.d1":"モデルは有限のディスク。全ビットを 1 つの仕事に。","s10.t2":"プロダクト自体が RL 環境。","s10.d2":"玩具ジムは不要。本番を複製し、10 万 VM をオンデマンドで。","s10.t3":"非同期か、死か。","s10.d3":"同期 = GPU 半分遊休。古さを許容、スループットを得る。","s10.t4":"数値こそすべて。","s10.d4":"Router Replay + カーネル整合。なければ MoE-RL は発散。","s10.t5":"訓推分離は必須。","s10.d5":"訓練は中央、推論は全世界で安く。1TB は差分同期。","s10.t6":"Software 3.0 = 報酬を書く。","s10.d6":"1.0 はコードを書き · 2.0 はデータを与え · 3.0 は評価ルールを設計。",
+    "footer.1":"composer 2.5 / 訓練の解剖","footer.2":"kimi 2.5 → 中間学習 → rl → リアルタイム · ⚙"
+  },
+  ko: {
+    "nav.pipeline":"파이프라인","nav.base":"베이스","nav.midtrain":"중간학습","nav.rollout":"롤아웃","nav.fanout":"팬아웃","nav.async":"비동기","nav.moe":"MoE","nav.global":"글로벌","nav.realtime":"실시간","nav.payload":"페이로드","nav.takeaway":"요점",
+    "header.eyebrow":"Cursor · Composer 2.5","header.title1":"학습","header.title2":"해부.","header.sub":"Kimi 2.5 베이스에서 Real-time RL 까지 — 1T MoE 모델이 수만 GPU 위에서 Cursor 전용 코딩 Agent 로 다듬어지는 과정.","header.stat.base":"베이스","header.stat.params":"파라미터","header.stat.active":"활성","header.stat.cost":"Opus 대비 비용","header.stat.clusters":"클러스터","header.stat.global":" 글로벌",
+    "s0.idx":"개요","s0.h":"5 단계 파이프라인.","s0.p0.n":"베이스","s0.p0.d":"오픈 가중치 · MoE","s0.p1.n":"중간학습","s0.p1.t":"지속 사전학습","s0.p1.d":"코드 + 웹 토큰","s0.p2.t":"대규모 RL","s0.p2.d":"하네스 내 롤아웃","s0.p3.n":"분산","s0.p3.t":"4 클러스터, 1TB 동기","s0.p4.n":"실시간","s0.p4.t":"온라인 RL","s0.p4.d":"사용자 신호 · 시간 단위",
+    "s1.h":"모델은 유한한 디스크.","s1.btn1":"범용 (Kimi 2.5)","s1.btn2":"Composer 2.5 특화","s1.row1":"총 파라미터","s1.row2":"토큰당 활성","s1.row3":"아키텍처","s1.row4":"왜 처음부터 안 하나","s1.row4v":"출시 속도","s1.row5":"전략","s1.row5v":"범용 말고 특화",
+    "s2.h":"분포를 넓힌다.","s2.meta":"~사전학습 규모 · 코드 중심","s2.srcA":"소스 A","s2.srcAv":"코드 토큰","s2.srcB":"소스 B","s2.srcBv":"웹 데이터","s2.out":"체크포인트","s2.outv":"더 넓은 코드 분포","s2.bar.code":"코드","s2.bar.web":"웹","s2.bar.misc":"기타","s2.learn":"배우는 것:","s2.learnv":"코드베이스, 코드 패턴, 세상 지식","s2.notlearn":"안 배우는 것:","s2.notlearnv":"무엇이 올바른 코드인가 → 그건 RL 의 일",
+    "s3.h":"한 번의 롤아웃, 단계별.","s3.play":"재생","s3.reset":"리셋","s3.elapsed":"경과","s3.st1":"VM 기동","s3.st1s":"환경 복제","s3.st2":"프롬프트","s3.st2s":"태스크 투입","s3.st3":"Agent 루프","s3.st3s":"N 턴","s3.st4":"자가 요약","s3.st4s":"200K 초과 시","s3.st5":"보상","s3.st5s":"판정","s3.st6":"회신","s3.hint":"// Play 를 눌러 1 회 롤아웃을 실행",
+    "s4.h":"1 프롬프트, N 병렬 롤아웃.","s4.best":"최고","s4.avg":"평균","s4.worst":"최저","s4.adv":"어드밴티지",
+    "s5.h":"Trainer 와 Rollout 은 멈추지 않는다.","s5.meta":"낡음 ≈ 3 버전","s5.trainer":"Trainer","s5.trainerTag":"중앙 · RDMA · ~10K GPU","s5.step":"step","s5.using":"사용 중인 rollout","s5.tput":"처리량","s5.rollout":"Rollout","s5.rolloutTag":"글로벌 · 4 클러스터 · ~100K VM","s5.active":"활성 rollout","s5.done":"완료 / 분","s5.avg":"평균 시간",
+    "s6.h":"전문가 라우팅의 악몽.","s6.grid":"전문가 그리드 · 384 셀","s6.leg1":"추론이 선택","s6.leg2":"훈련이 선택","s6.leg3":"일치","s6.leg4":"불일치 ⚠","s6.btn1":"Router Replay 없음","s6.btn2":"Router Replay 적용 ✓","s6.badgeP":"문제","s6.p1t":"부동소수 드리프트 → 잘못된 전문가","s6.p1d":"부동소수에서 <code>a+b+c ≠ c+b+a</code>. 소수 5 자리 드리프트 → 라우터가 9 대신 7 선택. Trainer 는 추론이 쓰지 않은 전문가를 갱신. 신호 붕괴.","s6.badgeF1":"해결 · ROUTER REPLAY","s6.p2t":"추론이 전문가 ID 를 정수로 송신","s6.p2d":"토큰마다 <code>{layer, [exp_ids]}</code>. Trainer 는 그대로 재사용 — 재계산 없음, 불일치 없음.","s6.badgeF2":"해결 · KERNEL MATCH","s6.p3t":"양자화 / 연산 순서 정렬","s6.p3d":"몇 % 성능 손실 수용 → 수치 드리프트 90% 제거. 실서비스는 FP4 로 학습.",
+    "s7.h":"4 클러스터, 1TB 가중치, 대륙 간.","s7.meta":"델타 압축 20× · 스왑 30 초","s7.m1":"step 간격","s7.m2":"델타 비율","s7.m3":"전송","s7.m4":"스왑 정지","s7.delta":"가중치 델타 크기 · step 당 (압축 후)","s7.bit":"비트 등가 ✓","s7.late":"step 400 (후기)",
+    "s8.h":"사용자 신호로 루프 종결.","s8.meta":"몇 시간마다 새 빌드","s8.user":"사용자","s8.userv":"수락 / 거절","s8.signal":"신호","s8.signalv":"좋아요 · 편집 · 유지","s8.online":"온라인 RL","s8.onlinev":"증분 업데이트","s8.build":"빌드","s8.ship":"배포","s8.shipv":"몇 시간마다","s8.user2":"사용자","s8.user2v":"루프 지속","s8.note1":"먼저 오프라인 RL 로 \"충분히 좋은\" 기준 통과 필요","s8.note2":"시뮬레이션 RL 도 병행 (프롬프트당 16-128 병렬)",
+    "s9.h":"회신되는 것.",
+    "s10.h":"이 모든 것의 의미.","s10.meta":"여섯 가지 요점","s10.t1":"범용 말고 특화하라.","s10.d1":"모델은 유한한 디스크. 모든 비트를 한 가지 일에.","s10.t2":"제품이 곧 RL 환경이다.","s10.d2":"장난감 gym 없다. 실서비스를 복제, 10 만 VM 을 온디맨드로.","s10.t3":"비동기, 아니면 죽음.","s10.d3":"동기 = GPU 절반 유휴. 낡음을 받아들이고 처리량을 얻어라.","s10.t4":"수치가 전부.","s10.d4":"Router Replay + 커널 정렬. 없으면 MoE-RL 발산.","s10.t5":"학습 ≠ 추론 분리 필수.","s10.d5":"학습은 중앙, 추론은 전세계에 싸게. 1TB 는 델타로.","s10.t6":"Software 3.0 = 보상 작성.","s10.d6":"1.0 은 코드를 썼고 · 2.0 은 데이터를 먹였고 · 3.0 은 평가 규칙을 설계한다.",
+    "footer.1":"composer 2.5 / 학습 해부","footer.2":"kimi 2.5 → 중간학습 → rl → 실시간 · ⚙"
+  }
+};
+
+const LANG_LABELS = {en:'EN', zh:'中文', ja:'日本語', ko:'한국어'};
+
+function detectLang(){
+  try{ const saved = localStorage.getItem('composer.lang'); if(saved && i18n[saved]) return saved; }catch(e){}
+  const nav = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+  if(nav.startsWith('zh')) return 'zh';
+  if(nav.startsWith('ja')) return 'ja';
+  if(nav.startsWith('ko')) return 'ko';
+  return 'en';
+}
+
+function applyI18n(lang){
+  const dict = i18n[lang] || i18n.en;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    if(dict[key] !== undefined){ el.innerHTML = dict[key]; }
+  });
+  document.documentElement.setAttribute('lang', lang);
+  const lbl = document.getElementById('langLabel');
+  if(lbl) lbl.textContent = LANG_LABELS[lang] || 'EN';
+  document.querySelectorAll('.lang-item').forEach(it=>{
+    it.classList.toggle('active', it.getAttribute('data-lang')===lang);
+  });
+  try{ localStorage.setItem('composer.lang', lang); }catch(e){}
+}
+
+(function initLang(){
+  const btn = document.getElementById('langBtn');
+  const menu = document.getElementById('langMenu');
+  if(btn && menu){
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      e.preventDefault();
+      menu.classList.toggle('open');
+    });
+    document.querySelectorAll('.lang-item').forEach(it=>{
+      it.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        applyI18n(it.getAttribute('data-lang'));
+        menu.classList.remove('open');
+      });
+    });
+    document.addEventListener('mousedown', (e)=>{
+      if(!menu.contains(e.target) && !btn.contains(e.target)){
+        menu.classList.remove('open');
+      }
+    });
+  }
+  try{ applyI18n(detectLang()); }catch(err){ console.error('i18n init failed', err); }
+})();
+</script>
+</body>
+</html>
