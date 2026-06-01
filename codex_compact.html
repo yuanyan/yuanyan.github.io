@@ -286,6 +286,7 @@
   .seg-agents  { background: #5A6F87; }
   .seg-hist    { background: #C9A48C; color: #5a3a26; text-shadow: none; }
   .seg-pruned  { background: repeating-linear-gradient(45deg, #d6c9b3 0 6px, #c4b69e 6px 12px); color: #6b5e4a; text-shadow: none; }
+  .seg-replay  { background: var(--warm-yellow); color: #4a3010; text-shadow: none; }
   .seg-compact { background: repeating-linear-gradient(45deg, #7A4D6B 0 6px, #623e57 6px 12px); }
   .seg-user    { background: var(--accent); }
   .seg-cached  { background: var(--warm-green); position: relative; }
@@ -461,26 +462,26 @@
 <body>
 <div class="wrap">
 
-  <div class="eyebrow">Interactive Architecture Note · 2026·05</div>
-  <h1>Codex 服务端 <em>Compaction</em> × Responses API<br>端到端工作原理</h1>
+  <div class="eyebrow">Interactive Architecture Note · 2026·05 · 基于源码与黑盒实验</div>
+  <h1>为什么 Codex 压缩几十次<br>仍然<em>不降智</em>?</h1>
   <p class="lede">
-    点击下方每个阶段的 <b>Play</b> 按钮观察 token / 数据包 / KV 状态的逐步演化 ——
-    重点搞清 <code>context_management</code> 怎么在<b>单次 stream 内</b>完成压缩,
-    以及"旧前缀 KV"为什么依然命中。
+    Codex 的"vibe contexting"靠两件事:<b>Remote Compact</b> 把摘要交给服务端 + <b>Prompt Scaffolding</b> 每轮重建系统约束。
+    走中转站只能拿到 <b>Local Compact</b> — 实验数据显示:同一长程任务下,Local 约 28 / 100,Remote 约 94 / 100。
   </p>
   <div class="meta-row">
-    <span><b>API</b> /v1/responses</span>
-    <span><b>threshold</b> 200K tokens</span>
-    <span><b>compact item</b> ≈ 2-8K opaque blob</span>
-    <span><b>ZDR</b> store=false</span>
+    <span><b>路由</b> is_openai() ? Remote : Local</span>
+    <span><b>Remote V1</b> /v1/responses/compact</span>
+    <span><b>Remote V2</b> CompactionTrigger 在 stream 内</span>
+    <span><b>blob</b> Fernet 加密 (AES-128-CBC + HMAC)</span>
   </div>
 
   <!-- ============================================
        SECTION 1 — Pipeline animation
        ============================================ -->
-  <h2><span class="num">1</span>请求泳道动画</h2>
+  <h2><span class="num">1</span>请求泳道 — Remote Compact 的两次请求</h2>
   <p class="section-sub">
-    单流编排:点 Play,看请求如何从终端走到推理引擎,在<b>同一条 SSE</b> 内触发 compact、prune、续推。
+    点 Play,看 <b>Compact 请求</b>(V1 走专用 endpoint / V2 走 trigger item)和<b>后续推理请求</b>怎么交替:
+    服务端把<b>明文 history</b> 压成 <b>Fernet 加密 blob</b>,客户端只透传不解密。
   </p>
 
   <div class="stage">
@@ -508,64 +509,64 @@
       <div class="pipe-col-head"><b>Prefix Cache</b>KV store</div>
 
       <!-- Row 1 -->
-      <div class="pipe-row-label">Turn N<br>start</div>
+      <div class="pipe-row-label">Turn N<br>token check</div>
       <div class="pipe-col"><div class="node" data-step="1"><span class="pin">1</span>输入 <code>codex "refactor"</code></div></div>
-      <div class="pipe-col"><div class="node" data-step="1"><span class="pin">2</span>组装 prompt:<br>history + AGENTS.md + tools</div></div>
-      <div class="pipe-col"><div class="node" data-step="1"><span class="pin">3</span><code>POST /v1/responses</code><br>含 <code>compact_threshold</code></div></div>
-      <div class="pipe-col"><div class="node" data-step="2"><span class="pin">4</span>真实 tokenizer 渲染,<br>统计 tokens</div></div>
+      <div class="pipe-col"><div class="node" data-step="1"><span class="pin">2</span><b>token 估算</b><br>BodyAfterPrefix ≥ limit</div></div>
       <div class="pipe-col"></div>
-      <div class="pipe-col"><div class="node cache" data-step="2"><span class="pin">5</span>稳定前缀 KV<br><b>HIT</b></div></div>
+      <div class="pipe-col"></div>
+      <div class="pipe-col"></div>
+      <div class="pipe-col"></div>
 
       <!-- Row 2 -->
-      <div class="pipe-row-label">阈值<br>check</div>
+      <div class="pipe-row-label">路由判断<br>compact.rs</div>
+      <div class="pipe-col"></div>
+      <div class="pipe-col"><div class="node hot" data-step="2"><span class="pin">3</span><code>should_use_remote_compact_task()</code><br>OpenAI / Azure → <b>Remote</b><br>其他 → <b>Local</b></div></div>
       <div class="pipe-col"></div>
       <div class="pipe-col"></div>
       <div class="pipe-col"></div>
-      <div class="pipe-col"><div class="node hot" data-step="3"><span class="pin">6</span><b>tokens ≥ 200K?</b><br>→ 触发 compact pass</div></div>
+      <div class="pipe-col"></div>
+
+      <!-- Row 3: Compact request -->
+      <div class="pipe-row-label">Compact<br>请求 #1</div>
+      <div class="pipe-col"></div>
+      <div class="pipe-col"></div>
+      <div class="pipe-col"><div class="node" data-step="3"><span class="pin">4</span>V1: <code>POST /v1/responses/compact</code><br>V2: 普通 stream + <code>CompactionTrigger</code></div></div>
+      <div class="pipe-col"><div class="node hot" data-step="3"><span class="pin">5</span>调内置 <b>compressor LLM</b><br>读 system prompt + history</div></div>
+      <div class="pipe-col"><div class="node hot" data-step="3"><span class="pin">6</span>生成<b>明文 summary</b><br>→ Fernet 加密(AES-128-CBC + HMAC)</div></div>
+      <div class="pipe-col"></div>
+
+      <!-- Row 4: Compact response -->
+      <div class="pipe-row-label">返回<br>compaction item</div>
+      <div class="pipe-col"></div>
+      <div class="pipe-col"><div class="node" data-step="4"><span class="pin">7</span>SDK 写入 JSONL<br><code>"type":"compacted"</code><br>+ <code>replacement_history</code></div></div>
+      <div class="pipe-col"><div class="node" data-step="4"><span class="pin">8</span>返回 <code>Compaction&#123; encrypted_content &#125;</code><br><b>message 为空字符串</b></div></div>
+      <div class="pipe-col"><div class="node" data-step="4"><span class="pin">9</span>客户端后过滤:<br>只留 user msgs + encrypted item</div></div>
       <div class="pipe-col"></div>
       <div class="pipe-col"></div>
 
-      <!-- Row 3 -->
-      <div class="pipe-row-label">Compact<br>pass</div>
-      <div class="pipe-col"></div>
-      <div class="pipe-col"></div>
-      <div class="pipe-col"></div>
-      <div class="pipe-col"><div class="node hot" data-step="4"><span class="pin">7</span>同流内编排:<br>暂停主推理 → 调内置 summarizer</div></div>
-      <div class="pipe-col"><div class="node hot" data-step="4"><span class="pin">8</span>summarizer 推理<br>output: <b>opaque blob</b></div></div>
-      <div class="pipe-col"><div class="node write" data-step="4"><span class="pin">9</span>新 blob 的 KV<br>写入 cache</div></div>
-
-      <!-- Row 4 -->
-      <div class="pipe-row-label">SSE<br>回吐</div>
-      <div class="pipe-col"></div>
-      <div class="pipe-col"><div class="node" data-step="6"><span class="pin">11</span>SDK 监听 SSE<br>写入 <code>~/.codex/sessions/</code></div></div>
-      <div class="pipe-col"><div class="node" data-step="5"><span class="pin">10</span><code>output_item.added</code><br>type=compaction</div></div>
-      <div class="pipe-col"><div class="node hot" data-step="5"><span class="pin">★</span><b>prune 服务端 ctx</b><br>同流续推 — 无需重发</div></div>
-      <div class="pipe-col"><div class="node" data-step="6"><span class="pin">★</span>续推 assistant<br>token → SSE</div></div>
-      <div class="pipe-col"></div>
-
-      <!-- Row 5 -->
-      <div class="pipe-row-label">Turn N+1</div>
-      <div class="pipe-col"><div class="node" data-step="7"><span class="pin">12</span>用户继续提问</div></div>
-      <div class="pipe-col"><div class="node" data-step="7"><span class="pin">13</span>请求 body 极小:<br>新 user msg + compaction item</div></div>
-      <div class="pipe-col"></div>
-      <div class="pipe-col"><div class="node" data-step="7"><span class="pin">14</span>解密 reasoning state<br>注入新 prompt</div></div>
-      <div class="pipe-col"><div class="node" data-step="7"><span class="pin">15</span>基于压缩状态续推</div></div>
-      <div class="pipe-col"><div class="node cache" data-step="7"><span class="pin">16</span>稳定前缀 + compaction<br><b>KV HIT</b></div></div>
+      <!-- Row 5: Continuation request -->
+      <div class="pipe-row-label">续推<br>请求 #2</div>
+      <div class="pipe-col"><div class="node" data-step="5"><span class="pin">10</span>用户继续提问</div></div>
+      <div class="pipe-col"><div class="node" data-step="5"><span class="pin">11</span><b>build_initial_context()</b><br>13 类系统上下文<b>从零重建</b></div></div>
+      <div class="pipe-col"><div class="node" data-step="5"><span class="pin">12</span><code>POST /v1/responses</code><br>body: 脚手架 + user msgs + 加密 blob</div></div>
+      <div class="pipe-col"><div class="node hot" data-step="6"><span class="pin">13</span>解密 blob<br>组装 handoff prompt + 上下文</div></div>
+      <div class="pipe-col"><div class="node" data-step="6"><span class="pin">14</span>主推理基于<br>压缩状态续推</div></div>
+      <div class="pipe-col"><div class="node cache" data-step="7"><span class="pin">15</span>稳定前缀 KV<br><b>HIT</b></div></div>
 
       <div class="packets-layer" id="packets"></div>
     </div>
 
     <div class="stage-caption" id="p1Cap">
-      点 <b>Play</b> 开始;或点 <b>Step</b> 一步步走。每步会高亮哪些进程在工作、SSE 飞了什么包。
+      点 <b>Play</b> 开始;或点 <b>Step</b> 一步步走。注意 — 这是<b>两次独立请求</b>,不是单次 SSE 内的 mid-stream prune。
     </div>
   </div>
 
   <!-- ============================================
        SECTION 2 — Token Tape
        ============================================ -->
-  <h2><span class="num">2</span>Token 序列演化 — 为什么旧前缀仍然命中</h2>
+  <h2><span class="num">2</span>Token 序列演化 — replacement_history 长什么样</h2>
   <p class="section-sub">
-    OpenAI prefix cache 按 token 序列<b>从开头逐 token 哈希</b>。点 Play,看 4 个阶段下 token tape 怎么变。
+    OpenAI prefix cache 按 token 序列<b>从开头逐 token 哈希</b>。点 Play,看 compact 前后 token tape 怎么变 — 重点是<b>稳定前缀逐 token 不变</b>,以及 <code>replacement_history</code> 只保留<b>历史 user message</b>。
   </p>
 
   <div class="stage">
@@ -586,49 +587,51 @@
     <div class="tape-block" id="tapeBlock">
       <!-- Row 1: Turn N before compact -->
       <div class="tape-row" data-stage="1">
-        <div class="tape-row-label">阶段 ①<b>Turn N · 触发前</b><span class="tag">渲染 ≥ 200K</span></div>
+        <div class="tape-row-label">阶段 ①<b>Turn N · compact 前</b><span class="tag">明文 history 满载</span></div>
         <div class="tape" data-row="1"></div>
         <div class="tape-tokens" data-row="1">≈ 200K</div>
       </div>
-      <!-- Row 2: Compact pass -->
+      <!-- Row 2: Compact request -->
       <div class="tape-row" data-stage="2">
-        <div class="tape-row-label">阶段 ②<b>Compact pass</b><span class="tag">同流 prune</span></div>
+        <div class="tape-row-label">阶段 ②<b>Compact 请求</b><span class="tag">独立请求 · 返回加密 blob</span></div>
         <div class="tape" data-row="2"></div>
-        <div class="tape-tokens" data-row="2">→ ≈ 8K</div>
+        <div class="tape-tokens" data-row="2">输出 ≈ 2-8K</div>
       </div>
-      <!-- Row 3: Turn N+1 -->
+      <!-- Row 3: Turn N+1 — body sent -->
       <div class="tape-row" data-stage="3">
-        <div class="tape-row-label">阶段 ③<b>Turn N+1</b><span class="tag">HIT vs 写入</span></div>
+        <div class="tape-row-label">阶段 ③<b>Turn N+1 请求 body</b><span class="tag">脚手架重建 + replacement_history</span></div>
         <div class="tape" data-row="3"></div>
-        <div class="tape-tokens" data-row="3">≈ 9K</div>
+        <div class="tape-tokens" data-row="3">≈ 30K</div>
       </div>
       <!-- Row 4: Turn N+2 -->
       <div class="tape-row" data-stage="4">
-        <div class="tape-row-label">阶段 ④<b>Turn N+2</b><span class="tag">compaction 也成"旧前缀"</span></div>
+        <div class="tape-row-label">阶段 ④<b>Turn N+2</b><span class="tag">blob 也成"旧前缀" → 全段 HIT</span></div>
         <div class="tape" data-row="4"></div>
-        <div class="tape-tokens" data-row="4">≈ 9K</div>
+        <div class="tape-tokens" data-row="4">≈ 31K</div>
       </div>
     </div>
 
     <div class="legend">
       <span><i style="background:#4A6B8A"></i>稳定前缀 system/tools/AGENTS</span>
       <span><i style="background:#C9A48C"></i>明文 history</span>
-      <span><i style="background:repeating-linear-gradient(45deg,#d6c9b3 0 5px,#c4b69e 5px 10px)"></i>已 prune</span>
-      <span><i style="background:repeating-linear-gradient(45deg,#7A4D6B 0 5px,#623e57 5px 10px)"></i>compaction blob</span>
+      <span><i style="background:#D6A14C"></i>replacement_history (user msgs)</span>
+      <span><i style="background:repeating-linear-gradient(45deg,#7A4D6B 0 5px,#623e57 5px 10px)"></i>encrypted blob</span>
       <span><i style="background:#5A7A4F"></i>KV HIT</span>
       <span><i style="background:#C96442"></i>新 user msg</span>
     </div>
 
     <div class="stage-caption" id="t1Cap">
-      关键:稳定前缀那一段在每轮 token 序列开头<b>逐 token 完全一致</b>,所以 KV 永远命中。
+      关键:稳定前缀那一段在每轮 token 序列开头<b>逐 token 完全一致</b>;<code>replacement_history</code> 把所有 assistant/tool/reasoning 删掉,只留 user msgs。
     </div>
   </div>
 
   <!-- ============================================
        SECTION 3 — Compare Matrix Toggle
        ============================================ -->
-  <h2><span class="num">3</span>本地 inline · vs · 服务端 compaction</h2>
-  <p class="section-sub">用同一个维度切换两种实现的差异。点 tab 看分别表现;点"差异 spotlight"高亮关键对比。</p>
+  <h2><span class="num">3</span>Local Compact · vs · Remote Compact</h2>
+  <p class="section-sub">
+    源码层<code>should_use_remote_compact_task()</code> 决定路由 — <code>is_openai() || azure</code> 走 Remote,其他走 Local。两条路同提示词,效果天差地别(见底部实验数据)。
+  </p>
 
   <div class="stage">
     <div class="stage-toolbar">
@@ -640,74 +643,93 @@
 
     <div class="compare-grid" id="cmpGrid">
       <div class="cg-head">维度</div>
-      <div class="cg-head local">本地 inline compact</div>
-      <div class="cg-head server">服务端 compaction</div>
+      <div class="cg-head local">Local Compact</div>
+      <div class="cg-head server">Remote Compact (V1 / V2)</div>
 
-      <div class="cg-row-label">触发</div>
-      <div class="cg-cell" data-key="trigger">客户端 token 估算 / 手动 <code>/compact</code></div>
-      <div class="cg-cell spot" data-key="trigger"><span class="verdict good">精准</span>服务端真实 tokenizer + <code>compact_threshold</code></div>
+      <div class="cg-row-label">触发条件</div>
+      <div class="cg-cell" data-key="provider">第三方 provider · 中转站 · Ollama · 自建 vLLM</div>
+      <div class="cg-cell spot" data-key="provider"><span class="verdict good">官方</span><code>is_openai()</code> 或 Azure Responses provider</div>
 
-      <div class="cg-row-label">算力</div>
-      <div class="cg-cell" data-key="cost"><span class="verdict bad">+1 往返</span>额外发一次完整 <code>/responses</code> 让模型写摘要</div>
-      <div class="cg-cell spot" data-key="cost"><span class="verdict good">0 往返</span>同流内 compact + 续推一气呵成</div>
+      <div class="cg-row-label">压缩执行方</div>
+      <div class="cg-cell" data-key="executor">客户端当前模型自己写 handoff 摘要</div>
+      <div class="cg-cell spot" data-key="executor"><span class="verdict good">服务端</span>OpenAI 内置 compressor LLM(权重未知)</div>
 
-      <div class="cg-row-label">压缩形态</div>
-      <div class="cg-cell" data-key="form">自然语言摘要 + 最近 ~20K user tokens</div>
-      <div class="cg-cell spot" data-key="form">加密 <b>opaque blob</b>(摘要 + reasoning state)</div>
+      <div class="cg-row-label">网络调用</div>
+      <div class="cg-cell" data-key="cost">额外一次 <code>/v1/responses</code> 让模型写摘要 + 续推</div>
+      <div class="cg-cell spot" data-key="cost">V1: <code>POST /v1/responses/compact</code><br>V2: 普通 stream + <code>CompactionTrigger</code></div>
 
-      <div class="cg-row-label">Reasoning 保真</div>
-      <div class="cg-cell" data-key="fidelity"><span class="verdict bad">丢失</span>自然语言压缩 → reasoning trace 丢失</div>
-      <div class="cg-cell spot" data-key="fidelity"><span class="verdict good">保留</span>训练对齐协议 → reasoning 模型友好</div>
+      <div class="cg-row-label">输出形态</div>
+      <div class="cg-cell" data-key="form"><b>明文</b>自然语言摘要 + 最近 ~20K user tokens</div>
+      <div class="cg-cell spot" data-key="form"><b>Fernet 加密 blob</b>(AES-128-CBC + HMAC-SHA256)<br>V2 客户端预算 64K user tokens(V1 的 3×)</div>
 
-      <div class="cg-row-label">Prefix Cache</div>
-      <div class="cg-cell" data-key="cache"><span class="verdict bad">破坏</span>客户端重写 history → token 序列变了</div>
-      <div class="cg-cell spot" data-key="cache"><span class="verdict good">连续</span>稳定前缀不破 → 旧 KV 持续命中</div>
+      <div class="cg-row-label">JSONL 记录</div>
+      <div class="cg-cell" data-key="record">type=user,以 "Another language model started..." 开头</div>
+      <div class="cg-cell" data-key="record">type=compaction · <code>encrypted_content</code> · message 空串</div>
 
-      <div class="cg-row-label">ZDR / 合规</div>
-      <div class="cg-cell" data-key="zdr">需自行处理摘要落盘</div>
-      <div class="cg-cell" data-key="zdr">配合 <code>store=false</code> 即满足零数据保留</div>
+      <div class="cg-row-label">超窗容错</div>
+      <div class="cg-cell" data-key="resilience"><span class="verdict good">递归</span>shrink-and-retry:从最旧 item 逐个删,直到只剩 1 个</div>
+      <div class="cg-cell" data-key="resilience"><span class="verdict bad">one-shot</span>只做一次预防性尾部修剪,失败即报错</div>
+
+      <div class="cg-row-label">压缩提示词</div>
+      <div class="cg-cell" data-key="prompt">开源 <code>prompt.md</code> · 仅 9 行</div>
+      <div class="cg-cell" data-key="prompt">prompt injection 套出:与开源版<b>几乎一致</b></div>
+
+      <div class="cg-row-label">实验效果(复杂任务)</div>
+      <div class="cg-cell" data-key="bench"><span class="verdict bad">≈ 28 / 100</span>5 / 24 gold facts 命中 · 主线/分支/PR/测试基本失忆</div>
+      <div class="cg-cell spot" data-key="bench"><span class="verdict good">≈ 94 / 100</span>23 / 24 gold facts 命中 · 长程依赖完整恢复</div>
 
       <div class="cg-row-label">适用</div>
-      <div class="cg-cell" data-key="fit">OpenRouter / 自建 vLLM / 第三方 provider</div>
-      <div class="cg-cell" data-key="fit">官方 Responses API · 默认开启(2026-02-11+)</div>
+      <div class="cg-cell" data-key="fit">OpenRouter / 自建 vLLM / sub2api / cliproxyapi</div>
+      <div class="cg-cell" data-key="fit">官方 ChatGPT 订阅 · 或改 provider name 为 "OpenAI" 强开</div>
+    </div>
+
+    <div class="callout" style="margin-top:18px;">
+      <span class="label">实验数据出处</span>
+      Kangwook Lee 用 prompt injection 套出了服务端 compaction prompt,发现<b>与开源版几乎一致</b>。
+      但同一长程任务下 Local 28 vs Remote 94 — 差距不在提示词,而在<b>服务端的整条 pipeline</b>(压缩器模型 + 加密前后处理 + 解密时的 context assembly)。
     </div>
   </div>
 
   <!-- ============================================
        SECTION 4 — Hypothesis tiles
        ============================================ -->
-  <h2><span class="num">4</span>为什么服务端体感更好 — 点击 tile 展开</h2>
+  <h2><span class="num">4</span>黑盒里到底藏了什么 — 点击 tile 展开</h2>
   <p class="section-sub">
-    社区反馈服务端 compact 后<b>任务连贯性 / 变量名保真 / 长程依赖</b>明显更好。
-    点 tile 看每个猜想被 Transformer 工作原理筛选后的结论 — 绿色=高置信,黄色=有保留,灰色删除线=不成立。
+    Kangwook Lee 套出的<b>服务端 compaction prompt 与开源 prompt.md 几乎一致</b>,但效果 28 vs 94。
+    提示词解释不了差距,合理的猜想分两类:<b>服务端 pipeline 有更大操作空间</b>(假设 1-4)+ <b>Codex 还有第二条腿 — Prompt Scaffolding 自动重建</b>。
   </p>
 
   <div class="stage">
     <div class="hyp-grid" id="hypGrid">
-      <div class="hyp-tile strong active" data-id="A">
-        <span class="hyp-badge">高置信</span>
+      <div class="hyp-tile mid active" data-id="A">
+        <span class="hyp-badge">假设 1</span>
         <div class="hyp-code">A</div>
-        <div class="hyp-name">训练对齐的内部 token 编码协议</div>
+        <div class="hyp-name">服务端注入了额外结构化信号</div>
       </div>
-      <div class="hyp-tile strong" data-id="B">
-        <span class="hyp-badge">高置信</span>
+      <div class="hyp-tile mid" data-id="B">
+        <span class="hyp-badge">假设 2</span>
         <div class="hyp-code">B</div>
-        <div class="hyp-name">压缩端 / 解压端联合训练</div>
+        <div class="hyp-name">blob 不止是自然语言 summary</div>
       </div>
-      <div class="hyp-tile strong" data-id="C">
-        <span class="hyp-badge">高置信</span>
+      <div class="hyp-tile mid" data-id="C">
+        <span class="hyp-badge">假设 3</span>
         <div class="hyp-code">C</div>
-        <div class="hyp-name">item 级智能保留</div>
+        <div class="hyp-name">compressor LLM 专门微调</div>
       </div>
       <div class="hyp-tile mid" data-id="D">
-        <span class="hyp-badge">中等</span>
+        <span class="hyp-badge">假设 4</span>
         <div class="hyp-code">D</div>
-        <div class="hyp-name">编码效率高但仍有损</div>
+        <div class="hyp-name">解密时的 context assembly 有额外逻辑</div>
+      </div>
+      <div class="hyp-tile strong" data-id="S">
+        <span class="hyp-badge">已验证</span>
+        <div class="hyp-code">★</div>
+        <div class="hyp-name">第二条腿:Prompt Scaffolding 自动重建</div>
       </div>
       <div class="hyp-tile weak" data-id="E">
         <span class="hyp-badge">不成立</span>
         <div class="hyp-code">E</div>
-        <div class="hyp-name">序列化 KV / hidden state</div>
+        <div class="hyp-name">blob 直接序列化 KV / hidden state</div>
       </div>
       <div class="hyp-tile weak" data-id="F">
         <span class="hyp-badge">不成立</span>
@@ -719,27 +741,23 @@
         <div class="hyp-code">G</div>
         <div class="hyp-name">KV cache 连续 = 质量更好</div>
       </div>
-      <div class="hyp-tile" data-id="X" style="border-left-color: var(--accent); background: linear-gradient(135deg, #FFF6EE 0%, var(--paper) 100%);">
-        <span class="hyp-badge" style="background: var(--accent-soft); color: var(--accent-deep);">结论</span>
-        <div class="hyp-code" style="color: var(--accent-deep);">★</div>
-        <div class="hyp-name">质量优势 = 权重 + 协议</div>
-      </div>
     </div>
 
     <div class="hyp-detail" id="hypDetail"></div>
 
     <div class="callout">
-      <span class="label">反直觉推论</span>
-      若高置信猜想成立,服务端 compact 的<b>质量优势完全来自模型权重</b>(co-trained autoencoder),
-      与"传 KV"、"加密"、"多 pass"无关。OpenAI 理论上可以让 compaction 明文 —
-      选择加密更像<b>商业考虑</b>(防止竞品仿造内部 token 协议、防对抗注入、防训练数据特征泄露),而非技术必需。
+      <span class="label">作者原话(Kangwook Lee · 万字调研)</span>
+      <b>"如果提示词一样,那 Remote 到底多做了什么?"</b> — 这是个公开问题。
+      Prompt injection 只能套出表层文本,无法触达加密前后处理 / 服务端 context assembly / compressor 模型权重等内部环节。
+      <b>客户端只能看到 encrypted blob 的输入和输出,中间发生了什么完全是黑盒。</b>
     </div>
   </div>
 
   <footer>
     Sources ·
-    <a href="https://developers.openai.com/api/docs/guides/compaction">developers.openai.com/api/docs/guides/compaction</a> ·
-    <a href="https://github.com/openai/codex">github.com/openai/codex</a> · codex-rs/core/src/compact.rs
+    <a href="https://x.com/Kangwook_Lee/article/2028955292025962534">Kangwook Lee · Investigating Codex Compaction</a> ·
+    <a href="https://developers.openai.com/api/docs/guides/compaction">OpenAI Compaction docs</a> ·
+    <a href="https://github.com/openai/codex">github.com/openai/codex</a> · <code>codex-rs/core/src/{compact,compact_remote,compact_remote_v2}.rs</code>
   </footer>
 </div>
 
@@ -765,30 +783,32 @@
   const pktLayer = document.getElementById('packets');
 
   const captions = [
-    `点 <b>Play</b> 开始;或点 <b>Step</b> 一步步走。每步会高亮哪些进程在工作、SSE 飞了什么包。`,
-    `<b>Step 1 · 请求出发。</b>Codex CLI 把 history + AGENTS.md + tools schema 打包,通过 SDK 发起 <code>POST /v1/responses</code>,body 中带 <code>context_management:[{type:'compaction', compact_threshold:200000}]</code> 与 <code>store=false</code>。`,
-    `<b>Step 2 · 网关计数。</b>/responses 用真实 tokenizer 渲染整个 prompt 统计 token,并查 prefix cache:稳定前缀(system + tools + AGENTS.md)永远逐 token 一致 → 直接 <b>KV HIT</b>,跳过这一段 prefill。`,
-    `<b>Step 3 · 阈值判定。</b>渲染 tokens ≥ 200K → 触发服务端 compact pass。<b>关键</b>:这是同一条 SSE 流内的编排,客户端不感知、不重发。`,
-    `<b>Step 4 · 同流压缩。</b>网关暂停主推理,调内置 summarizer 对待压缩 history 做一次推理,产出 <b>opaque blob</b>(语义摘要 + 加密 reasoning state),其 KV 立即写入 cache 供未来命中。`,
-    `<b>Step 5 · 增量回吐 + 服务端 prune。</b>SSE 立即 emit <code>output_item.added · type=compaction</code>;服务端把 compaction 之前的明文 items <b>从自己的 context 里丢弃</b>,同流继续推理。`,
-    `<b>Step 6 · 续推 assistant。</b>主推理基于「稳定前缀 + compaction blob + user_N」继续生成,token 持续 SSE 回吐。SDK 把 compaction item 落到本地 <code>~/.codex/sessions/</code> rollout。`,
-    `<b>Step 7 · 下一轮 KV 大命中。</b>Turn N+1 请求 body 极小:稳定前缀 + compaction item + 新 user msg。前两段都被 cache 命中,推理几乎瞬时启动。`
+    `点 <b>Play</b> 开始;或点 <b>Step</b> 一步步走。本节强调 — 这是<b>两次独立请求</b>:Compact 请求 + 后续推理请求。`,
+    `<b>Step 1 · token 估算。</b>每轮发请求前,Codex 在 <code>session/turn.rs</code> 算 <b>BodyAfterPrefix</b> tokens。BodyAfterPrefix 是"prefix baseline 之后的增量",避免固定 system prompt 反复占预算。`,
+    `<b>Step 2 · 路由判断。</b><code>compact.rs</code> 调 <code>should_use_remote_compact_task()</code>:<br>• <code>is_openai() || azure_responses</code> → <b>Remote Compact</b>(V1 或 V2)<br>• 其他(中转站 / Ollama / 自建) → <b>Local Compact</b> — 让当前模型自己写明文 handoff 摘要。两条路质量差距巨大(28 vs 94)。`,
+    `<b>Step 3 · Compact 请求(独立请求 #1)。</b>V1 调用<b>专用 endpoint</b> <code>POST /v1/responses/compact</code>;V2 在普通 stream input 末尾追加一个 <code>CompactionTrigger</code> item,通过标准 <code>/v1/responses</code> 接口发送。服务端内置 <b>compressor LLM</b> 读 system prompt + history,生成<b>明文 summary</b>,再用 <b>Fernet (AES-128-CBC + HMAC-SHA256)</b> 加密成 opaque blob。`,
+    `<b>Step 4 · 返回压缩结果。</b>服务端返回 <code>Compaction&#123; encrypted_content &#125;</code> item,<b>message 字段是空字符串</b>(摘要在 blob 里)。客户端做后过滤:丢掉 raw tool output / reasoning,只保留真实 user messages + 加密 item。本地 JSONL 落 <code>"type":"compacted"</code> + <code>replacement_history</code>(只含历史 user message)。`,
+    `<b>Step 5 · 后续推理(独立请求 #2)。</b>用户继续提问 → Codex 检测到 <code>reference_context_item</code> baseline 被清空 → 调 <code>build_initial_context()</code> <b>从零重建 13 类系统上下文</b>(AGENTS.md / 权限策略 / Skills / MCP / 环境 / personality...)。请求 body = 重建的脚手架 + replacement_history(user msgs) + 加密 blob + 新 user msg。`,
+    `<b>Step 6 · 服务端解密 + 续推。</b>网关解密 blob,在前面拼上 <b>handoff prompt</b>("Another language model started to solve this problem..."),组装最终 prompt 发给主推理模型。模型基于压缩状态继续生成。`,
+    `<b>Step 7 · KV 大命中。</b>稳定前缀(system + tools + AGENTS + skills)逐 token 一致 → KV HIT;加密 blob 也已在上一轮写入 cache → 同样 HIT。<b>cache_hit token 价格约为正常的 1/10</b> — 这是不修中段、只全量替换的根本动机。`
   ];
 
   // SSE packet animations: list of (atStep, fromColIdx, toColIdx, label, cls)
+  // Request #1: Compact (step 3 send, step 4 return)
+  // Request #2: Continuation (step 5 send, step 6 SSE return)
   const packets = [
-    {at:1, from:1, to:3, label:'POST', cls:''},
-    {at:5, from:3, to:1, label:'SSE', cls:'sse'},
-    {at:5, from:3, to:1, label:'item', cls:'sse'},
+    {at:3, from:1, to:3, label:'compact', cls:''},
+    {at:4, from:3, to:1, label:'blob', cls:'sse'},
+    {at:5, from:1, to:3, label:'POST', cls:''},
+    {at:6, from:3, to:1, label:'SSE', cls:'sse'},
     {at:6, from:3, to:1, label:'tok', cls:'sse'},
-    {at:6, from:3, to:1, label:'tok', cls:'sse'},
-    {at:7, from:1, to:3, label:'POST', cls:''},
+    {at:7, from:3, to:1, label:'tok', cls:'sse'},
   ];
 
   function setStep(n){
     step = n;
     stepNumEl.textContent = n;
-    const phases = ['idle','REQUEST','TOKENIZE','THRESHOLD','COMPACT','SSE EMIT','STREAM','TURN N+1'];
+    const phases = ['idle','TOKEN CHECK','ROUTE','COMPACT REQ','COMPACTION ITEM','CONTINUE REQ','DECRYPT + INFER','KV HIT'];
     phaseEl.textContent = phases[n];
     capEl.innerHTML = captions[n] || captions[0];
 
@@ -891,45 +911,46 @@
         {cls:'seg-system', flex:0.5, label:'system'},
         {cls:'seg-tools',  flex:0.5, label:'tools'},
         {cls:'seg-agents', flex:0.5, label:'AGENTS.md'},
-        {cls:'seg-hist',   flex:5.5, label:'明文 history · turn1 → turn40'},
+        {cls:'seg-hist',   flex:5.5, label:'明文 history · user + assistant + tool_call + reasoning · turn1 → turn40'},
         {cls:'seg-user',   flex:0.6, label:'user_N'},
       ],
       row1Tokens: '≈ 200K', row1TokensCls: 'grew',
     },
-    2: { // compact pass: history pruned, compaction blob inserted
+    2: { // compact request: a separate request that returns the encrypted blob
       row2: [
         {cls:'seg-system', flex:0.5, label:'system'},
         {cls:'seg-tools',  flex:0.5, label:'tools'},
-        {cls:'seg-agents', flex:0.5, label:'AGENTS.md'},
-        {cls:'seg-pruned', flex:5.5, label:'━━ history 被 prune ━━'},
-        {cls:'seg-compact',flex:0.8, label:'compaction'},
-        {cls:'seg-user',   flex:0.6, label:'user_N'},
+        {cls:'seg-hist',   flex:5.5, label:'POST /v1/responses/compact · 输入仍是完整 history'},
+        {cls:'seg-compact',flex:0.8, label:'→ encrypted blob'},
       ],
-      row2Tokens: '→ ≈ 8K', row2TokensCls: 'shrunk',
+      row2Tokens: '输出 ≈ 2-8K', row2TokensCls: 'shrunk',
     },
-    3: { // Turn N+1: stable prefix cached, compaction is fresh cache entry
+    3: { // Turn N+1 — body sent
       row3: [
-        {cls:'seg-cached', flex:1.5, label:'system + tools + AGENTS.md'},
-        {cls:'seg-write',  flex:0.8, label:'compaction blob · 写入 cache'},
+        {cls:'seg-cached', flex:1.8, label:'稳定前缀 · system + tools + AGENTS + skills (13 类脚手架重建)'},
+        {cls:'seg-replay', flex:1.4, label:'replacement_history · 仅历史 user messages'},
+        {cls:'seg-write',  flex:0.7, label:'encrypted blob · 写入 cache'},
         {cls:'seg-user',   flex:0.6, label:'user_N+1'},
       ],
-      row3Tokens: '≈ 9K', row3TokensCls: 'shrunk',
+      row3Tokens: '≈ 30K', row3TokensCls: 'shrunk',
     },
-    4: { // Turn N+2: everything is cached
+    4: { // Turn N+2: blob also cached now
       row4: [
-        {cls:'seg-cached', flex:2.3, label:'system + tools + AGENTS + compaction · 全部 HIT'},
+        {cls:'seg-cached', flex:1.8, label:'稳定前缀 · HIT'},
+        {cls:'seg-cached', flex:1.4, label:'replacement_history · HIT'},
+        {cls:'seg-cached', flex:0.7, label:'blob · HIT'},
         {cls:'seg-user',   flex:0.6, label:'user_N+2'},
       ],
-      row4Tokens: '≈ 9K', row4TokensCls: 'shrunk',
+      row4Tokens: '≈ 31K · cache hit ≈ 1/10 价格', row4TokensCls: 'shrunk',
     }
   };
 
   const captions = {
-    0: `关键:稳定前缀那一段在每轮 token 序列开头<b>逐 token 完全一致</b>,所以 KV 永远命中。`,
-    1: `<b>阶段 ①</b> · Turn N 的渲染量到达 200K。整段明文 history 还在,网关算出超过阈值。`,
-    2: `<b>阶段 ②</b> · 同流内 prune:明文 history 从服务端 context 移除,替换成 <b>compaction blob</b>。token 序列<b>从开头到稳定前缀那一段没有任何变化</b> — prefix cache 不被破坏。`,
-    3: `<b>阶段 ③</b> · Turn N+1:稳定前缀 KV <b>HIT</b>(逐 token 一致);compaction blob 是首次出现,做一次小 prefill,然后<b>写入新 cache entry</b>。`,
-    4: `<b>阶段 ④</b> · Turn N+2:连 compaction blob 也成了「旧前缀」,整段 KV 一并命中。<b>prefix cache 在 compaction 之后没有被冲掉,只是多了一段新可复用前缀。</b>`
+    0: `稳定前缀 + replacement_history + 加密 blob 这三段在 Turn N+2 之后<b>整体进入旧前缀</b> — KV 全段命中,且 token 价格只有正常的约 1/10。`,
+    1: `<b>阶段 ①</b> · Turn N:整段明文 history 还在,客户端算出 BodyAfterPrefix tokens 超过 limit,准备发起 compact。`,
+    2: `<b>阶段 ②</b> · <b>Compact 请求</b> — 客户端发 <code>POST /v1/responses/compact</code>(V1)或带 <code>CompactionTrigger</code> 的标准 stream(V2)。服务端 compressor LLM 生成明文 summary → Fernet 加密 → 返回 <code>Compaction&#123; encrypted_content &#125;</code> 一个 item。<b>这是独立的一次请求</b>,不是同流 prune。`,
+    3: `<b>阶段 ③</b> · Turn N+1 后续推理请求:Codex 调 <code>build_initial_context()</code> <b>从零重建 13 类系统脚手架</b>(AGENTS / skills / 权限...),然后拼 <code>replacement_history</code>(只含历史 user msg)+ 加密 blob + 新 user msg。注意:<b>这次请求的开头比 Turn N 还短</b>,因为 replacement_history 已经把 assistant/tool/reasoning 都删掉了。`,
+    4: `<b>阶段 ④</b> · Turn N+2:稳定前缀 + replacement_history + 加密 blob 全部成为"旧前缀"(逐 token 一致)→ <b>KV 全段命中</b>。系统约束不依赖摘要而是<b>每轮脚手架重建</b> — 即使 summary 漏写,AGENTS.md 这类规则也不会丢。`
   };
 
   function buildSeg(s){
@@ -1012,7 +1033,7 @@
 (function(){
   const buttons = document.querySelectorAll('.compare-toolbar .seg-btn');
   const cells = document.querySelectorAll('#cmpGrid .cg-cell');
-  const spotKeys = ['trigger','cost','form','fidelity','cache']; // diff highlights
+  const spotKeys = ['provider','executor','cost','form','bench']; // diff highlights
 
   buttons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -1043,44 +1064,44 @@
 
   const details = {
     A: {
-      tag:'高置信',
-      title:'A · 训练对齐的内部 token 编码协议',
-      body:`加密 blob 装的是<b>一段 token 序列</b>(很可能含 OpenAI 专门设计的 sentinel token 与紧凑 schema),而不是 KV / hidden state。模型在训练阶段见过这套协议,attention 读回时<b>信息利用率远高于读一段第三方写的自然语言摘要</b>。加密本身更像反混淆 / 防对抗注入,而非承载 KV 的技术必需。`
+      tag:'假设 1 · 中等置信',
+      title:'A · 服务端在模型输入中注入了额外结构化信号',
+      body:`Prompt injection 套出来的只是文本层的 compaction prompt。但服务端可能在<b>实际发给模型的 input 里</b>包含 prompt 文本之外的<b>结构化上下文信号</b> — 比如 tool call 的结构化摘要、关键实体的索引、conversation 元数据标注。这些不出现在 prompt 文本里,prompt injection 也套不出来。`
     },
     B: {
-      tag:'高置信',
-      title:'B · 压缩端与解压端联合训练(autoencoder-style)',
-      body:`GPT-5.5(以及前代 GPT-5.1-Codex-Max)在训练阶段就用自己的 compact 输出再续推 — 压缩端和解压端是<b>同一组权重</b>。训练目标包含「compact 后续推任务质量」,所以模型主动把<b>对续推有用的信息</b>保留下来,而不是像本地 compact 那样追求「摘要可读性」。客户端永远无法复刻 — 因为客户端改不了模型权重。`
+      tag:'假设 2 · 中等置信',
+      title:'B · 加密 blob 不止是一段自然语言 summary',
+      body:`虽然 prompt injection 显示输出看起来是自然语言 handoff,但服务端在 Fernet 加密前<b>可能做了后处理</b> — 比如附加向量化的会话状态表示、结构化的 tool output 摘要、关键决策节点的索引。<b>客户端永远看不到加密前的真实内容</b>,只能看到 base64 的 ciphertext。`
     },
     C: {
-      tag:'高置信',
-      title:'C · 真实 tokenizer + item 级智能保留',
-      body:`服务端能拿到精确 token 数与每个 item 边界,可以做<b>按 item 粒度的智能取舍</b> — 哪些 tool_call/result 被后续引用、哪些 file read 已被覆盖、哪些 retry 可去重保留最后一次。文档原话「compacted window can also include retained items」也佐证了<b>分类压缩(原文保留 + reasoning state 压缩 + 直接丢弃)</b>而非「一坨摘要」。`
+      tag:'假设 3 · 中等置信',
+      title:'C · 服务端 compressor 是专门优化的模型',
+      body:`Local Compact 用的是用户当前配置的模型(GPT-5.5 / GPT-5.1...);而 Remote 的 compressor LLM 可能是<b>针对 compaction 任务专门微调过的模型</b>,天然更擅长提取和保留任务状态。<br><span style="color:var(--ink-mute)">作者备注:不好说 — 也可能就是同一个 GPT-5.5,但带了不同 sampling / temperature 配置。</span>`
     },
     D: {
-      tag:'中等置信',
-      title:'D · 编码效率优势,但仍是有损压缩',
-      body:`加密 blob 比自然语言摘要保留更多 reasoning 相关信息 — 但<b>不是无损</b>。200K → 2K 是 100× 压缩,信息论上不可能无损;合理表述是「用更适合模型读回的 token 编码方式记录关键 reasoning 结论」,而不是「完整复刻 reasoning 过程」。`
+      tag:'假设 4 · 中等置信',
+      title:'D · 解密后的 context assembly 有额外逻辑',
+      body:`Kangwook Lee 的实验只能看到解密后的 summary 被放在 handoff prompt 之后。但服务端在<b>组装最终 prompt</b> 时,可能还有额外的检索 / 重排 / 二次注入逻辑 — 比如从 blob 里反向恢复某些 tool call 的结构化字段,或者从 session-level 缓存里捞回某些被引用的早期内容。`
+    },
+    S: {
+      tag:'已验证 · 高置信',
+      title:'★ 第二条腿:Prompt Scaffolding 自动重建',
+      body:`Codex 的 <code>reference_context_item</code> baseline 在 compact 完成后被<b>清空为 None</b>。下一轮系统检测到 baseline 缺失,就调 <code>build_initial_context()</code> <b>从零重建 13 类系统上下文</b>:仓库规则(AGENTS.md)、权限策略、Skills、MCP 连接器、环境上下文(OS/shell/cwd/git)、personality、guardian 策略...<br><br><b>Summary 不需要记 AGENTS.md / Skills / 权限</b> — 这些每轮重新构造。Summary 只专注一件事:任务本身做了什么、决策了什么、还剩什么。<br><br>这是 Codex 几十次 compact 后仍能遵守仓库规则和用户偏好的<b>真正原因</b>之一 — 系统约束不依赖摘要承载,而是有可重建的 prompt baseline。`
     },
     E: {
       tag:'不成立',
       title:'E · 加密 blob 直接序列化 KV / hidden state ✗',
-      body:`从 Transformer 工作原理看<b>不可行</b>:<br>① KV 体积太大(200K 上下文对应几百 MB 级 KV),SSE 来回传与「省 token」目标自相矛盾;<br>② KV 与 (model_version, weights, exact_token_seq) <b>强耦合</b>,跨 GPU / 滚动版本不兼容;<br>③ 公开技术里 KV offload 都是<b>单进程内</b>(vLLM、Together 等),没有跨请求 round-trip 复用 KV 的产品化先例。<br>更经济的等价做法就是把 reasoning 压回 token 让模型自己重读(即猜想 A)。`
+      body:`从 Transformer 原理 + Kangwook Lee 实验证据看<b>不成立</b>:<br>① 实验证明<b>解密后是可读自然语言文本</b>,不是张量;<br>② KV 体积太大(200K 上下文对应几百 MB),与"压缩"目标矛盾;<br>③ KV 与 (model_version, weights, exact_token_seq) <b>强耦合</b>,跨 GPU / 滚动版本不兼容。<br>Fernet 只是封装传输安全层 — blob 里仍然是 token 序列。`
     },
     F: {
       tag:'不成立',
       title:'F · 多 model pass 串联的 compact pipeline ✗',
-      body:`compact 延迟 30s+ 的现象<b>不需要</b>用「3–5 个独立模型 pass 串联」来解释 — 200K context 的<b>单次 prefill 本来就慢</b>,加上网络/排队/审计写入即可。现代 LLM 完全能在单次 forward 里产出结构化压缩输出,串行多 pass 在高频操作上不经济。`
+      body:`compact 延迟数十秒的现象<b>不需要</b>用「3-5 个独立模型 pass 串联」来解释 — 长 context 的<b>单次 prefill 本来就慢</b>,加上网络/排队/审计写入即可。现代 LLM 完全能在单次 forward 里产出结构化压缩输出。`
     },
     G: {
       tag:'混淆维度',
       title:'G · KV cache 连续 = 质量更好 ✗',
-      body:`KV cache HIT 的好处是<b>省 prefill 算力 + 降延迟</b>,它<b>不改变输出 logits</b> — 给同样 token 序列,KV 是 cache 拿的还是现场算的,数学上输出完全一致。这条只能解释<b>成本优势</b>,不能解释<b>质量优势</b>;之前若用它解释「体感更好」属于维度混淆。`
-    },
-    X: {
-      tag:'结论',
-      title:'★ 质量优势 = 模型权重 × 训练协议',
-      body:`汇总 A + B + C,服务端 compact 的体感优势归因清晰:<br>① 模型在训练时就见过自己的压缩输出(权重对齐);<br>② 服务端能拿到完整 item 边界和精确 token 数(信息更全);<br>③ 输出的是<b>训练对齐的 token 协议</b>而非自然语言摘要(读回效率高)。<br>这三点客户端 inline compact 都无法复制 — 这才是体感差距的根因。`
+      body:`KV cache HIT 的好处是<b>省 prefill 算力 + 降延迟 + 1/10 价格</b>,它<b>不改变输出 logits</b> — 给同样 token 序列,KV 是 cache 拿的还是现场算的,数学上输出完全一致。<br>这条只能解释<b>成本和延迟优势</b>,不能解释<b>质量优势</b>(28 vs 94)。Codex / Claude Code 都"极力避免 mid-prefix 修改",是为<b>成本</b>而非质量。`
     }
   };
 
