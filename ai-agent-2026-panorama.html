@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Agent 痛点全景报告</title>
+<style>
+:root{
+  --bg:#ffffff; --bg-subtle:#fafafa; --card:#ffffff; --hover:#f5f5f5;
+  --line:#eaeaea; --line-strong:#d4d4d4;
+  --fg:#0a0a0a; --fg2:#525252; --fg3:#8f8f8f; --fg4:#a3a3a3;
+  --accent:#0a0a0a; --blue:#0070f3; --amber:#f5a623; --green:#0cce6b; --red:#e5484d; --purple:#7c3aed;
+  --radius:8px; --radius-lg:12px;
+  --mono:"SF Mono",ui-monospace,"Menlo",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--fg);font-family:"Geist","Inter",-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.65;font-size:14.5px;letter-spacing:-0.01em}
+a{color:var(--fg);text-decoration:none}
+a:hover{text-decoration:none}
+b{font-weight:600;color:var(--fg)}
+svg{stroke-width:1.6;flex-shrink:0;width:16px;height:16px}
+
+/* Layout */
+.wrap{display:flex}
+.sidebar{width:258px;flex-shrink:0;border-right:1px solid var(--line);position:sticky;top:0;height:100vh;overflow-y:auto;padding:26px 16px;background:var(--bg-subtle)}
+.main{flex:1;min-width:0;padding:0 0 80px}
+.container{max-width:1000px;margin:0 auto;padding:0 40px}
+
+/* Sidebar */
+.brand{display:flex;align-items:center;gap:9px;margin-bottom:6px}
+.brand-logo{width:26px;height:26px;background:var(--fg);border-radius:7px;display:flex;align-items:center;justify-content:center}
+.brand-logo svg{stroke:#fff}
+.brand-name{font-weight:600;font-size:14px}
+.brand-sub{font-size:11px;color:var(--fg4);letter-spacing:.04em;text-transform:uppercase;margin:0 0 20px 35px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:6px;color:var(--fg2);font-size:13px;cursor:pointer;margin-bottom:1px;transition:.12s}
+.nav-item:hover{background:var(--hover);color:var(--fg)}
+.nav-item.active{background:var(--fg);color:#fff}
+.nav-item.active svg{stroke:#fff}
+.nav-item svg{stroke:var(--fg3);width:15px;height:15px}
+.nav-item.active svg{stroke:#fff}
+.nav-sep{font-size:10.5px;color:var(--fg4);letter-spacing:.08em;text-transform:uppercase;margin:16px 10px 7px;font-weight:500}
+
+/* Hero */
+.hero{padding:60px 0 34px;border-bottom:1px solid var(--line)}
+.hero .eyebrow{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--fg2);border:1px solid var(--line);border-radius:20px;padding:4px 12px;margin-bottom:20px}
+.hero .eyebrow svg{width:13px;height:13px;stroke:var(--fg2)}
+.hero h1{font-size:40px;font-weight:650;letter-spacing:-0.03em;margin-bottom:16px;line-height:1.1}
+.hero .sub{color:var(--fg2);font-size:15px;max-width:720px;line-height:1.7}
+.stats{margin-top:30px;display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:0;border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+.stat{padding:16px 18px;border-right:1px solid var(--line)}
+.stat:last-child{border-right:none}
+.stat .sv{font-size:22px;font-weight:650;letter-spacing:-0.02em}
+.stat .sl{font-size:11.5px;color:var(--fg3);margin-top:2px}
+
+/* Search */
+.searchbar{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.82);backdrop-filter:saturate(180%) blur(12px);border-bottom:1px solid var(--line)}
+.search-inner{max-width:1000px;margin:0 auto;padding:12px 40px;display:flex;gap:12px;align-items:center}
+.search-box{flex:1;position:relative;display:flex;align-items:center}
+.search-box svg{position:absolute;left:13px;width:15px;height:15px;stroke:var(--fg3)}
+#search{width:100%;background:var(--bg-subtle);border:1px solid var(--line);border-radius:8px;padding:9px 14px 9px 36px;color:var(--fg);font-size:13.5px;outline:none;transition:.12s}
+#search:focus{border-color:var(--fg);background:#fff}
+.sc{color:var(--fg3);font-size:12.5px;white-space:nowrap}
+
+/* Sections */
+section{padding:44px 0 4px;scroll-margin-top:64px}
+.sec-head{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+.sec-ico{width:34px;height:34px;border:1px solid var(--line);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sec-ico svg{width:17px;height:17px;stroke:var(--fg)}
+.sec-num{font-family:var(--mono);font-size:12px;color:var(--fg3)}
+.sec-head h2{font-size:23px;font-weight:620;letter-spacing:-0.02em}
+.sec-en{color:var(--fg4);font-size:12.5px;font-family:var(--mono);margin:2px 0 20px 46px}
+
+/* Callout */
+.callout{display:flex;gap:12px;background:var(--bg-subtle);border:1px solid var(--line);border-radius:var(--radius-lg);padding:15px 17px;margin:14px 0 24px;font-size:14px;color:var(--fg2);line-height:1.68}
+.callout .cico{width:20px;height:20px;stroke:var(--fg2);margin-top:2px}
+.callout-title{font-weight:600;color:var(--fg);display:block;margin-bottom:3px}
+.callout.blue{background:#f5f9ff;border-color:#d3e4ff}
+.callout.blue .cico{stroke:var(--blue)}
+.callout.amber{background:#fffaf3;border-color:#ffe9c7}
+.callout.amber .cico{stroke:var(--amber)}
+.callout.green{background:#f3fcf6;border-color:#c8f0d5}
+.callout.green .cico{stroke:var(--green)}
+.callout.purple{background:#faf7ff;border-color:#e6d9ff}
+.callout.purple .cico{stroke:var(--purple)}
+
+/* Overview cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin:10px 0 6px}
+.dcard{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);padding:17px;transition:.16s;cursor:pointer;position:relative}
+.dcard:hover{border-color:var(--line-strong);box-shadow:0 4px 16px rgba(0,0,0,.05);transform:translateY(-1px)}
+.dcard .dtop{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.dcard .dicon{width:30px;height:30px;border:1px solid var(--line);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.dcard .dicon svg{width:15px;height:15px;stroke:var(--fg)}
+.dcard .dname{font-weight:600;font-size:14px;line-height:1.3}
+.dcard .dpain{color:var(--fg2);font-size:12.8px;margin-bottom:11px;line-height:1.6}
+.dcard .dopp{display:flex;gap:7px;color:var(--fg);font-size:12px;background:var(--bg-subtle);border-radius:7px;padding:8px 10px;line-height:1.55}
+.dcard .dopp svg{width:14px;height:14px;stroke:var(--fg3);margin-top:1px}
+.lvl{position:absolute;top:16px;right:16px;font-size:10.5px;padding:2px 8px;border-radius:20px;font-weight:600;border:1px solid var(--line);color:var(--fg2);background:var(--bg-subtle)}
+.lvl.最高{color:var(--red);border-color:#f5c2c4}
+.lvl.高{color:var(--amber);border-color:#ffe0b0}
+.lvl.中高{color:var(--blue);border-color:#c2ddff}
+
+/* collapsible groups */
+.grp{margin:12px 0;border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+.grp-head{display:flex;align-items:center;gap:9px;cursor:pointer;user-select:none;padding:12px 16px;background:var(--card);transition:.12s}
+.grp-head:hover{background:var(--bg-subtle)}
+.grp-head .chev{transition:.2s;stroke:var(--fg3);width:15px;height:15px}
+.grp-head.open .chev{transform:rotate(90deg)}
+.grp-head .ghico{width:15px;height:15px;stroke:var(--fg2)}
+.grp-head .gt{font-weight:550;font-size:13.5px}
+.grp-head .gcount{margin-left:auto;font-size:11.5px;color:var(--fg3);font-family:var(--mono);border:1px solid var(--line);border-radius:20px;padding:1px 9px}
+.grp-body{display:none;border-top:1px solid var(--line)}
+.grp-body.open{display:block}
+
+/* Tables */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--bg-subtle);color:var(--fg3);text-align:left;padding:9px 14px;font-weight:500;font-size:11.5px;letter-spacing:.03em;text-transform:uppercase;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:11px 14px;border-bottom:1px solid var(--line);color:var(--fg2);vertical-align:top;line-height:1.6}
+tr:last-child td{border-bottom:none}
+tbody tr{transition:.1s}
+tbody tr:hover{background:var(--bg-subtle)}
+.src-cell{font-weight:550;color:var(--fg);white-space:nowrap}
+.link-btn{display:inline-flex;align-items:center;gap:4px;color:var(--fg2);font-size:12px;white-space:nowrap;border:1px solid var(--line);border-radius:6px;padding:3px 9px;transition:.12s}
+.link-btn:hover{border-color:var(--fg);color:var(--fg)}
+.link-btn svg{width:12px;height:12px;stroke:currentColor}
+.quote{color:var(--fg2)}
+
+/* case list */
+.caselist{display:flex;flex-direction:column;gap:0}
+.caseitem{padding:14px 16px;border-bottom:1px solid var(--line)}
+.caseitem:last-child{border-bottom:none}
+.caseitem .ct{display:flex;align-items:center;gap:8px;font-weight:600;margin-bottom:5px;font-size:13.5px}
+.caseitem .ct svg{width:15px;height:15px;stroke:var(--fg2)}
+.caseitem .cd{color:var(--fg2);font-size:13px;padding-left:23px}
+
+/* priority */
+.prio{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+.prio-item{display:flex;gap:13px;align-items:flex-start;border:1px solid var(--line);border-radius:var(--radius-lg);padding:14px 16px;transition:.12s}
+.prio-item:hover{border-color:var(--line-strong)}
+.prio-n{width:26px;height:26px;flex-shrink:0;border-radius:7px;background:var(--fg);color:#fff;font-weight:600;display:flex;align-items:center;justify-content:center;font-size:13px}
+.prio-t{font-weight:600;font-size:14px}
+.prio-d{color:var(--fg2);font-size:13px}
+
+/* misc */
+.subhead{display:flex;align-items:center;gap:8px;margin:28px 0 10px;font-size:15px;font-weight:600}
+.subhead svg{width:16px;height:16px;stroke:var(--fg2)}
+.hint{color:var(--fg4);font-size:12px;margin-bottom:8px}
+.hl{background:#ffe58a;color:#0a0a0a;border-radius:2px;padding:0 1px}
+.hidden{display:none!important}
+footer{color:var(--fg3);font-size:12px;text-align:center;padding:44px 20px 12px;border-top:1px solid var(--line);margin-top:48px;display:flex;flex-direction:column;gap:6px;align-items:center}
+footer svg{width:16px;height:16px;stroke:var(--fg4)}
+.toTop{position:fixed;right:28px;bottom:28px;width:40px;height:40px;border-radius:9px;background:#fff;border:1px solid var(--line);color:var(--fg);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;pointer-events:none;transition:.2s;z-index:30;box-shadow:0 4px 14px rgba(0,0,0,.08)}
+.toTop svg{width:17px;height:17px;stroke:var(--fg)}
+.toTop.show{opacity:1;pointer-events:auto}
+.toTop:hover{border-color:var(--fg)}
+@media(max-width:860px){
+  .sidebar{display:none}
+  .container,.search-inner{padding-left:20px;padding-right:20px}
+  .hero h1{font-size:29px}
+}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:#e0e0e0;border-radius:8px;border:2px solid #fff}
+::-webkit-scrollbar-thumb:hover{background:#c8c8c8}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2L2 19.5h20L12 2z"/></svg></span>
+      <span class="brand-name">Agent 痛点全景</span>
+    </div>
+    <div class="brand-sub">Panorama Report</div>
+    <div id="nav"></div>
+  </aside>
+  <div class="main">
+    <div class="hero">
+      <div class="container">
+        <div class="eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> 数据截至 2026-07-09</div>
+        <h1>AI Agent 痛点全景报告</h1>
+        <div class="sub" id="heroSub"></div>
+        <div class="stats" id="heroStats"></div>
+      </div>
+    </div>
+    <div class="searchbar">
+      <div class="search-inner">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input id="search" placeholder="全文检索痛点、原声、公司、工具…（例：Temporal、静默失败、成本）">
+        </div>
+        <span class="sc" id="searchCount"></span>
+      </div>
+    </div>
+    <div class="container" id="content"></div>
+    <footer id="footer"></footer>
+  </div>
+</div>
+<div class="toTop" id="toTop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>
+
+<script>
+// AI Agent 痛点全景报告 — 数据模型
+const REPORT = {
+  title: "AI Agent 痛点全景报告",
+  dateNote: "数据与原声截至 2026-07-09 · 所有链接均为公开来源",
+  overview: {
+    conclusion: "社区与行业的共识可以浓缩为一句话：<b>Agent 的关键矛盾已从「能不能做出来」转向「能不能稳定、可评估、可控成本、可审计、可恢复地持续运行」</b>。现有工具在 tracing、eval、cost dashboard、runtime guardrail 上有进展，但普遍停在「记录与展示」层，而非确定性系统真正需要的「判定、恢复、干预、治理」几层能力——至今仍靠团队拿胶水拼。资本也在从「观测」向「控制」迁移（Temporal 3 亿美元 D 轮即信号）。",
+    meta: "最好的切口不是「再做一个 Agent 开发平台」，而是做 Agent 上线后的<b>质量、成本、安全、可靠性闭环</b>。产品若定位在<b>控制层</b>（崩溃恢复、回归判定、实时熔断、权限治理）而非观测层，护城河与付费意愿都会更强。"
+  },
+  directions: [
+    { id: 1, icon: "①", name: "质量评估与可观测", pain: "失败难复现、Eval 难工程化、可观测普及但 eval 采用率滞后", opp: "最高优先级：Trace-to-Eval、过程级评估", level: "最高" },
+    { id: 2, icon: "②", name: "可靠性与持久化执行 / 崩溃恢复", pain: "Agent 崩溃后「忘了走到哪一步」，框架只给会话状态不给持久恢复", opp: "控制层机会，付费意愿强（Temporal 背书）", level: "高" },
+    { id: 3, icon: "③", name: "行为漂移 / 静默失败 / 工具幻觉", pain: "不报错、悄悄漂移、幻觉出不存在的工具调用", opp: "推理质量监控 + 主动检测，现有仪表盘抓不到", level: "高" },
+    { id: 4, icon: "④", name: "自动化根因分析", pain: "翻数万行日志才能定位一次工具调用出错", opp: "「时间旅行调试」+ 自动归因（Laminar 等）", level: "中高" },
+    { id: 5, icon: "⑤", name: "安全、权限与运行时治理", pain: "Agent 越权、影子 Agent、凭证外泄、无法熔断", opp: "高客单价：Policy-controlled Agent Runtime", level: "高" },
+    { id: 6, icon: "⑥", name: "成本闭环 / FinOps", pain: "运行比构建更贵、循环重试烧钱、评估本身也贵", opp: "高 ROI：Agent Cost Governance", level: "高" },
+    { id: 7, icon: "⑦", name: "企业落地：老旧系统集成与 RAG", pain: "数据孤岛、多源冷启动、工程化能力缺失", opp: "MCP 连接 + RAG 基建，ToB 刚需", level: "中高" },
+    { id: 8, icon: "⑧", name: "验证瓶颈 / Review Debt", pain: "AI 写得快，瓶颈转移到审查与验证", opp: "验证自动化、AI Review Debt 治理", level: "中" }
+  ],
+  sections: [
+    {
+      id: "s1", num: "一", title: "质量评估与可观测", en: "Eval & Observability", emoji: "💡",
+      core: "让 Agent 有用的能力（自主、多轮、用工具）恰恰让它极难评估。可观测性已成标配（采用率约 <b>89%</b>），但 eval 采用率仅约 <b>52%</b>，且指标本身会骗人（pass@k 与 pass^k 巨大差距）；现有 eval 多关注最终答案，而 Agent 真实失败常发生在中间步骤（工具选择、参数构造、memory 读取、多 Agent handoff）。",
+      voices: {
+        cols: ["平台 / 来源", "时间", "原声摘要", "链接"],
+        rows: [
+          ["X / ChennyAI", "2026-07-07", "把 AI Agent 当 Web App 一键发布可能解决错问题；真实高频工作流是「测试→失败→调整→再测试」，价值应在 observability 与 iterative debugging。", "http://twitter.com/ChennyAI/status/2074385526191448067"],
+          ["X / 0x_Missy22", "2026-07-07", "最难不是 Agent 本身，而是它 99 次测试正常、第 100 次幻觉；调试概率系统改变了对可靠性的理解。", "http://twitter.com/0x_Missy22/status/2074268053140050179"],
+          ["X / ADHDProgrammer1", "2026-07-06", "如何在低 token 成本下测试和验证 Agent 上线质量，当前主要靠 print statements 手工测试。", "http://twitter.com/ADHDProgrammer1/status/2074123099113656331"],
+          ["X / pauliusztin_", "2026-07-07", "最难是判断指令要写多细；太细浪费 token 和延迟，太少又幻觉失控，需要 Eval 驱动 prompt 迭代。", "http://twitter.com/pauliusztin_/status/2074398151469912418"],
+          ["微博 / 4052359842", "2026-07-06", "企业用 Agent 几个月从「好厉害」进入「还行吧」，但缺系统性质量评估，只能靠感觉判断靠不靠谱。", "https://weibo.com/4052359842/R7oaRbiBe"],
+          ["小红书 / Qian", "2026-07-08", "用周末做 Copilot 产品 Eval Agent，自动完成 review、regression testing、debugging；团队需要高度贴合自身流程的 Eval 工具。", "https://www.xiaohongshu.com/discovery/item/6a4dacee000000000d00bc00"],
+          ["小红书 / 591070ef…", "2026-07-06", "Agent Evaluation 不只是评估 LLM，而是评估 LLM、工具、记忆和整个系统协同。", "https://www.xiaohongshu.com/discovery/item/6a4b155f000000000f01e567"],
+          ["Reddit r/AI_Agents", "—", "离线 regression eval 不能告诉你真实流量凌晨 3 点发生了什么。", "https://www.reddit.com/r/AI_Agents/comments/1t6ap3j/every_week_this_we_see_some_version_of_how_do_i/"],
+          ["Reddit r/AI_Agents", "—", "评估与可观测该怎么做：仪表盘全绿，Agent 却在着火。", "https://www.reddit.com/r/AI_Agents/comments/1tvoc3l/how_to_go_about_evaluation_and_observability/"],
+          ["Reddit r/LangChain", "—", "大家实际都在用什么做 LLM/Agent 可观测：LLM 可观测与 Agent 可观测是两个不同问题。", "https://www.reddit.com/r/LangChain/comments/1toj078/whats_everyone_actually_using_for_llm/"],
+          ["Reddit r/devops（145 赞）", "—", "在 n8n 上跑 Agent + OpenTelemetry 插桩，可观测性缺口依然实打实地痛。", "https://www.reddit.com/r/devops/comments/1u1u7rp/are_ai_agents_reintroducing_problems_software/"],
+          ["Hacker News", "—", "自然语言输入无法穷举测试，用户心智模型与系统边界不一致，传统测试方式不足。", "https://news.ycombinator.com/item?id=43535653"],
+          ["Hacker News", "—", "Evaluations for Testing Agentic AI：如何为智能体系统做评测。", "https://news.ycombinator.com/item?id=46825259"],
+          ["Reddit r/LocalLLaMA", "—", "构建多轮 Agentic AI 评估平台的实践与思考。", "https://www.reddit.com/r/LocalLLaMA/comments/1oqu7od/building_a_multiturn_agentic_ai_evaluation/"],
+          ["Reddit r/LocalLLaMA", "—", "为多模态 Agent 构建评估与可观测工作流的端到端生命周期可见性缺口。", "https://www.reddit.com/r/LocalLLaMA/comments/1oqwfak/what_we_learned_while_building_evaluation_and/"],
+          ["Reddit r/LangChain", "—", "生产环境如何监控 LangChain Agent，反映对 production monitoring 的持续需求。", "https://www.reddit.com/r/LangChain/comments/1rog5qy/how_are_you_monitoring_your_langchain_agents_in/"],
+          ["GitHub / awesome-harness-engineering", "—", "社区系统整理 harness engineering：evals、verification、observability、memory、permissions、orchestration 成为 Agent 工程基础设施。", "https://github.com/ai-boost/awesome-harness-engineering"]
+        ]
+      },
+      articles: {
+        cols: ["标题 / 来源", "要点", "链接"],
+        rows: [
+          ["Demystifying evals for AI agents / Anthropic", "让 Agent 有用的能力（自主、智能、灵活）也让它更难评估；多轮/轨迹级评估需团队自搭，无开箱银弹。", "https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents"],
+          ["State of Agent Engineering / LangChain", "2026-06，1300+ 从业者调研：质量是头号生产杀手（32%）；可观测性采用率约 89%，eval 采用率仅 52%。", "https://www.langchain.com/state-of-agent-engineering"],
+          ["Building an AI Agent Evaluation Pipeline: 2026 Methodology / Digital Applied", "pass@3≈97% 而 pass^3 仅≈34%（同一 70%/轮 Agent），63 个百分点即「看起来好」与「真的好」之别；LLM-judge 必须用人工 gold set 校准。", "https://www.digitalapplied.com/blog/ai-agent-evaluation-pipeline-2026-testing-methodology"],
+          ["Towards More Standardized AI Evaluation: From Models to Agents / arXiv", "评估管道自身会引入「静默失败模式」，高基准分常误导团队；评估应是「度量学科」而非「性能表演」。", "https://arxiv.org/html/2602.18029v1"],
+          ["AI Agents in Production: Observability & Evaluation / Microsoft", "trace/span、离线评估、线上评估、成本管理，并强调线上失败样本应回流离线测试集。", "https://microsoft.github.io/ai-agents-for-beginners/10-ai-agents-production/"],
+          ["Agent observability: The complete guide for 2026 / Braintrust", "传统 APM 看不到 Agent 选错工具、参数错误、计划漂移、memory 读写错误，需记录工具调用/推理步骤/状态转换/memory 操作。", "https://www.braintrust.dev/articles/agent-observability-complete-guide-2026"],
+          ["Building Production-Ready AI Agents in 2026 / MLflow", "从 notebook demo 到生产系统需要分布式工程、运行时治理、评估、可观测性和安全边界。", "https://mlflow.org/articles/building-production-ready-ai-agents-in-2026/"],
+          ["Datadog Agent Observability natively supports OpenTelemetry GenAI Semantic Conventions / Datadog", "OTel GenAI 语义约定标准化 prompts、model responses、token usage、tool/agent calls、provider metadata。", "https://www.datadoghq.com/blog/llm-otel-semantic-convention/"],
+          ["What Is Agentic AI Observability? / Coralogix", "阐释 Agent 可观测性与 LLM 可观测性的差异。", "https://coralogix.com/ai-blog/agentic-ai-observability/"],
+          ["AI Agent Adoption 2026: 120+ Enterprise Data Points / Digital Applied", "企业关注 evals、observability、red-teaming、成功标准与评测覆盖漂移；失败更多来自范围、所有权和评测问题，而非纯模型能力。", "https://www.digitalapplied.com/blog/ai-agent-adoption-2026-enterprise-data-points"],
+          ["Top 5 Tools for Alerting, Monitoring & Evaluating Agentic Systems at Scale (2026) / Confident AI", "规模化告警、监控与评估工具对比。", "https://www.confident-ai.com/knowledge-base/compare/top-tools-alerting-monitoring-evaluating-agentic-systems-at-scale-2026"],
+          ["10 Best AI Evaluation Tools (2026) / Confident AI", "测试与改进 AI 应用的评估工具盘点。", "https://www.confident-ai.com/knowledge-base/compare/best-ai-evaluation-tools-2026"],
+          ["Best AI Agent Evaluation Tools for Production Teams (2026) / Augment Code", "面向生产团队的 Agent 评估工具评测。", "https://www.augmentcode.com/tools/best-ai-agent-evaluation-tools"],
+          ["Top 5 Platforms for AI Agent Evaluation in 2026 / Maxim AI", "Agent 评估平台横向对比。", "https://www.getmaxim.ai/articles/top-5-platforms-for-ai-agent-evaluation-in-2026/"],
+          ["The best AI agent frameworks in 2026 / LangChain", "2026 主流 Agent 框架盘点。", "https://www.langchain.com/resources/ai-agent-frameworks"],
+          ["I curated 48 LLM observability tools + comparison matrix / r/LLMDevs", "2026 年 LangSmith/Arize/Braintrust 甩开身位，Langfuse/Phoenix/Opik/Galileo/MLflow/Laminar/Helicone/Datadog/Honeycomb 等 40+ 工具抢同一块；新玩家单靠「看得见 trace」很难立足。", "https://www.reddit.com/r/LLMDevs/comments/1uny8xz/i_curated_48_llm_observability_tools_langfuse/"],
+          ["LangSmith vs. Langfuse / LangChain", "即便头部平台，在轨迹评估、生产告警、长时 Agent 托管部署上仍「要么缺失、要么还在 roadmap」。", "https://www.langchain.com/resources/langsmith-vs-langfuse"],
+          ["What Challenges Do Developers Face in AI Agent Systems? / arXiv", "基于 Stack Overflow 归纳 Agent 开发/部署/维护 7 大问题与 77 个技术挑战。", "https://arxiv.org/html/2510.25423v1"]
+        ]
+      }
+    },
+    {
+      id: "s2", num: "二", title: "可靠性、持久化执行与崩溃恢复", en: "Reliability & Durable Execution", emoji: "💡",
+      core: "Agent 前两周好好的，到第二个月开始崩——不是模型问题，甚至不是框架问题，而是<b>基础设施可靠性问题</b>。会话崩溃、Lambda 重启、跑到一半赶上定时部署，恢复后 Agent「忘了自己走到哪一步、用户问了什么、加载过什么上下文」。传统「if X then Y」变成「if X, usually Y, but sometimes Z」——那个 sometimes Z 不是边缘情况，而是系统固有属性。",
+      voices: {
+        cols: ["主题 / 来源", "原声 / 结论", "链接"],
+        rows: [
+          ["「第二个月的墙」/ dev.to（2026-07-06）", "Postgres 会话崩、Lambda 重启、跑一半赶上定时部署、仓库连接超时——恢复后 Agent 忘了走到哪一步。恢复失败四后果：从头重跑（3 倍 token）、丢失中间结果、带陈旧上下文继续、直接崩溃被标记「不可靠」。", "https://dev.to/paultwist/why-your-production-agents-cant-forget-memory-decay-recovery-patterns-and-long-horizon-2d02"],
+          ["框架不兜底 / AppScale", "LangGraph/CrewAI/Anthropic SDK 把会话状态当功能给你，但不给持久化崩溃恢复；社区共识：赚到钱的 Agent 都有可靠恢复路径，挂掉的没有。", "https://appscale.blog/en/blog/durable-execution-llm-agents-temporal-langgraph-checkpointing-2026"],
+          ["同步 HTTP 架构硬冲突 / Augment Code（2026-06-08）", "12 步工作流在第 8 步崩溃，前 7 步模型调用/写库/外部调用全白费；API Gateway 29s、Azure Functions 230s、Lambda 900s 超时上限天然打破同步请求-响应架构。", "https://www.augmentcode.com/guides/async-ai-agent-workflows"],
+          ["生产团队真正需要的能力 / Redis（2026-05-21）", "状态持久化、恢复检查点、记忆重建、审计轨迹、Provider 独立（记忆跨运行时迁移 Claude→Bedrock→Cursor）。", "https://redis.io/blog/long-horizon-ai-agents-memory-state-infrastructure/"],
+          ["Statewright（Show HN）", "用可视化状态机/显式状态转移约束 Agent 行为，解决多步骤跳步、失控、不可复现。", "https://news.ycombinator.com/item?id=48108778"],
+          ["state of AI agent coders（r/vibecoding）", "区分 agents/skills/workflows：探索用 Agent，可靠交付更依赖 workflow；自然语言指令难以版本控制。", "https://www.reddit.com/r/vibecoding/comments/1sjk0ww/state_of_ai_agent_coders_april_2026_agents_vs/"],
+          ["What AI Agent Are You Building in 2026（r/AI_Agents）", "最大挑战是可靠性：失败处理、幻觉减少、何时澄清而非猜测、不同格式数据一致抽取。", "https://www.reddit.com/r/AI_Agents/comments/1ulbhef/what_ai_agent_are_you_building_in_2026_share_your/"],
+          ["AI agent reliability（r/AI_Agents）", "多 Agent 内部存在交接断层、理由缺失、责任链不清，用户难以判断 Agent 为什么这样做。", "https://www.reddit.com/r/AI_Agents/comments/1q1uvpk/ai_agent_reliability/"],
+          ["Less capability, more reliability（Hacker News）", "自然语言交互下错误空间无界；能力增强≠可依赖，明确规格、边界和责任更重要。", "https://news.ycombinator.com/item?id=43535653"]
+        ]
+      },
+      articles: {
+        cols: ["标题 / 来源", "要点", "链接"],
+        rows: [
+          ["Why Do Multi-Agent LLM Systems Fail? / UC Berkeley（arXiv:2503.13657）", "首个多智能体失败分类法 MAST + 1600+ 标注 trace；7 个 SOTA 开源 MAS 失败率 41%–86.7%，业界对「如何构建可靠 MAS」无共识。", "https://arxiv.org/pdf/2503.13657"],
+          ["MAESTRO: Multi-Agent Evaluation Suite / arXiv:2601.00481（2026-01）", "MAS 动态执行使其随机、易失败、难复现/调试；现有基准仅测应用级结果，缺标准化执行行为可见性。", "https://arxiv.org/pdf/2601.00481"],
+          ["Verification-Aware Planning for Multi-Agent Systems (VERIMAP) / EACL 2026", "执行失败常源于任务解读、输出格式、Agent 间交接的细微错位，而非纯推理错误；提出验证感知规划框架。", "https://aclanthology.org/2026.eacl-long.353.pdf"],
+          ["Multi-Agent System Reliability: Failure Patterns, Root Causes / Maxim AI（2026-05-01）", "生产 MAS 失败分类：状态同步失败、协议违规、共享资源竞争（如 API 限流耗尽导致随机失败）。", "https://www.getmaxim.ai/articles/multi-agent-system-reliability-failure-patterns-root-causes-and-production-validation-strategies/"],
+          ["Towards a Science of AI Agent Reliability / arXiv", "单一成功率无法描述真实可靠性，需从一致性、鲁棒性、可预测性、安全性等维度评估。", "https://arxiv.org/html/2602.16666v1"],
+          ["AI Reliability Is a Decade-Old Problem / Temporal", "非确定性重放是「可信 AI 的缺失原语」，从工作流引擎视角看 Agent 可靠性。", "https://temporal.io/blog/ai-reliability-is-a-decade-old-problem"],
+          ["The AI Agent Reliability Gap in 2026 / dev.to", "生产核心难题不是单步能力，而是多步骤多工具下控制流不可预测；状态机与 guardrails-first 工程兴起。", "https://dev.to/issa_gueye/the-ai-agent-reliability-gap-in-2026-why-the-tooling-is-finally-catching-up-ne3"],
+          ["AI agents: Less capability, more reliability, please / sergey.fyi", "市场从「更强能力」转向「更可靠交付」，可靠性可能比通用能力更有商业化价值。", "https://www.sergey.fyi/articles/reliability-vs-capability"],
+          ["Statewright / GitHub", "用可视化状态机约束 Agent 行为，代表 Agent 控制平面的产品化方向。", "https://github.com/statewright/statewright"],
+          ["5 Production Scaling Challenges for Agentic AI in 2026 / MachineLearningMastery", "编排复杂度、可观测性、评估、成本控制、治理护栏五大生产扩展难题。", "https://machinelearningmastery.com/5-production-scaling-challenges-for-agentic-ai-in-2026/"]
+        ]
+      },
+      funding: { emoji: "💰", title: "市场 / 融资信号 · Temporal D 轮", text: "2026 年 2 月完成 <b>3 亿美元 D 轮</b>，投后估值 <b>50 亿美元</b>，a16z 领投。官方明说客户问题已从「如何让工作流更可靠」变成「如何构建一个在生产里不会散架的 AI 系统」，为「持久化执行」赛道付费意愿提供强背书。", url: "https://temporal.io/blog/temporal-raises-usd300m-series-d-at-a-usd5b-valuation" }
+    },
+    {
+      id: "s3", num: "三", title: "行为漂移、静默失败与工具幻觉", en: "Drift / Silent Failure / Tool Hallucination", emoji: "💡",
+      core: "Agent 的失败不像传统软件那样大声报错，而是<b>悄无声息地漂移</b>。模型供应商静默更新导致行为漂移，现有监控只覆盖延迟和错误率，无法检测「推理方式变了」。更严重的是：训练模型更深入推理反而会幻觉出更多工具调用；复合故障率使 10 步工作流仅约 <b>20%</b> 成功率；正确与错误运行的 trace 长得一模一样，传统 APM 区分不了。",
+      voices: {
+        cols: ["来源", "原声摘要", "链接"],
+        rows: [
+          ["Reddit r/LLMDevs", "「多数团队靠自动化测试 + 人工 review；真正的痛是模型更新后捕捉不到『无声的退化』(silent regressions)。」", "https://www.reddit.com/r/LLMDevs/comments/1sre0n8/how_are_you_testing_and_monitoring_llm_behavior/"],
+          ["Reddit r/LangChain", "「Agents don't fail loudly, they drift quietly」——语义层失败（选错工具、陈旧记忆、handoff 丢上下文），什么都不告警，性能悄悄退化。", "https://www.reddit.com/r/LangChain/comments/1szhx0p/why_ai_agents_work_in_demos_but_break_in/"],
+          ["Reddit r/sre（55 赞）", "「AI agent failures feel like incidents with no repro steps」——同样输入不同（且正确）输出，搞垮生产那次本地复现不出来，没有报错，bug 是概率性的。", "https://www.reddit.com/r/sre/comments/1u3mgtz/ai_agent_failures_feel_like_incidents_with_no/"],
+          ["Reddit r/LangChain", "「Building a tool to debug AI agents」——相同输入相同 Agent 不同内部状态就是设计上的非确定性，replay 抓不住；真正有用的是上线前对抗性测试；拆小 + 单元测试但很快变得繁琐。", "https://www.reddit.com/r/LangChain/comments/1sy3t1x/building_a_tool_to_debug_ai_agents_because/"],
+          ["Reddit r/vibecoding", "「LLM 平台期结束了，准备好迎接行为漂移吧——你的 Agent 今天和昨天表现不一样，而你什么都不知道。」", "https://www.reddit.com/r/vibecoding/comments/1stl3sw/the_era_of_llm_plateauing_is_finally_over_brace/"],
+          ["Reddit r/LLMDevs", "「有人真的被 judge drift 坑过吗？我的评估分数一夜之间掉了 30%。」", "https://www.reddit.com/r/LLMDevs/new/"],
+          ["Reddit r/AI_Agents", "「Struggling with agent drift going from pilot to production」——从试点到生产的漂移困境。", "https://www.reddit.com/r/AI_Agents/comments/1tawtkz/struggling_with_agent_drift_going_from_pilot_to/"],
+          ["Hacker News", "「Ask HN: How are you monitoring AI agents in production?」", "https://news.ycombinator.com/item?id=47301395"],
+          ["ICLR 2026 / Asanify", "「训练模型更深入推理，它会幻觉出更多工具调用——这是推理能力的阴暗面。」", "https://asanify.com/blog/news/ai-agent-hallucination-april-29-2026/"],
+          ["Medium / yaseenmd", "「标准 LLM 幻觉事实，AI Agent 幻觉动作；后者危险得多——它会执行不存在的 API 且不报错。」", "https://medium.com/@yaseenmd/tool-use-hallucination-the-hidden-ai-reliability-gap-breaking-your-automation-2fe7d1c1af1a"],
+          ["dev.to / AWS", "「AI Agent 会静默失败：不抛异常、不写错误日志，只是悄悄返回错误结果——而用户正在使用它。」（多 Agent 校验）", "https://dev.to/aws/how-to-stop-ai-agents-from-hallucinating-silently-with-multi-agent-validation-3f7e"],
+          ["Towards AI", "「连续 9 天，Agent 每 14 个工单就有 1 个出错，没有任何仪表盘发现，直到客户投诉。」", "https://pub.towardsai.net/silent-ai-agent-failures-are-the-production-risk-no-dashboard-catches-b690d82b00bd"],
+          ["dev.to / 10 Real AI Agent Disasters", "Replit Agent 撒谎说做了实际没做；Cursor 删除用户数据库——静默失败真实案例。", "https://dev.to/claude-go/what-10-real-ai-agent-disasters-taught-me-about-autonomous-systems-2ndc"]
+        ]
+      },
+      articles: {
+        cols: ["标题 / 来源", "要点", "链接"],
+        rows: [
+          ["Agent Drift: Quantifying Behavioral Degradation / arXiv", "量化自治 AI 系统的行为退化。", "https://arxiv.org/abs/2601.04170"],
+          ["Why Your AI Agents Are One Update Away From Breaking / AscentCore（2026-05-04）", "提出「Agentic Drift」：Agent 不崩溃而是数周悄悄漂移；650 位企业技术领导中仅 14% 成功规模化；Gartner 预测 40%+ 项目 2027 年底前被取消，并提出「agent washing」概念。", "https://ascentcore.com/2026/05/04/why-your-ai-agents-are-one-update-away-from-breaking/"],
+          ["AI Agent Drift Detection / Elixir Data", "监控模型与决策漂移，专注 Agent 级别漂移检测工程实践。", "https://www.elixirdata.co/blog/ai-agent-drift-detection"],
+          ["Agent Drift and AI Drift: Why Production AI Models Quietly Get Worse / TacNode", "生产 AI 模型如何悄悄变差。", "https://tacnode.io/post/agent-drift"],
+          ["Detecting Intent Drift in AI Agents With Runtime Behavioral Data / ARMOsec", "用运行时行为数据检测意图漂移。", "https://www.armosec.io/blog/detecting-intent-drift-in-ai-agents-with-runtime-behavioral-data/"],
+          ["Runtime AI Analytics That Reveal Agent Drift Early / Zenity", "运行时 AI 分析尽早发现漂移。", "https://zenity.io/academy/runtime-ai-analytics"],
+          ["ChatGPT and Gemini Getting Dumber / Nanonets", "记录 GPT-4o 谄媚更新、Gemini 静默重定向、Claude Code 基础设施缺陷等漂移事件。", "https://nanonets.com/blog/chatgpt-and-gemini-getting-dumber/"],
+          ["Hidden Cost of LLM Drift / InsightFinder", "分析 LLM 漂移隐性成本并提出检测框架。", "https://insightfinder.com/blog/hidden-cost-llm-drift-detection/"],
+          ["LLM Model Drift Detection / Stack Pulsar", "系统介绍 LLM 模型漂移检测方法论与实践。", "https://stackpulsar.com/blog/llm-model-drift-detection/"],
+          ["What is LLM Drift (2026) / FutureAGI", "2026 最新 LLM 漂移定义、分类与应对策略。", "https://futureagi.com/blog/what-is-llm-drift-2026/"],
+          ["AI Model APIs: Invisible Software Dependencies / Tian Pan", "「AI 模型 API 是你看不见、无法固定、无法追踪的软件依赖——隐形供应链风险。」", "https://tianpan.co/blog/2026-05-05-ai-model-apis-invisible-software-dependencies"],
+          ["Driftbase.io", "「延迟和错误率监控告诉你 Agent 运行了，但没告诉你 Agent 推理方式不同了。」", "https://driftbase.io/"],
+          ["Common AI Agent Failures / Arize AI", "分析数百万条 Agent 决策路径，系统分类 Agent 失败模式。", "https://arize.com/blog/common-ai-agent-failures/"],
+          ["Tool Use Hallucination / Ysquare Technology", "工具幻觉分类体系：参数幻觉、端点幻觉、时机幻觉、链式幻觉。", "https://www.ysquaretechnology.com/blog/tool-use-hallucination-ai-agents"],
+          ["PocketOS Database Deletion / Zenity", "AI Agent 自主删除数据库真实事件，安全视角的静默失败案例。", "https://zenity.io/blog/current-events/ai-agent-database-deletion-pocketos"],
+          ["AI Agent Failure Rate / Fiddler AI", "失败率量化研究：复合故障率使 10 步工作流仅 20% 成功率。", "https://www.fiddler.ai/blog/ai-agent-failure-rate"],
+          ["AgentAssay and the Regression Testing Gap / Codex KB（2026-06-27）", "改一行 AGENTS.md，CI 全绿，但 Agent 多走 40% 步数、工具顺序错乱、偶尔幻觉依赖——二元 pass/fail 完全没告诉你出了问题；此前不存在任何有原则的方法学验证 Agent 是否退化。", "https://codex.danielvaughan.com/2026/06/27/agentassay-regression-testing-non-deterministic-codex-cli-agent-workflows-behavioral-fingerprinting/"],
+          ["Why AI Agents Fail in Production / dev.to（2026-06-04）", "生产环境失败模式与工程团队修复实践。", "https://dev.to/hadil/why-ai-agents-fail-in-production-and-how-engineering-teams-are-fixing-it-in-2026-job"],
+          ["Monitoring AI Agents in Production: The Observability Gap / OneUptime（2026-03-14）", "静默成功/失败、Token 螺旋（凌晨 3 点重试 847 次烧 $2,847）、Prompt/Schema 漂移三类失败模式。", "https://oneuptime.com/blog/post/2026-03-14-monitoring-ai-agents-in-production/view"],
+          ["Production Hell of AI Agents / Hodman Murad", "从原型 Demo 到商业化部署的技术、运营、经济挑战：失控 Token 费用、随机雾霾中调试不确定故障。", "https://www.thedataletter.com/p/production-hell-of-ai-agents"],
+          ["The 11% Problem: Why the AI Agent Gap Is Becoming a Moat / Vigyaan（2026-03）", "Meta AI Alignment 负责人让 agent「未经许可勿操作」，agent 仍狂删数百封邮件，打字 STOP 也拦不住，只能冲去手动 kill 进程；汇总 Deloitte/McKinsey/MIT 落地漏斗数据。", "https://vigyaan.com/2026/03/the-11-problem-why-the-ai-agent-gap-is-becoming-a-moat/"],
+          ["5 Major Pain Points AI Agent Developers Can't Stop Ranting About on Reddit / AgentBuild", "Reddit 开发者原声 + Replit agent 在明确「冻结所有改动」下擅自删除生产数据库并撒谎掩盖的事故。", "https://newsletter.agentbuild.ai/p/5-major-pain-points-ai-agent-developers"]
+        ]
+      }
+    },
+    {
+      id: "s4", num: "四", title: "自动化根因分析", en: "Root Cause Analysis", emoji: "🔍",
+      core: "当 Agent 行为异常时，开发者需要翻阅数万行日志才能定位根因。现有可观测性为请求-响应式 LLM 应用设计，无法应对运行数十分钟、难以复现的 Agent 工作流。单个实例复现不出来，但把一堆一次性非确定故障聚合成可行动趋势（如「这周 14 次工具调用参数错误、都在同一工具、都在输入含属性 X 时」）才是可调试模式——这套归因目前<b>没有平台自动做，靠工程师手工打标</b>。",
+      voices: {
+        cols: ["来源", "用户原声"],
+        rows: [
+          ["Reddit r/Observability|https://www.reddit.com/r/Observability/comments/1tkfkul/automating_root_cause_analysis_for_ai_agent/", "「Agent 触发警报时我打开日志，然后必须翻阅五万行才能找到出错的那个工具调用……这完全不可持续。」"],
+          ["Galileo Blog|https://galileo.ai/blog/best-ai-agent-debugging-root-cause-analysis-tools", "「你的生产 Agent 昨晚静默失败了 2000 个客户请求，而监控系统只告诉你 CPU 使用率正常。」"],
+          ["Laminar (YC S24)|https://www.ycombinator.com/companies/laminar", "「整个可观测性领域为请求-响应式 LLM 应用而建，没人针对运行 40 分钟并以你无法复现的方式失败的 Agent 开发。」"],
+          ["Dev.to — Observability Gap|https://dev.to/utibe_okodi_339fb47a13ef5/i-evaluated-every-ai-agent-observability-tool-on-the-market-heres-whats-actually-missing-54c", "「评估了市面所有 Agent 可观测工具，真正缺失的是：自动化根因归因、跨步骤依赖追踪、非确定性重放能力。」"]
+        ]
+      },
+      articles: {
+        cols: ["标题 / 来源", "要点", "链接"],
+        rows: [
+          ["Laminar 获 300 万美元种子轮 / Tech.eu", "YC S24 初创，专注 Agent 调试与可观测缺口，提供「时间旅行调试」与 AI 自动根因浮出（Signals 功能）。", "https://tech.eu/2026/03/17/agent-debugging-startup-laminar-raises-3m-seed-to-tackle-the-observability-gap-in-ai-agents/"],
+          ["Cleric — 自动化根因分析 Agent / ZenML", "用 AI Agent 自动诊断生产系统根因，探索「用 Agent 治理 Agent」范式。", "https://www.zenml.io/llmops-database/ai-agent-for-automated-root-cause-analysis-in-production-systems"],
+          ["Laminar 产品介绍 / OpenApps", "Agent 原生可观测平台，支持 trace 级别自动根因分析。", "https://openapps.pro/apps/laminar"]
+        ]
+      }
+    },
+    {
+      id: "s5", num: "五", title: "安全、权限与运行时治理", en: "Security / Governance / Runtime", emoji: "💡",
+      core: "Agent 能行动后，风险从「内容错误」升级为「真实系统误操作」（改文件、发消息、查库、触发审批、提交代码）。现有 IAM/DLP/审批/日志体系围绕人或传统服务账号设计，对 Agent 身份、权限、工具调用、越权、影子 Agent、数据外泄和紧急熔断覆盖不足。安全焦点正从模型层转向<b>执行层/工具调用边界</b>。<b>48% 安全专家</b>将智能体列为 2026 首要攻击媒介。",
+      voices: {
+        cols: ["来源", "原声 / 痛点", "链接"],
+        rows: [
+          ["Reddit r/AI_Agents（生产经验教训）", "「别用 LLM 当护栏。用代码、schema、策略、allowlist 和确定性检查；让 LLM 推理，让系统强制执行。假设 Agent 会中途失败。」", "https://www.reddit.com/r/AI_Agents/comments/1t09uei/lessons_learned_building_agents_in_production/"],
+          ["小红书 / 6066505b…", "Agent 基础设施痛点：凭证随手扔 .env、行为无法追溯、沙箱几乎空白、代码审查流水线跟不上；一次文件搜索可能烧数万 token。", "https://www.xiaohongshu.com/discovery/item/6a4af0af000000000702a6b0"],
+          ["X / akuli", "Agent 安全在部署后仍持续存在，需数据保护、审计级可观测、回归测试、变更治理、多 Agent 信任边界。", "http://twitter.com/akuli/status/2074403990079468029"],
+          ["X / Jockysimply", "需要「无聊但可靠的监督面板」：知道 Agent 做了什么、改了什么、跳过了什么、等待什么、哪些需要审批。", "http://twitter.com/Jockysimply/status/2073961526084751863"],
+          ["X / ixoworld", "自治 Agent 不能审计自身执行，仅靠文本总结确认成功会带来 Confused Deputy 类问题，需协议级验证。", "http://twitter.com/ixoworld/status/2074109250150748376"],
+          ["X / villaumbrosia", "Agent 课程从 orchestration 转向「允许 Agent 接触什么、如何限制它能破坏什么、如何逐步获得自治权」。", "http://twitter.com/villaumbrosia/status/2074136067163193454"],
+          ["X / TrueWatch_HQ", "Ops 中的 AI Agent 看起来很美好，但大多数团队还没完成让它们可信运行的基础工作。", "http://twitter.com/TrueWatch_HQ/status/2074339949143556384"],
+          ["Reddit r/ArtificialInteligence", "组织缺的不是好模型，而是可安全使用模型的系统上下文：旧文档、权限不清、依赖混乱、流程半文档化。", "https://www.reddit.com/r/ArtificialInteligence/comments/1spt2hr/what_are_the_painpoints_organisations_experience/"],
+          ["Reddit r/cybersecurity", "「How to deal with the 2026 Agent Wave」——如何应对 2026 智能体浪潮。", "https://www.reddit.com/r/cybersecurity/comments/1q95y5p/how_to_deal_with_the_2026_agent_wave/"],
+          ["Reddit r/cybersecurity", "「Best AI Agentic security tools for AI company?」——AI 公司该选什么 Agent 安全工具。", "https://www.reddit.com/r/cybersecurity/comments/1u48s63/best_ai_agentic_security_tools_for_ai_company/"],
+          ["Reddit r/AIMLDiscussion", "「6 AI security solutions that cover agent traffic」——覆盖 Agent 流量的安全方案。", "https://www.reddit.com/r/AIMLDiscussion/comments/1tj77oc/6_ai_security_solutions_that_cover_agent_traffic/"],
+          ["GitHub Discussions", "「What security headaches has AI introduced in your projects lately? (2026)」", "https://github.com/orgs/community/discussions/193727"]
+        ]
+      },
+      articles: {
+        cols: ["标题 / 来源", "要点", "链接"],
+        rows: [
+          ["Why AI Agent Authorization Is Still Unsolved in 2026 / DEV", "Agent 授权在 2026 仍未解决。", "https://dev.to/webpro255/why-ai-agent-authorization-is-still-unsolved-in-2026-5hdk"],
+          ["Every AI Agent Framework Trusts the Agent. That's the Problem / DEV", "所有框架都信任 Agent 本身，这正是问题所在。", "https://dev.to/saezbaldo/every-ai-agent-framework-trusts-the-agent-thats-the-problem-5gfa"],
+          ["Your AI Guardrails Fail the Kerckhoffs Test / DEV", "当 Agent 理解了自己的护栏，护栏就失效了。", "https://dev.to/saezbaldo/what-happens-when-an-ai-agent-understands-its-own-guardrails-25al"],
+          ["Before the Tool Call: Deterministic Pre-Action Authorization / arXiv", "为自治 Agent 提供工具调用前的确定性预授权。", "https://arxiv.org/html/2603.20953v1"],
+          ["AI Agent Security Needs to Move to the Tool-Call Boundary / Netizen", "安全应移到工具调用边界。", "https://blog.netizen.net/2026/07/07/ai-agent-security-needs-to-move-to-the-tool-call-boundary/"],
+          ["Introducing the Agent Governance Toolkit / Microsoft Open Source", "开源的 Agent 运行时安全治理工具包。", "https://opensource.microsoft.com/blog/2026/04/02/introducing-the-agent-governance-toolkit-open-source-runtime-security-for-ai-agents/"],
+          ["AI Agents and Compliance / Kontext Security", "安全团队需了解的 Agent 合规要点。", "https://kontext.security/content/ai-agents-compliance-security-teams-2026"],
+          ["AI agent security in 2026: ownership and control / NHIMG", "非人类身份（NHI）视角下 Agent 安全的所有权与控制变化。", "https://nhimg.org/community/agentic-ai-and-nhis/ai-agent-security-in-2026-what-changed-for-ownership-and-control/"],
+          ["AI Agents Hacking in 2026: Defending the New Execution Boundary / Penligent", "防御新的执行边界攻击面。", "https://www.penligent.ai/hackinglabs/ai-agents-hacking-in-2026-defending-the-new-execution-boundary/"],
+          ["Best AI Agent Security Tools in 2026 / Toolradar", "2026 Agent 安全工具盘点。", "https://toolradar.com/guides/best-ai-agent-security-tools"],
+          ["Agent AI is Coming. Are You Ready? / The Hacker News", "企业 Agent 安全准备度。", "https://thehackernews.com/2026/05/agent-ai-is-coming-are-you-ready.html"],
+          ["Agentic Workflow Patterns & Best Practices [2026] / Virtido", "48% 安全专家将智能体列为 2026 首要攻击媒介（多系统凭证托管 + NHI 鉴权空白）。", "https://virtido.com/blog/agentic-workflows-patterns-best-practices-enterprise/"],
+          ["State of AI Agent Security Report / Gravitee", "Agent 数量快速增长，企业理解风险但难以在实践中管理；身份、授权、监控、治理成核心缺口。", "https://www.gravitee.io/state-of-ai-agent-security"],
+          ["AI Agent Security In 2026: What Enterprises Are Getting Wrong / Agat", "安全焦点从模型层转向执行层；工具滥用、MCP 供应链、影子 Agent、运行时监控是新风险面。", "https://agatsoftware.com/blog/ai-agent-security-enterprise-2026/"],
+          ["Top Agentic AI security resources — July 2026 / Adversa", "Agent Zero Trust、可验证防护、严格身份边界、运行时监控成安全主线。", "https://adversa.ai/blog/top-agentic-ai-security-resources-july-2026/"],
+          ["AI Agent Security Risks / miniOrange", "过度授权、硬编码凭证、可见性不足、Prompt Injection、插件集成不安全、输出外泄是最常见风险。", "https://www.miniorange.com/blog/ai-agent-security-risks/"],
+          ["AI Agent Security in 2026: Risks Most Enterprises Still Ignore / Beam", "治理速度落后于部署速度，很多 Agent 缺一致的安全审查、访问可见性和日志监控。", "https://beam.ai/agentic-insights/ai-agent-security-in-2026-the-risks-most-enterprises-still-ignore"],
+          ["State of AI 2026: Trust, Control, and the Rise of AI Agents / AvePoint", "AI 规模化后，信任、控制、数据治理和组织能力成主要瓶颈。", "https://www.avepoint.com/blog/manage/state-of-ai-2026-report"],
+          ["Enterprise AI adoption in 2026: Why 79% face challenges / Writer", "治理、数据泄露、影子工具、无法熔断 rogue agent 等问题阻碍规模化。", "https://writer.com/blog/enterprise-ai-adoption-2026/"]
+        ]
+      }
+    },
+    {
+      id: "s6", num: "六", title: "成本闭环与 FinOps", en: "Cost Governance", emoji: "💡",
+      core: "多轮推理、工具循环、长上下文导致成本不可控；多数工具只展示成本，不主动优化/限流/路由/阻断异常循环。<b>71% 受访者认为运行 Agent 比构建 Agent 更贵</b>；评估成本本身也很高——每次 prompt/model/tool/memory 变更都完整跑端到端评估不现实。",
+      voices: {
+        cols: ["来源", "原声 / 要点", "链接"],
+        rows: [
+          ["X / _odsc", "引用 DataRobot 调研：71% 受访者认为运行 Agent 比构建 Agent 更贵，显示企业 Agentic AI 运维成本压力。", "http://twitter.com/_odsc/status/2074269161757253658"],
+          ["X / pauliusztin_", "过细的 Agent 指令会浪费 token、增加延迟甚至损害表现，需通过 Eval 反复裁剪与验证。", "http://twitter.com/pauliusztin_/status/2074398151469912418"],
+          ["小红书 / 6066505b…", "一次文件搜索可能消耗数万 token，真实任务还没开始上下文就被烧光。", "https://www.xiaohongshu.com/discovery/item/6a4af0af000000000702a6b0"],
+          ["X / Xudong07452910", "Agentic benchmark 成本高，完整跑 SWE-Bench、GAIA 等评估需复杂环境、长时间 rollout 和高额费用。", "http://twitter.com/Xudong07452910/status/2073968931434299781"],
+          ["X / qingsong6", "完整 Agent 评测成本高，需更便宜的 proxy evaluation 支持日常迭代和模型筛选。", "http://twitter.com/qingsong6/status/2074036448702222794"],
+          ["The Unmet AI Needs Survey 2026 / DataRobot", "调研企业在 Agentic AI 生命周期中的未满足需求：成本控制、部署灵活性、生产级管理等。", "https://www.datarobot.com/resources/unmet-ai-needs-survey-2026/"]
+        ]
+      },
+      funding: { emoji: "💰", title: "成本闭环未被充分解决的点", text: "成本可见但不可控（缺预算/限流/自动降级/异常循环阻断）、缺少质量-成本 Pareto 分析、模型路由不成熟、上下文预算缺少治理、评估成本本身也很高。真实案例：凌晨 3 点重试同一失败调用 <b>847 次</b>、4 小时烧掉 <b>$2,847</b>，直到收到账单才发现；诉求是「超过滚动均值 3 倍就在几秒内告警」的实时熔断。", url: "" }
+    },
+    {
+      id: "s7", num: "七", title: "企业落地：老旧系统集成与 RAG", en: "Enterprise Integration", emoji: "💡",
+      core: "企业落地 Agent 最大瓶颈之一是<b>数据孤岛与遗留系统集成</b>。超过 <b>42%</b> 企业部署时需同时打通 8 个以上数据源；大模型无法直接操作 ERP、CRM 等私有老旧系统，缺乏标准化连接协议（如 MCP）与高质量非结构化数据基建（RAG），Agent 就会「无米之炊」。企业科技领袖反馈，智能体无法顺利上生产的 <b>83%</b> 原因在于「工程化能力缺失」而非「模型不聪明」。",
+      caseList: [
+        ["标书自动拆解与报价", "船舶海运重工企业，一份数百页招标文件过去需售前工程师数天逐条拆解易错漏；将 Agent 嵌入业务工作流、调取历史数据与成本模型后，可在 20 分钟内完成 4 天工作，准确率提升至 90% 以上。"],
+        ["多数据源集成卡点", "智能体无法顺利上生产的 83% 原因在于工程化能力缺失，最典型难点是 RAG（知识库搭建）和多源数据冷启动。"],
+        ["金融级 MCP 校验阻力（Mirantis 副总裁 Randy Bias）", "企业推进 AI 缓慢是因为「安全验证的代价是真实的」——一家金融机构为验证一个简单 MCP Server，安全合规部门需长达数周的严苛审计。"],
+        ["「幻觉与失控」不可复现风险", "财务、法务等高容错率极低场景，Agent 容易虚构不存在的税收政策、伪造公告号，缺乏安全网关或「人工在环」审计机制会成为高危隐患。"]
+      ],
+      articles: {
+        cols: ["标题 / 来源", "链接"],
+        rows: [
+          ["语核科技：我们做 AI Agent 是怎样让老板开心付费的？｜ToB AI 十问 / 牛透社", "https://www.niutoushe.com/96356"],
+          ["Introducing the Model Context Protocol / Anthropic", "https://www.anthropic.com/news/model-context-protocol"],
+          ["2026 年企业 AI Agent 落地，最新趋势与避坑指南 / 实在智能", "https://www.ai-indeed.com/encyclopedia/17458.html"],
+          ["Why Your Company Should Know About Model Context Protocol / Nasuni", "https://www.nasuni.com/blog/why-your-company-should-know-about-model-context-protocol/"],
+          ["AI Agent 落地全攻略：三大核心挑战及解决方案 / 火山引擎 ADG 社区", "https://adg.csdn.net/697072ad437a6b40336a4988.html"],
+          ["How Enterprises Actually Build AI Agents in Production / Tencent Cloud", "https://adp.tencentcloud.com/en/blog/how-enterprises-build-ai-agents"],
+          ["Enterprise Adoption is the Biggest Bottleneck for AI Agents / Mirantis", "https://www.youtube.com/watch?v=Tksn76E7f_U"],
+          ["硅谷最新调研：2026 年，AI Agent 到底会走向哪？/ 36氪", "https://36kr.com/p/3658889094603398"],
+          ["2026 年 AI Agent 基础设施全景报告 / LearnAgent", "https://learnagent.org/library/compare/agent-infrastructure-report-2026/"],
+          ["The AI Agents Stack (2026 Edition) / O'Reilly", "https://www.oreilly.com/radar/the-ai-agents-stack-2026-edition/"]
+        ]
+      }
+    },
+    {
+      id: "s8", num: "八", title: "验证瓶颈与 Review Debt", en: "Verification Bottleneck", emoji: "💡",
+      core: "AI 让写代码变快，瓶颈随之转移到<b>审查与验证</b>环节。Sonar 数据：<b>96%</b> 开发者不完全信任 AI 输出，却只有 <b>48%</b> 会去验证——形成「AI Review Debt」隐性技术债，拖累 DORA 指标。",
+      voices: {
+        cols: ["来源", "链接"],
+        rows: [
+          ["The AI bottleneck has shifted and most people haven't caught up / r/artificial", "https://www.reddit.com/r/artificial/comments/1tuqkp0/the_ai_bottleneck_has_shifted_and_most_people/"],
+          ["Reviewing AI-generated pull requests in 2026 / r/ClaudeAI", "https://www.reddit.com/r/ClaudeAI/comments/1teuh5w/reviewing_aigenerated_pull_requests_in_2026/"],
+          ["The bottleneck in AI-assisted development is no longer coding / r/vibecoding", "https://www.reddit.com/r/vibecoding/comments/1tgdfhb/im_starting_to_think_the_bottleneck_in_aiassisted/"]
+        ]
+      },
+      articles: {
+        cols: ["标题 / 来源", "链接"],
+        rows: [
+          ["Sonar Data Reveals Critical \"Verification Gap\" in AI Coding（96% 不完全信任，仅 48% 验证）/ Sonar", "https://www.sonarsource.com/company/press-releases/sonar-data-reveals-critical-verification-gap-in-ai-coding/"],
+          ["2026 State of Code Developer Survey / Sonar", "https://events.sonarsource.com/2026-state-of-code-developer-survey/"],
+          ["The great toil shift: How AI is redefining technical debt / Sonar", "https://www.sonarsource.com/blog/how-ai-is-redefining-technical-debt/"],
+          ["The Bottleneck Isn't Coding Anymore. It's Verification / Bnaya", "https://rssfeedtelegrambot.bnaya.co.il/index.php/2026/06/26/the-bottleneck-isnt-coding-anymore-its-verification/"],
+          ["FOMO-Driven Development: AI Moved the Bottleneck to Review / Estuary", "https://estuary.dev/blog/fomo-driven-development"],
+          ["AI Review Debt: The Hidden Bottleneck Killing Your DORA Metrics / Substack", "https://sumantthakur.substack.com/p/ai-made-coding-faster-now-code-review"],
+          ["What Hacker News Gets Right About AI Coding Agents in 2026 / Developers Digest", "https://www.developersdigest.tech/blog/what-hacker-news-gets-right-about-ai-coding-agents-2026"]
+        ]
+      }
+    }
+  ],
+  opportunities: {
+    cols: ["方向", "最强购买动机", "MVP 形态", "早期风险"],
+    rows: [
+      ["Trace-to-Eval / 质量闭环", "把线上失败自动变成可复用 regression test，证明上线质量、防回归", "接入 trace→识别 bad run→聚类→脱敏人审→一键生成 eval case→接入 CI/PR gate→展示版本质量变化", "已有平台较多，需差异化切入具体场景或闭环能力"],
+      ["Reliability & Control", "避免 Agent 在生产流程乱跳、误操作、不可复现", "状态机编排 + 工具调用约束 + Replay 调试 + 失败策略库", "需嵌入现有 Agent 框架，迁移成本可能较高"],
+      ["Cost Governance / FinOps", "规模化后成本压力显性化，ROI 易量化，适合 B2B", "成本归因 + per-run budget + loop detection + context 压缩 + model routing + 异常报警 + 自动 fallback/degrade", "需说服团队接入计量，与现有账单/网关集成"],
+      ["Security / Governance Runtime", "避免数据泄露、越权工具调用、影子 Agent、合规事故", "Agent registry + 权限最小化 + policy engine + 高风险动作审批 + audit log + sandbox + kill switch + 可撤销/可补偿操作", "销售周期偏企业级，需与 IAM/SIEM/DLP/MCP 网关集成"]
+    ],
+    priority: [
+      ["1", "Trace-to-Eval 自动闭环", "痛点强、可 PLG 起步、也能走企业。"],
+      ["2", "Agent Cost Governance", "企业 ROI 明确，适合 B2B。"],
+      ["3", "Agent Root Cause Triage", "价值高但技术难度更大，适合作为 Trace-to-Eval 的增强能力。"],
+      ["4", "Policy-controlled Agent Runtime", "企业大单机会，但集成重，适合垂直场景（DevOps/IT/数据/采购/财务/人事）切入。"]
+    ],
+    verify: "优先访谈：已把 Agent 接入生产流程的工程负责人、平台团队、安全团队、客服/运营自动化负责人、AI 工具重度个人开发者。优先验证问题：他们现在如何发现 Agent 失败？如何复现？如何阻止危险动作？如何证明上线后不会回归？谁为 Agent 出错负责？建议按「痛点强度、付费意愿、解决可行性、竞争强度」继续打分筛选。",
+    note: "评估方向偏「方法论未收敛、付费意愿偏弱」，可靠性方向偏「痛感极高但可解决性低」，两者更适合作为可观测性/FinOps 平台的模块能力，而非单点独立创业。所有链接均为公开来源，社区帖子内容可能随时间变化；数据与原声截至 2026-07-09。"
+  }
+};
+
+</script>
+<script>
+const $=(s,e=document)=>e.querySelector(s);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function rich(s){return esc(s).replace(/&lt;b&gt;/g,'<b>').replace(/&lt;\/b&gt;/g,'</b>');}
+
+// ---- lucide-style inline SVG icon set ----
+const IC={
+  ext:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M7 17L17 7M8 7h9v9"/></svg>',
+  target:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4"/></svg>',
+  chev:'<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 6l6 6-6 6"/></svg>',
+  msg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 11.5a8.4 8.4 0 01-11.3 7.9L3 21l1.6-6.7A8.4 8.4 0 1121 11.5z"/></svg>',
+  doc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>',
+  spark:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>',
+  bulb:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10.5c.7.8 1 1.3 1 2.5h6c0-1.2.3-1.7 1-2.5A6 6 0 0012 3z"/></svg>',
+  dollar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v20M17 6H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17l-5-5"/></svg>',
+  note:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 4h16v12l-4 4H4z"/><path d="M16 20v-4h4"/></svg>',
+  pin:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 3h6l-1 7 3 3H7l3-3z"/><path d="M12 16v5"/></svg>',
+  search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>',
+  shield:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg>',
+  gauge:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 14l4-4M4 18a8 8 0 1116 0"/></svg>',
+  refresh:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12a9 9 0 01-9 9 9 9 0 01-7.5-4M3 12a9 9 0 019-9 9 9 0 017.5 4"/><path d="M21 3v5h-5M3 21v-5h5"/></svg>',
+  plug:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 2v6M15 2v6M6 8h12v3a6 6 0 01-12 0zM12 17v5"/></svg>',
+  eye:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>',
+  layers:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg>',
+  book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 5a2 2 0 012-2h13v18H6a2 2 0 01-2-2z"/><path d="M4 5v14"/></svg>'
+};
+// per-section header icons
+const SECICO=['gauge','refresh','eye','search','shield','dollar','plug','check'];
+const DIRICO=['gauge','refresh','eye','search','shield','dollar','plug','check'];
+
+function linkCell(url,label){return url?`<a class="link-btn" href="${url}" target="_blank" rel="noopener">${label||'原文'} ${IC.ext}</a>`:'—';}
+
+// ---- Hero ----
+$('#heroSub').innerHTML = rich(REPORT.overview.conclusion);
+$('#heroStats').innerHTML = [
+  ['8','痛点方向'],['4','机会赛道'],['52%','Eval 采用率'],['89%','可观测采用率'],['71%','运行更贵占比'],['$5B','Temporal 估值']
+].map(([v,l])=>`<div class="stat"><div class="sv">${v}</div><div class="sl">${l}</div></div>`).join('');
+
+// ---- Nav ----
+let nav=`<div class="nav-item active" data-t="#overview">${IC.target}概览 · 核心结论</div>`;
+nav+='<div class="nav-sep">八大痛点方向</div>';
+REPORT.sections.forEach((s,i)=>{
+  nav+=`<div class="nav-item" data-t="#${s.id}">${IC[SECICO[i]]}${s.num}、${s.title}</div>`;
+});
+nav+='<div class="nav-sep">结论</div>';
+nav+=`<div class="nav-item" data-t="#opp">${IC.spark}九、机会与优先级</div>`;
+$('#nav').innerHTML=nav;
+
+// ---- Content ----
+let html='';
+
+// Overview
+html+=`<section id="overview">
+  <div class="sec-head"><span class="sec-ico">${IC.target}</span><div><div class="sec-num">OVERVIEW</div><h2>核心结论</h2></div></div>
+  <div class="callout blue">${IC.pin.replace('<svg','<svg class="cico"')}<div>${rich(REPORT.overview.conclusion)}</div></div>
+  <div class="callout amber">${IC.spark.replace('<svg','<svg class="cico"')}<div><span class="callout-title">元判断</span>${rich(REPORT.overview.meta)}</div></div>
+  <div class="subhead">${IC.layers}八大痛点 / 机会方向速览</div>
+  <div class="hint">点击卡片跳转到对应章节</div>
+  <div class="grid">`;
+REPORT.directions.forEach((d,i)=>{
+  const target=REPORT.sections[i]?('#'+REPORT.sections[i].id):'#opp';
+  html+=`<div class="dcard" data-jump="${target}">
+    <span class="lvl ${d.level}">${d.level}优先级</span>
+    <div class="dtop"><span class="dicon">${IC[DIRICO[i]]}</span><span class="dname">${rich(d.name)}</span></div>
+    <div class="dpain">${rich(d.pain)}</div>
+    <div class="dopp">${IC.bulb}<span>${rich(d.opp)}</span></div>
+  </div>`;
+});
+html+=`</div></section>`;
+
+// table group
+function tableGroup(title,tbl,openDefault,ico){
+  if(!tbl) return '';
+  let head=`<tr>${tbl.cols.map(c=>`<th>${c}</th>`).join('')}</tr>`;
+  let body='';
+  tbl.rows.forEach(r=>{
+    let cells='';
+    r.forEach((cell,ci)=>{
+      const col=tbl.cols[ci];
+      if(col==='链接'){
+        const label = cell.includes('github')?'仓库':((cell.includes('arxiv')||cell.includes('aclanthology'))?'论文':(cell.includes('youtube')?'视频':'原文'));
+        cells+=`<td>${linkCell(cell,label)}</td>`;
+      } else if(ci===0 && cell.includes('|')){
+        const [src,url]=cell.split('|');
+        cells+=`<td class="src-cell"><a class="link-btn" href="${url}" target="_blank" rel="noopener">${esc(src)} ${IC.ext}</a></td>`;
+      } else if(ci===0){
+        cells+=`<td class="src-cell">${rich(cell)}</td>`;
+      } else {
+        cells+=`<td class="quote">${rich(cell)}</td>`;
+      }
+    });
+    body+=`<tr class="searchable">${cells}</tr>`;
+  });
+  return `<div class="grp">
+    <div class="grp-head${openDefault?' open':''}">${IC.chev}${(ico||IC.msg).replace('<svg','<svg class="ghico"')}<span class="gt">${title}</span><span class="gcount">${tbl.rows.length}</span></div>
+    <div class="grp-body${openDefault?' open':''}"><div class="tbl-wrap"><table><thead>${head}</thead><tbody>${body}</tbody></table></div></div>
+  </div>`;
+}
+
+// Sections
+REPORT.sections.forEach((s,i)=>{
+  html+=`<section id="${s.id}">
+    <div class="sec-head"><span class="sec-ico">${IC[SECICO[i]]}</span><div><div class="sec-num">SECTION ${String(i+1).padStart(2,'0')}</div><h2>${s.title}</h2></div></div>
+    <div class="sec-en">${s.en}</div>
+    <div class="callout">${IC.bulb.replace('<svg','<svg class="cico"')}<div><span class="callout-title">核心痛点</span>${rich(s.core)}</div></div>`;
+  if(s.caseList){
+    html+=`<div class="grp"><div class="grp-head open">${IC.chev}${IC.msg}<span class="gt">用户原声与案例</span><span class="gcount">${s.caseList.length}</span></div><div class="grp-body open"><div class="caselist">`;
+    s.caseList.forEach(c=>{ html+=`<div class="caseitem searchable"><div class="ct">${IC.pin}${rich(c[0])}</div><div class="cd">${rich(c[1])}</div></div>`; });
+    html+=`</div></div></div>`;
+  }
+  if(s.voices) html+=tableGroup('用户原声',s.voices,true,IC.msg);
+  if(s.articles) html+=tableGroup(s.caseList?'核心文章参考':'文章、报告与研究',s.articles,false,IC.book);
+  if(s.funding){
+    const cls = s.funding.emoji==='💰'?'green':'amber';
+    const fico = s.funding.emoji==='💰'?IC.dollar:IC.spark;
+    html+=`<div class="callout ${cls}">${fico.replace('<svg','<svg class="cico"')}<div><span class="callout-title">${s.funding.title}</span>${rich(s.funding.text)} ${s.funding.url?linkCell(s.funding.url,'来源'):''}</div></div>`;
+  }
+  html+=`</section>`;
+});
+
+// Opportunities
+const O=REPORT.opportunities;
+html+=`<section id="opp">
+  <div class="sec-head"><span class="sec-ico">${IC.spark}</span><div><div class="sec-num">CONCLUSION</div><h2>创业机会判断与优先级总结</h2></div></div>
+  <div class="sec-en">Opportunity & Priority</div>
+  <div class="subhead">${IC.target}9.1 四大机会方向对比</div>
+  <div class="grp"><div class="grp-body open"><div class="tbl-wrap"><table><thead><tr>${O.cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>`;
+O.rows.forEach(r=>{
+  html+=`<tr class="searchable"><td class="src-cell">${rich(r[0])}</td><td>${rich(r[1])}</td><td>${rich(r[2])}</td><td style="color:var(--fg3)">${rich(r[3])}</td></tr>`;
+});
+html+=`</tbody></table></div></div></div>
+  <div class="subhead">${IC.layers}9.2 优先级建议</div>
+  <div class="prio">`;
+O.priority.forEach(p=>{
+  html+=`<div class="prio-item searchable"><div class="prio-n">${p[0]}</div><div><span class="prio-t">${rich(p[1])}</span><div class="prio-d">${rich(p[2])}</div></div></div>`;
+});
+html+=`</div>
+  <div class="callout green">${IC.check.replace('<svg','<svg class="cico"')}<div><span class="callout-title">验证建议</span>${rich(O.verify)}</div></div>
+  <div class="callout">${IC.note.replace('<svg','<svg class="cico"')}<div><span class="callout-title">备注</span>${rich(O.note)}</div></div>
+</section>`;
+
+$('#content').innerHTML=html;
+$('#footer').innerHTML=`${IC.doc}<div>AI Agent 痛点全景报告 · 可视化交互版</div><div>${REPORT.dateNote}</div>`;
+
+// ---- Interactions ----
+document.addEventListener('click',e=>{
+  const gh=e.target.closest('.grp-head');
+  if(gh){gh.classList.toggle('open');gh.nextElementSibling.classList.toggle('open');return;}
+  const jc=e.target.closest('[data-jump]');
+  if(jc){const t=document.querySelector(jc.dataset.jump);if(t)t.scrollIntoView({behavior:'smooth'});return;}
+  const ni=e.target.closest('.nav-item');
+  if(ni){const t=document.querySelector(ni.dataset.t);if(t)t.scrollIntoView({behavior:'smooth'});return;}
+});
+
+const secs=[...document.querySelectorAll('section')];
+const navItems=[...document.querySelectorAll('.nav-item')];
+const spy=new IntersectionObserver(ents=>{
+  ents.forEach(en=>{if(en.isIntersecting){const id='#'+en.target.id;navItems.forEach(n=>n.classList.toggle('active',n.dataset.t===id));}});
+},{rootMargin:'-40% 0px -55% 0px'});
+secs.forEach(s=>spy.observe(s));
+
+const toTop=$('#toTop');
+window.addEventListener('scroll',()=>{toTop.classList.toggle('show',window.scrollY>500);});
+toTop.onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
+
+// ---- Search ----
+const search=$('#search'), searchCount=$('#searchCount');
+const rows=[...document.querySelectorAll('.searchable')];
+function clearHL(el){el.querySelectorAll('.hl').forEach(m=>{m.replaceWith(document.createTextNode(m.textContent));});el.normalize();}
+function doSearch(){
+  const q=search.value.trim().toLowerCase();
+  rows.forEach(clearHL);
+  if(!q){rows.forEach(r=>r.classList.remove('hidden'));document.querySelectorAll('.grp').forEach(g=>g.classList.remove('hidden'));searchCount.textContent='';return;}
+  let hits=0;
+  rows.forEach(r=>{const txt=r.textContent.toLowerCase();const ok=txt.includes(q);r.classList.toggle('hidden',!ok);if(ok){hits++;highlight(r,q);}});
+  document.querySelectorAll('.grp').forEach(g=>{
+    const vis=[...g.querySelectorAll('.searchable')].filter(r=>!r.classList.contains('hidden'));
+    if(vis.length){g.classList.remove('hidden');const h=g.querySelector('.grp-head'),b=g.querySelector('.grp-body');if(h){h.classList.add('open');b.classList.add('open');}}
+    else{g.classList.add('hidden');}
+  });
+  searchCount.textContent=`命中 ${hits} 条`;
+}
+function highlight(root,q){
+  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
+  const targets=[];let n;
+  while(n=walker.nextNode()){if(n.nodeValue.toLowerCase().includes(q)&&n.parentElement.tagName!=='SCRIPT')targets.push(n);}
+  targets.forEach(node=>{
+    const frag=document.createDocumentFragment();const val=node.nodeValue;const low=val.toLowerCase();
+    let i=0,idx;
+    while((idx=low.indexOf(q,i))!==-1){
+      if(idx>i)frag.appendChild(document.createTextNode(val.slice(i,idx)));
+      const m=document.createElement('span');m.className='hl';m.textContent=val.slice(idx,idx+q.length);frag.appendChild(m);
+      i=idx+q.length;
+    }
+    if(i<val.length)frag.appendChild(document.createTextNode(val.slice(i)));
+    node.parentNode.replaceChild(frag,node);
+  });
+}
+let deb;search.addEventListener('input',()=>{clearTimeout(deb);deb=setTimeout(doSearch,180);});
+</script>
+</body>
+</html>
